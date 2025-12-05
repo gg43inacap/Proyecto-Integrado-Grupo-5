@@ -1,19 +1,19 @@
-from django.db import models
+from django.db import models # Sistema de modelos de Django
 
-class Madre(models.Model):
-    nombre = models.CharField(max_length=255)
-    rut = models.CharField(max_length=12, unique=True)
-    fecha_nacimiento = models.DateField()
-    comuna = models.CharField(max_length=255, blank=True, null=True)
-    cesfam = models.CharField(max_length=255, blank=True, null=True)
-    direccion = models.CharField(max_length=255, blank=True, null=True)
-    telefono = models.CharField(max_length=20, blank=True, null=True)
-    antecedentes_obstetricos = models.TextField(blank=True, null=True)
-    atenciones_clinicas = models.TextField(blank=True, null=True)
-    acompañante = models.CharField(max_length=255, blank=True, null=True)
-    confirmado = models.BooleanField(default=False)  # Para control de Matrona
-    objects = models.Manager()
+class Madre(models.Model): # Modelo que representa a una madre
+    # Aquí se definen los campos para guardar la información de la madre
+    # Ejemplo: nombre, rut, fecha_nacimiento, etc.
+    nombre = models.CharField(max_length=100) # Nombre de la madre
+    rut = models.CharField(max_length=12) # RUT de la madre
+    fecha_nacimiento = models.DateField() # Fecha de nacimiento
+    comuna = models.CharField(max_length=100) # Comuna de residencia
+    cesfam = models.CharField(max_length=100) # CESFAM asociado
+    direccion = models.CharField(max_length=200) # Dirección
+    telefono = models.CharField(max_length=20) # Teléfono
+    antecedentes_obstetricos = models.TextField() # Antecedentes obstétricos
+    atenciones_clinicas = models.TextField() # Atenciones clínicas
+    acompanante = models.CharField(max_length=100, blank=True, default="Sin Acompañante") # Nombre del acompañante
 
-    def __str__(self):
-        return f"{self.nombre} ({self.rut})"
+    def __str__(self): # Muestra la madre como texto
+        return f"{self.nombre} ({self.rut})" # Ejemplo: Ana Pérez (12345678-9)
 

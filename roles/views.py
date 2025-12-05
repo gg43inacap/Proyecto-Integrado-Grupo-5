@@ -1,35 +1,37 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model
-from .forms import CustomUserForm
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required # Requiere que el usuario esté autenticado
+from django.shortcuts import render, redirect # Mostrar páginas y redirigir
+from django.contrib.auth import get_user_model # Obtener el modelo de usuario personalizado
+from .forms import CustomUserForm # Importa el formulario para usuarios
+from django.contrib import messages # Importa el sistema de mensajes para mostrar avisos
 
-def dashboard(request):
-    # Bypass login demo SIEMPRE si hay parámetro rol (prioridad máxima)
-    rol_param = request.GET.get('rol')
+# Vista principal que muestra el panel según el rol del usuario
+# Si se pasa el parámetro 'rol', muestra el panel de ese rol para pruebas
+# Si no, muestra el panel según el rol del usuario logueado
+
+def dashboard(request): # Muestra el panel correspondiente al rol
+    rol_param = request.GET.get('rol') # Obtiene el parámetro de rol si existe
     if rol_param:
-        # Usar el primer superusuario para pruebas
-        User = get_user_model()
-        superuser = User.objects.filter(is_superuser=True).first()
+        User = get_user_model() # Obtiene el modelo de usuario
+        superuser = User.objects.filter(is_superuser=True).first() # Busca el primer superusuario
         if superuser:
-            request.user = superuser
-            request.session['bypass_demo'] = True
-        rol = rol_param
-        # Mostrar el panel correspondiente al rol del parámetro
+            request.user = superuser # Asigna el superusuario para pruebas
+            request.session['bypass_demo'] = True # Marca la sesión como demo
+        rol = rol_param # Usa el rol del parámetro
+        # Muestra el panel según el rol
         if rol == 'ADMIN' or rol == 'SUPERADMIN':
-            return render(request, 'roles/panel_ADMIN.html')
+            return render(request, 'roles/panel_ADMIN.html') # Panel de admin
         elif rol == 'SOME':
-            return render(request, 'roles/panel_some.html')
+            return render(request, 'roles/panel_some.html') # Panel de SOME
         elif rol == 'MATRONA':
-            return render(request, 'roles/panel_matrona.html')
+            return render(request, 'roles/panel_matrona.html') # Panel de matrona
         elif rol == 'SUPERVISOR':
-            return render(request, 'roles/panel_supervisor.html')
+            return render(request, 'roles/panel_supervisor.html') # Panel de supervisor
         elif rol == 'AUDITORIA':
-            return render(request, 'roles/panel_auditoria.html')
+            return render(request, 'roles/panel_auditoria.html') # Panel de auditoria
         else:
-            return render(request, 'roles/no_autorizado.html')
+            return render(request, 'roles/no_autorizado.html') # Panel de no autorizado
     # Si no es demo, flujo normal
-    rol = getattr(request.user, 'role', None)
+    rol = getattr(request.user, 'role', None) # Obtiene el rol del usuario
     if rol == 'SUPERADMIN':
         return render(request, 'roles/panel_ADMIN.html')
     elif rol == 'SOME':
@@ -43,45 +45,54 @@ def dashboard(request):
     elif rol == 'ADMIN':
         return render(request, 'roles/panel_ADMIN.html')
     else:
-        return render(request, 'roles/no_autorizado.html')
-
-def user_list(request):
-    User = get_user_model()
-    users = User.objects.all()
-    return render(request, 'roles/user_list.html', {'users': users})
+        return render(request, 'roles/no_autorizado.html') # Si no tiene rol válido
 
 @login_required
-def user_create(request):
-    if request.method == 'POST':
-        form = CustomUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Usuario creado correctamente.')
-            return redirect('user_list')
+# Vista para listar todos los usuarios registrados
+
+def user_list(request): # Lista todos los usuarios
+    User = get_user_model() # Obtiene el modelo de usuario
+    users = User.objects.all() # Obtiene todos los usuarios
+    return render(request, 'roles/user_list.html', {'users': users}) # Muestra la lista de usuarios
+
+@login_required
+# Vista para crear un nuevo usuario
+
+def user_create(request): # Crea un nuevo usuario
+    if request.method == 'POST': # Si el formulario fue enviado
+        form = CustomUserForm(request.POST) # Crea el formulario con los datos enviados
+        if form.is_valid(): # Si el formulario es válido
+            form.save() # Guarda el usuario
+            messages.success(request, 'Usuario creado correctamente.') # Muestra mensaje de éxito
+            return redirect('user_list') # Redirige a la lista de usuarios
     else:
-        form = CustomUserForm()
-    return render(request, 'roles/user_form.html', {'form': form})
+        form = CustomUserForm() # Crea un formulario vacío
+    return render(request, 'roles/user_form.html', {'form': form}) # Muestra el formulario de creación
 
 @login_required
-def user_update(request, pk):
-    User = get_user_model()
-    user = User.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = CustomUserForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Usuario actualizado correctamente.')
-            return redirect('user_list')
+# Vista para editar los datos de un usuario existente
+
+def user_update(request, pk): # Edita un usuario
+    User = get_user_model() # Obtiene el modelo de usuario
+    user = User.objects.get(pk=pk) # Obtiene el usuario por su ID
+    if request.method == 'POST': # Si el formulario fue enviado
+        form = CustomUserForm(request.POST, instance=user) # Crea el formulario con los datos enviados
+        if form.is_valid(): # Si el formulario es válido
+            form.save() # Guarda los cambios
+            messages.success(request, 'Usuario actualizado correctamente.') # Muestra mensaje de éxito
+            return redirect('user_list') # Redirige a la lista de usuarios
     else:
-        form = CustomUserForm(instance=user)
-    return render(request, 'roles/user_form.html', {'form': form})
+        form = CustomUserForm(instance=user) # Crea el formulario con los datos actuales
+    return render(request, 'roles/user_form.html', {'form': form}) # Muestra el formulario de edición
 
 @login_required
-def user_delete(request, pk):
-    User = get_user_model()
-    user = User.objects.get(pk=pk)
-    if request.method == 'POST':
-        user.delete()
-        messages.success(request, 'Usuario eliminado correctamente.')
-        return redirect('user_list')
-    return render(request, 'roles/user_confirm_delete.html', {'user': user})
+# Vista para eliminar un usuario
+
+def user_delete(request, pk): # Elimina un usuario
+    User = get_user_model() # Obtiene el modelo de usuario
+    user = User.objects.get(pk=pk) # Obtiene el usuario por su ID
+    if request.method == 'POST': # Si se confirma la eliminación
+        user.delete() # Elimina el usuario
+        messages.success(request, 'Usuario eliminado correctamente.') # Muestra mensaje de éxito
+        return redirect('user_list') # Redirige a la lista de usuarios
+    return render(request, 'roles/user_confirm_delete.html', {'user': user}) # Muestra la página de confirmación

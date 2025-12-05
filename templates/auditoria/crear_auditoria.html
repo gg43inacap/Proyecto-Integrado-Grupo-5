@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Crear registro de auditoría (temporal)</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Acción realizada:</label>
+    <input type="text" name="accion_realizada" value="PRUEBA"><br>
+    <label>Modelo afectado:</label>
+    <input type="text" name="modelo_afectado" value="TestModel"><br>
+    <label>ID de registro:</label>
+    <input type="number" name="registro_id" value="1"><br>
+    <label>Detalles del cambio:</label>
+    <input type="text" name="detalles_cambio" value="Detalle de prueba"><br>
+    <button type="submit">Crear</button>
+</form>
+<p><a href="{% url 'lista_auditorias' %}">Volver a la lista</a></p>
+{% endblock %}

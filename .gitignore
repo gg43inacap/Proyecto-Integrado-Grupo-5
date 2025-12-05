@@ -7,3 +7,4 @@ __pycache__/
 .idea/
 .env
 db.sqlite3
+poblar_db.py

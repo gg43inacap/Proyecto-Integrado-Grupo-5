@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 def lista_partos(request):
     partos = Parto.objects.select_related('madre').all()
     return render(request, 'partos/lista_partos.html', {'partos': partos})
-
+# Vista para crear un nuevo parto
 @login_required
 def crear_parto(request):
     if request.method == 'POST':
@@ -19,7 +19,7 @@ def crear_parto(request):
     else:
         form = PartoForm()
     return render(request, 'partos/crear_parto.html', {'form': form})
-
+# Vista para editar un parto existente
 @login_required
 def editar_parto(request, parto_id):
     parto = get_object_or_404(Parto, id=parto_id)
