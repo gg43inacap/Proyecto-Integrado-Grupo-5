@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Editar Madre</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Nombre:</label><br>
+    <input type="text" name="nombre" value="{{ madre.nombre }}" required><br>
+    <label>RUT:</label><br>
+    <input type="text" name="rut" value="{{ madre.rut }}" required><br>
+    <label>Fecha de nacimiento:</label><br>
+    <input type="date" name="fecha_nacimiento" value="{{ madre.fecha_nacimiento }}" required><br>
+    <label>Comuna:</label><br>
+    <input type="text" name="comuna" value="{{ madre.comuna }}"><br>
+    <label>CESFAM:</label><br>
+    <input type="text" name="cesfam" value="{{ madre.cesfam }}"><br>
+    <label>Dirección:</label><br>
+    <input type="text" name="direccion" value="{{ madre.direccion }}"><br>
+    <label>Teléfono:</label><br>
+    <input type="text" name="telefono" value="{{ madre.telefono }}"><br>
+    <label>Antecedentes obstétricos:</label><br>
+    <textarea name="antecedentes_obstetricos">{{ madre.antecedentes_obstetricos }}</textarea><br>
+    <label>Atenciones clínicas:</label><br>
+    <textarea name="atenciones_clinicas">{{ madre.atenciones_clinicas }}</textarea><br>
+    <label>Acompañante:</label><br>
+    <input type="text" name="acompañante" value="{{ madre.acompañante }}"><br>
+    <button type="submit">Guardar cambios</button>
+  </form>
+  <a href="{% url 'lista_madres' %}">Volver al listado</a>
+{% endblock %}

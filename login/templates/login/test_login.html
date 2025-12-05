@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Login - Test Fork Neonatal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-5">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Iniciar Sesión (Demo)</h2>
+                <hr>
+                <h5 class="text-center mb-3">Acceso directo a paneles de rol (demo)</h5>
+                <div class="d-grid gap-2">
+                    <a href="/dashboard/?rol=SOME" class="btn btn-info">Panel SOME</a>
+                    <a href="/dashboard/?rol=MATRONA" class="btn btn-success">Panel MATRONA</a>
+                    <a href="/dashboard/?rol=SUPERVISOR" class="btn btn-warning">Panel SUPERVISOR</a>
+                    <a href="/dashboard/?rol=AUDITORIA" class="btn btn-secondary">Panel AUDITORIA</a>
+                    <a href="/dashboard/?rol=ADMIN" class="btn btn-dark">Panel ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

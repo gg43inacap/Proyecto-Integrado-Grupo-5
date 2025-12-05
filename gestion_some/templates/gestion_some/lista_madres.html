@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Listado de Madres</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>RUT</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for madre in madres %}
+    <tr>
+      <td>{{ madre.nombre }}</td>
+      <td>{{ madre.rut }}</td>
+      <td>
+        <a href="{% url 'detalle_madre' madre.id %}" class="btn btn-info btn-sm">Ver detalles</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No hay madres registradas.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

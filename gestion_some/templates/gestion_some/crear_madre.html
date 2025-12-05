@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Crear Madre</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Nombre:</label><br>
+    <input type="text" name="nombre" required><br>
+    <label>RUT:</label><br>
+    <input type="text" name="rut" required><br>
+    <label>Fecha de nacimiento:</label><br>
+    <input type="date" name="fecha_nacimiento" required><br>
+    <label>Comuna:</label><br>
+    <input type="text" name="comuna"><br>
+    <label>CESFAM:</label><br>
+    <input type="text" name="cesfam"><br>
+    <label>Dirección:</label><br>
+    <input type="text" name="direccion"><br>
+    <label>Teléfono:</label><br>
+    <input type="text" name="telefono"><br>
+    <label>Antecedentes obstétricos:</label><br>
+    <textarea name="antecedentes_obstetricos"></textarea><br>
+    <label>Atenciones clínicas:</label><br>
+    <textarea name="atenciones_clinicas"></textarea><br>
+    <label>Acompañante:</label><br>
+    <input type="text" name="acompañante"><br>
+    <button type="submit">Guardar</button>
+  </form>
+  <a href="{% url 'lista_madres' %}">Volver al listado</a>
+{% endblock %}

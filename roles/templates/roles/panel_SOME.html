@@ -2,4 +2,9 @@
 {% block content %}
 <h2>Panel SOME</h2>
 <p>Bienvenido al panel de usuario SOME.</p>
+
+<div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+	<a href="{% url 'crear_madre' %}" class="btn btn-primary">Agregar Madre Nueva</a>
+	<a href="{% url 'lista_madres' %}" class="btn btn-secondary">Ver Listado de Madres</a>
+</div>
 {% endblock %}

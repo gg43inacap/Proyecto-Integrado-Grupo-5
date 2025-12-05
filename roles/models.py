@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 ELEGIR_ROL = [
+    ('SUPERADMIN', 'Superadministrador'),
     ('SOME', 'SOME'),
     ('MATRONA', 'Matrona'),
     ('SUPERVISOR', 'Supervisor'),

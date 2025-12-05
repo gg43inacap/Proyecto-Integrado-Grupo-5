@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Detalle de Madre</h2>
+<table class="table">
+  <tr><th>Nombre</th><td>{{ madre.nombre }}</td></tr>
+  <tr><th>RUT</th><td>{{ madre.rut }}</td></tr>
+  <tr><th>Fecha de nacimiento</th><td>{{ madre.fecha_nacimiento }}</td></tr>
+  <tr><th>Comuna</th><td>{{ madre.comuna }}</td></tr>
+  <tr><th>CESFAM</th><td>{{ madre.cesfam }}</td></tr>
+  <tr><th>Dirección</th><td>{{ madre.direccion }}</td></tr>
+  <tr><th>Teléfono</th><td>{{ madre.telefono }}</td></tr>
+  <tr><th>Antecedentes obstétricos</th><td>{{ madre.antecedentes_obstetricos }}</td></tr>
+  <tr><th>Atenciones clínicas</th><td>{{ madre.atenciones_clinicas }}</td></tr>
+  <tr><th>Acompañante</th><td>{{ madre.acompañante }}</td></tr>
+  <tr><th>Confirmado</th><td>{{ madre.confirmado }}</td></tr>
+</table>
+<div style="margin-top: 1rem;">
+  <a href="{% url 'editar_madre' madre.id %}" class="btn btn-warning">Editar</a>
+  <a href="{% url 'eliminar_madre' madre.id %}" class="btn btn-danger">Eliminar</a>
+  <a href="{% url 'lista_madres' %}" class="btn btn-secondary">Volver al listado</a>
+</div>
+{% endblock %}
