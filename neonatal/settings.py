@@ -38,11 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'login',
     'partos',
-    'reportes',
     'auditoria',
+    'reportes',
+    'roles',
+    'gestion_some',
 ]
+
+AUTH_USER_MODEL = 'roles.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
