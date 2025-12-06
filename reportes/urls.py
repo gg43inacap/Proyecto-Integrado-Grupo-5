@@ -8,3 +8,5 @@ urlpatterns = [
     path('<int:reporte_id>/editar/', views.editar_reporte, name='editar_reporte'),  # Ruta para editar reporte
     path('<int:reporte_id>/eliminar/', views.eliminar_reporte, name='eliminar_reporte'),  # Ruta para eliminar reporte
 ]
+
+## PLACEHOLDER - ACA SE TIENE QUE HACER FUNCIONAR EL EXPORTAR EXCEL Y LOS GRAFICOS

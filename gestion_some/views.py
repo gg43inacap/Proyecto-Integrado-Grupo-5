@@ -19,6 +19,7 @@ def editar_madre(request, madre_id): # Edita los datos de una madre
         madre.fecha_nacimiento = request.POST.get('fecha_nacimiento') # Actualiza la fecha de nacimiento
         madre.comuna = request.POST.get('comuna') # Actualiza la comuna
         madre.cesfam = request.POST.get('cesfam') # Actualiza el CESFAM
+        madre.prevision = request.POST.get('prevision') # Actualiza la previsión
         madre.direccion = request.POST.get('direccion') # Actualiza la dirección
         madre.telefono = request.POST.get('telefono') # Actualiza el teléfono
         madre.antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos') # Actualiza los antecedentes obstétricos
