@@ -1,22 +1,219 @@
+<!-- login/templates/login/test_login.html -->
 {% extends 'base.html' %}
 
-{% block title %}Test Login - Test Fork Neonatal{% endblock %}
+{% block title %}Login Demo - Test Fork Neonatal{% endblock %}
+
+{% block head_extra %}
+<style>
+    .demo-container {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .demo-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 800px;
+        width: 100%;
+    }
+    
+    .demo-header {
+        background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+        color: white;
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .demo-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .demo-body {
+        padding: 40px;
+    }
+    
+    .role-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .role-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    
+    .role-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .role-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+    }
+    
+    .btn-role {
+        font-weight: 600;
+        padding: 12px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-role:hover {
+        transform: translateY(-2px);
+    }
+    
+    .demo-info-box {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-left: 4px solid var(--primary-color);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .demo-header, .demo-body {
+            padding: 30px 20px;
+        }
+        
+        .role-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mt-5">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Iniciar Sesión (Demo)</h2>
-                <hr>
-                <h5 class="text-center mb-3">Acceso directo a paneles de rol (demo)</h5>
-                <div class="d-grid gap-2">
-                    <a href="/dashboard/?rol=SOME" class="btn btn-info">Panel SOME</a>
-                    <a href="/dashboard/?rol=MATRONA" class="btn btn-success">Panel MATRONA</a>
-                    <a href="/dashboard/?rol=SUPERVISOR" class="btn btn-warning">Panel SUPERVISOR</a>
-                    <a href="/dashboard/?rol=AUDITORIA" class="btn btn-secondary">Panel AUDITORIA</a>
-                    <a href="/dashboard/?rol=ADMIN" class="btn btn-dark">Panel ADMIN</a>
+<div class="demo-container">
+    <div class="demo-card">
+        <!-- Encabezado -->
+        <div class="demo-header">
+            <div class="demo-icon">
+                <i class="fas fa-vial"></i>
+            </div>
+            <h1>Modo Demo</h1>
+            <h3>Test Fork Neonatal - Acceso Rápido</h3>
+            <p class="mt-3">Explore las funcionalidades del sistema con diferentes roles de usuario</p>
+        </div>
+        
+        <!-- Cuerpo -->
+        <div class="demo-body">
+            <h2 class="text-center mb-4">Seleccione un Rol para Demo</h2>
+            <p class="text-center text-muted mb-5">Haga clic en un panel para ingresar con permisos específicos de demostración</p>
+            
+            <!-- Grid de roles -->
+            <div class="row">
+                <!-- Panel SOME -->
+                <div class="col-md-6 mb-4">
+                    <div class="card role-card h-100">
+                        <div class="card-body text-center">
+                            <div class="role-icon text-info">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h5 class="role-title">SOME</h5>
+                            <p class="role-description">Servicio de Obstetricia y Medicina del Embarazo</p>
+                            <a href="/dashboard/?rol=SOME" class="btn btn-info btn-role w-100">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar como SOME
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Panel MATRONA -->
+                <div class="col-md-6 mb-4">
+                    <div class="card role-card h-100">
+                        <div class="card-body text-center">
+                            <div class="role-icon text-success">
+                                <i class="fas fa-user-nurse"></i>
+                            </div>
+                            <h5 class="role-title">MATRONA</h5>
+                            <p class="role-description">Atención especializada en partos y cuidados neonatales</p>
+                            <a href="/dashboard/?rol=MATRONA" class="btn btn-success btn-role w-100">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar como Matrona
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel SUPERVISOR -->
+                <div class="col-md-6 mb-4">
+                    <div class="card role-card h-100">
+                        <div class="card-body text-center">
+                            <div class="role-icon text-warning">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h5 class="role-title">SUPERVISOR</h5>
+                            <p class="role-description">Supervisión y coordinación de procesos hospitalarios</p>
+                            <a href="/dashboard/?rol=SUPERVISOR" class="btn btn-warning btn-role w-100">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar como Supervisor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel AUDITORIA -->
+                <div class="col-md-6 mb-4">
+                    <div class="card role-card h-100">
+                        <div class="card-body text-center">
+                            <div class="role-icon text-secondary">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h5 class="role-title">AUDITORÍA</h5>
+                            <p class="role-description">Control y verificación de registros médicos</p>
+                            <a href="/dashboard/?rol=AUDITORIA" class="btn btn-secondary btn-role w-100">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar como Auditor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel ADMIN -->
+                <div class="col-12">
+                    <div class="card role-card">
+                        <div class="card-body text-center">
+                            <div class="role-icon text-dark">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <h5 class="role-title">ADMINISTRADOR</h5>
+                            <p class="role-description">Acceso completo a todas las funcionalidades del sistema</p>
+                            <a href="/dashboard/?rol=ADMIN" class="btn btn-dark btn-role w-100">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar como Administrador
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información importante -->
+            <div class="demo-info-box">
+                <h5><i class="fas fa-info-circle"></i> Información Importante</h5>
+                <ul class="mb-0">
+                    <li>Este es un <strong>entorno de demostración</strong> con datos de prueba.</li>
+                    <li>Los cambios realizados <strong>no afectarán</strong> la información real del sistema.</li>
+                    <li>Cada rol tiene permisos y vistas diferentes para mostrar las capacidades del sistema.</li>
+                    <li>La sesión demo tiene una duración limitada por seguridad.</li>
+                </ul>
+            </div>
+            
+            <!-- Volver al login normal -->
+            <div class="text-center mt-4">
+                <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Volver al Login Normal
+                </a>
             </div>
         </div>
     </div>

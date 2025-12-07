@@ -1,18 +1,340 @@
+<!-- templates/inicio.html -->
 {% extends 'base.html' %}
 
 {% block title %}Inicio - Test Fork Neonatal{% endblock %}
 
+{% block head_extra %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #1a73e8, #0d47a1);
+        color: white;
+        padding: 60px 0 40px 0;
+        border-radius: 0 0 20px 20px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+    
+    .hospital-logo {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .hero-section h3 {
+        font-size: 1.3rem;
+        font-weight: 400;
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .hero-buttons .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        min-width: 160px;
+    }
+    
+    .hero-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .info-box {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 30px auto;
+        border-left: 4px solid #1a73e8;
+        max-width: 800px;
+    }
+    
+    .features-section {
+        padding: 40px 0;
+    }
+    
+    .feature-card {
+        border: none;
+        border-radius: 15px;
+        padding: 25px;
+        height: 100%;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #1a73e8;
+    }
+    
+    .feature-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #333;
+        font-size: 1.2rem;
+    }
+    
+    .demo-section {
+        background: linear-gradient(135deg, #f0f8ff, #e6f2ff);
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+    }
+    
+    .demo-section .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .demo-section .card-body {
+        padding: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 40px 0 30px 0;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .hospital-logo {
+            font-size: 2.5rem;
+        }
+        
+        .hero-section h1 {
+            font-size: 1.8rem;
+        }
+        
+        .hero-section h3 {
+            font-size: 1.1rem;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .hero-buttons .btn {
+            width: 100%;
+            max-width: 250px;
+            margin: 5px 0;
+        }
+        
+        .info-box {
+            padding: 20px;
+            margin: 20px auto;
+        }
+        
+        .feature-card {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5 text-center">
-        <h1 class="display-5 fw-bold">Bienvenido a Test Fork Neonatal</h1>
-        <h3 class="mb-4">Hospital Herminda Martin de Chillán</h3>
-        <p class="col-md-8 fs-4 mx-auto">Administración de partos, madres y recién nacidos.</p>
-        <p class="col-md-8 fs-4 mx-auto">Para utilizar la aplicación, debe iniciar sesión.</p>
-        <div class="d-flex justify-content-center mt-4 gap-3">
-            <a class="btn btn-primary btn-lg" href="/login/" role="button">Iniciar Sesión</a>
-            <a class="btn btn-info btn-lg" href="/login/test_login/" role="button">Iniciar Sesión (demo habilitada)</a>
+<!-- Sección Hero - Más compacta -->
+<section class="hero-section text-center">
+    <div class="container position-relative">
+        <div class="hospital-logo">
+            <i class="fas fa-hospital"></i>
+        </div>
+        <h1 class="fw-bold">Bienvenido a Test Fork Neonatal</h1>
+        <h3>Hospital Herminda Martin de Chillán</h3>
+        <p class="lead">Sistema integral para la administración de partos, madres y recién nacidos</p>
+        
+        <div class="hero-buttons mt-4">
+            <a class="btn btn-light btn-lg" href="{% url 'login' %}" role="button">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </a>
+            <a class="btn btn-outline-light btn-lg" href="{% url 'test_login' %}" role="button">
+                <i class="fas fa-vial"></i> Modo Demo
+            </a>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Sección de Información - Compacta -->
+<section class="container">
+    <div class="info-box">
+        <div class="row align-items-center">
+            <div class="col-md-12 text-center">
+                <h5 class="mb-3"><i class="fas fa-info-circle text-primary"></i> Para utilizar la aplicación, debe iniciar sesión</h5>
+                <p class="mb-0">Si es su primera vez, utilice el modo demo para explorar las funcionalidades del sistema sin necesidad de credenciales.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Características - Más compacta -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-4">Características del Sistema</h2>
+        
+        <div class="row g-4">
+            <!-- Característica 1 -->
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h4 class="feature-title">Gestión Neonatal</h4>
+                    <p>Control completo de historiales médicos de recién nacidos, seguimiento de desarrollo y atención especializada.</p>
+                </div>
+            </div>
+            
+            <!-- Característica 2 -->
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+                    <h4 class="feature-title">Control de Partos</h4>
+                    <p>Seguimiento en tiempo real de partos, historial obstétrico y coordinación de equipos médicos.</p>
+                </div>
+            </div>
+            
+            <!-- Característica 3 -->
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="feature-title">Reportes y Estadísticas</h4>
+                    <p>Generación automática de reportes, análisis estadísticos y visualización de datos hospitalarios.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Demo - Rediseñada -->
+<section class="demo-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="mb-3"><i class="fas fa-vial text-info"></i> ¿Primera vez en el sistema?</h3>
+                        <p class="lead mb-4">Explore todas las funcionalidades sin necesidad de credenciales usando nuestro modo demo.</p>
+                        <a href="{% url 'test_login' %}" class="btn btn-info btn-lg px-4">
+                            <i class="fas fa-play-circle"></i> Probar Modo Demo
+                        </a>
+                        <p class="text-muted mt-3 mb-0">
+                            <i class="fas fa-shield-alt"></i> Acceso completo con datos de prueba a todos los roles del sistema.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección adicional de características -->
+<section class="container pb-5">
+    <div class="row g-4">
+        <!-- Característica 4 -->
+        <div class="col-md-6">
+            <div class="feature-card">
+                <div class="d-flex align-items-start">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h4 class="feature-title">Seguridad y Permisos</h4>
+                        <p>Sistema de permisos por roles, auditoría de accesos y protección de datos sensibles del hospital.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Característica 5 -->
+        <div class="col-md-6">
+            <div class="feature-card">
+                <div class="d-flex align-items-start">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div>
+                        <h4 class="feature-title">Acceso Multiplataforma</h4>
+                        <p>Interfaz responsive adaptada a diferentes dispositivos para acceso desde cualquier lugar del hospital.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Efecto de entrada para las tarjetas
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 + (index * 100));
+        });
+        
+        // Efecto hover suave para botones
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
 {% endblock %}
