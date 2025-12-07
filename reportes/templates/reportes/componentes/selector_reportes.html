@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2>Selector de Reportes</h2>
+  <p class="text-muted">Elige el reporte que quieres descargar:</p>
+
+  <ul>
+    <li>
+      <a href="{% url 'exportar_reporte_parto_pdf' %}">Reporte 1: Características del Parto (PDF)</a> |
+      <a href="{% url 'exportar_reporte_parto_excel' %}">Excel</a>
+    </li>
+    <li>
+      <a href="{% url 'exportar_reporte_nacidos_vivos_pdf' %}">Reporte 2: Información General RN Vivos (PDF)</a> |
+      <a href="{% url 'exportar_reporte_nacidos_vivos_excel' %}">Excel</a>
+    </li>
+    <li>
+      <a href="{% url 'exportar_reporte_atencion_inmediata_pdf' %}">Reporte 3: Atención Inmediata RN (PDF)</a> |
+      <a href="{% url 'exportar_reporte_atencion_inmediata_excel' %}">Excel</a>
+    </li>
+  </ul>
+
+  <div class="mt-4">
+    <a href="{% url 'panel_supervisor' %}" class="btn btn-link">← Volver al panel</a>
+  </div>
+</div>
+{% endblock %}

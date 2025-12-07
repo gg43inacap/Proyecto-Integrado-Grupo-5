@@ -33,4 +33,5 @@ urlpatterns = [
     path('gestion_some/', include('gestion_some.urls')),
     path('roles/', include('roles.urls')),
     path('auditoria/', include('auditoria.urls')),
+    path('reportes/', include('reportes.urls')),
 ]

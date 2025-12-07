@@ -1,0 +1,31 @@
+<!-- templates/reportes/exportables/rem_24_caracteristicas_parto_pdf.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>REM 24 - Características del Parto</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+    th { background: #eee; }
+    h2 { text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>Reporte 1: Características del Parto</h2>
+  <table>
+    <thead>
+      <tr><th>Ítem</th><th>Cantidad</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Total Partos</td><td>{{ data.total }}</td></tr>
+      <tr><td>Vaginal</td><td>{{ data.vaginal }}</td></tr>
+      <tr><td>Instrumental</td><td>{{ data.instrumental }}</td></tr>
+      <tr><td>Cesárea Electiva</td><td>{{ data.cesarea_electiva }}</td></tr>
+      <tr><td>Cesárea Urgencia</td><td>{{ data.cesarea_urgencia }}</td></tr>
+      <tr><td>Lactancia precoz (≥ 2500 g)</td><td>{{ data.lactancia_precoz }}</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>

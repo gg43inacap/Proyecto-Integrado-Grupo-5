@@ -1,0 +1,17 @@
+<!-- templates/reportes/predefinidos/rem_24_caracteristicas_parto.html -->
+{% extends "reporte/reporte_base.html" %}
+
+{% block contenido_reporte %}
+<h2 class="text-center">Reporte 1: Características del Parto</h2>
+
+{% include "reportes/componentes/tabla_estilizada.html" with data=data %}
+
+<div class="text-center mt-3">
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalExportacion">
+        <i class="fas fa-file-export"></i> Exportar
+    </button>
+</div>
+
+
+{% include "reportes/fragmentos/modal_exportacion.html" %}
+{% endblock %}

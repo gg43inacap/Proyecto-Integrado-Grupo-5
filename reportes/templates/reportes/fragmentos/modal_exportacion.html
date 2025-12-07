@@ -1,0 +1,70 @@
+<div class="modal fade" id="modalExportacion" tabindex="-1" aria-labelledby="modalExportacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalExportacionLabel">Exportar Reporte</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        
+        <div class="modal-body">
+            <p>Seleccione el formato en el que desea exportar este reporte:</p>
+            <div class="d-grid gap-2">
+            {% if data.reporte_nombre == "reporte_parto" %}
+                <a href="{% url 'exportar_reporte_parto_pdf' %}" 
+                class="btn btn-danger" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en PDF">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </a>
+                <a href="{% url 'exportar_reporte_parto_excel' %}" 
+                class="btn btn-success" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en Excel">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+                </a>
+            {% elif data.reporte_nombre == "reporte_nacidos_vivos" %}
+                <a href="{% url 'exportar_reporte_nacidos_vivos_pdf' %}" 
+                class="btn btn-danger" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en PDF">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </a>
+                <a href="{% url 'exportar_reporte_nacidos_vivos_excel' %}" 
+                class="btn btn-success" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en Excel">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+                </a>
+            {% elif data.reporte_nombre == "reporte_atencion_inmediata" %}
+                <a href="{% url 'exportar_reporte_atencion_inmediata_pdf' %}" 
+                class="btn btn-danger" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en PDF">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </a>
+                <a href="{% url 'exportar_reporte_atencion_inmediata_excel' %}" 
+                class="btn btn-success" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Descargar en Excel">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+                </a>
+            {% endif %}
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Cerrar ventana">
+            <i class="fas fa-times"></i> Cerrar
+            </button>
+        </div>
+        </div>
+    </div>
+</div>

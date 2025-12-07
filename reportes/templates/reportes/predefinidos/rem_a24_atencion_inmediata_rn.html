@@ -1,0 +1,16 @@
+{% extends "reporte/reporte_base.html" %}
+
+{% block contenido_reporte %}
+<h2 class="text-center">Reporte 3: Atención Inmediata del Recién Nacido</h2>
+
+{% include "reportes/componentes/tabla_estilizada_atencion_inmediata.html" with data=data %}
+
+<div class="text-center mt-3">
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalExportacion">
+        <i class="fas fa-file-export"></i> Exportar
+    </button>
+</div>
+
+
+{% include "reportes/fragmentos/modal_exportacion.html" %}
+{% endblock %}
