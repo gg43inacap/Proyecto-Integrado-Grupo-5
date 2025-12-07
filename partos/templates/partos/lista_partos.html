@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Lista de Partos</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Madre</th>
+            <th>Fecha y Hora</th>
+            <th>Tipo de Parto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for parto in partos %}
+        <tr>
+            <td>{{ parto.id }}</td>
+            <td>{{ parto.madre }}</td>
+            <td>{{ parto.fecha_hora }}</td>
+            <td>{{ parto.get_tipo_parto_display }}</td>
+            <td>
+                <a href="{% url 'detalle_parto' parto.id %}">Ver</a> |
+                <a href="{% url 'editar_parto' parto.id %}">Editar</a> |
+                <a href="{% url 'eliminar_parto' parto.id %}">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay partos registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'crear_parto' %}" class="btn btn-primary">Registrar nuevo parto</a>
+{% endblock %}

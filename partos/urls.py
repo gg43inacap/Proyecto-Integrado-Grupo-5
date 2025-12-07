@@ -11,6 +11,7 @@ urlpatterns = [
     # CRUD RN
     path('rns/', views.lista_rns, name='lista_rns'), # Ruta para listar recién nacidos
     path('rns/crear/', views.crear_rn, name='crear_rn'), # Ruta para crear recién nacido
+    path('rns/crear-multiples/', views.crear_rns, name='crear_rns'), # Ruta para crear múltiples recién nacidos
     path('rns/<int:rn_id>/', views.detalle_rn, name='detalle_rn'), # Ruta para ver detalles de recién nacido
     path('rns/<int:rn_id>/editar/', views.editar_rn, name='editar_rn'), # Ruta para editar recién nacido
     path('rns/<int:rn_id>/eliminar/', views.eliminar_rn, name='eliminar_rn'), # Ruta para eliminar recién nacido

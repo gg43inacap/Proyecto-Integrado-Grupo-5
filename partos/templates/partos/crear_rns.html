@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Registrar Recién Nacidos</h2>
+{% if parto %}
+<p><strong>Parto asociado:</strong> {{ parto }} (Madre: {{ parto.madre }})</p>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div class="ribbon-container">
+        {% for form in formset %}
+        <div class="ribbon-tab">
+            <h4>Recién Nacido {{ forloop.counter }}</h4>
+            {{ form.as_p }}
+        </div>
+        {% endfor %}
+    </div>
+    <button type="submit">Guardar todos</button>
+    <a href="{% url 'lista_rns' %}">Cancelar</a>
+</form>
+{% endblock %}

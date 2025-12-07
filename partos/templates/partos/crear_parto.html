@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Registrar Parto</h2>
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Guardar Parto</button>
+	<a href="{% url 'lista_partos' %}">Cancelar</a>
+</form>
+{% if parto_guardado %}
+	<div class="alert alert-success">Parto registrado correctamente.</div>
+	<a href="{% url 'crear_rn' %}?parto_id={{ parto_guardado.id }}" class="btn btn-primary">Registrar Recién Nacido</a>
+{% endif %}
+{% endblock %}

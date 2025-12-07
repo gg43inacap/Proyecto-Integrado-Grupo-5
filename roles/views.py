@@ -2,7 +2,9 @@ from django.contrib.auth.decorators import login_required # Requiere que el usua
 from django.shortcuts import render, redirect # Mostrar páginas y redirigir
 from django.contrib.auth import get_user_model # Obtener el modelo de usuario personalizado
 from .forms import CustomUserForm # Importa el formulario para usuarios
+
 from django.contrib import messages # Importa el sistema de mensajes para mostrar avisos
+from auditoria.models import registrar_evento_auditoria
 
 # Vista principal que muestra el panel según el rol del usuario
 # Si se pasa el parámetro 'rol', muestra el panel de ese rol para pruebas
@@ -66,7 +68,15 @@ def crear_usuario(request): # Crea un nuevo usuario
     if request.method == 'POST': # Si el formulario fue enviado
         form = CustomUserForm(request.POST) # Crea el formulario con los datos enviados
         if form.is_valid(): # Si el formulario es válido
-            form.save() # Guarda el usuario
+            user = form.save() # Guarda el usuario
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='CREATE',
+                modelo_afectado='Usuario',
+                registro_id=user.id,
+                detalles_cambio=f"Usuario creado: {user.username} (RUT: {getattr(user, 'rut', '')})",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             messages.success(request, 'Usuario creado correctamente.') # Muestra mensaje de éxito
             return redirect('lista_usuarios') # Redirige a la lista de usuarios
     else:
@@ -86,7 +96,15 @@ def editar_usuario(request, pk): # Edita un usuario
     if request.method == 'POST': # Si el formulario fue enviado
         form = CustomUserForm(request.POST, instance=user) # Crea el formulario con los datos enviados
         if form.is_valid(): # Si el formulario es válido
-            form.save() # Guarda los cambios
+            user_edit = form.save() # Guarda los cambios
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='UPDATE',
+                modelo_afectado='Usuario',
+                registro_id=user_edit.id,
+                detalles_cambio=f"Usuario editado: {user_edit.username} (RUT: {getattr(user_edit, 'rut', '')})",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             messages.success(request, 'Usuario actualizado correctamente.') # Muestra mensaje de éxito
             return redirect('lista_usuarios') # Redirige a la lista de usuarios
     else:
@@ -106,6 +124,14 @@ def bloquear_usuario(request, pk): # Elimina un usuario
     if request.method == 'POST':
         user.is_active = False  # Solo bloquea el usuario
         user.save()
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='USER_BLOCKED',
+            modelo_afectado='Usuario',
+            registro_id=user.id,
+            detalles_cambio=f"Usuario bloqueado: {user.username} (RUT: {getattr(user, 'rut', '')})",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
         messages.success(request, 'Usuario bloqueado correctamente.')
         return redirect('lista_usuarios')
     return render(request, 'roles/bloquear_usuario.html', {'user': user})

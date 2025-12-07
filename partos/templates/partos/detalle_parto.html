@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Detalle de Parto</h2>
+<table class="table table-bordered">
+    <tr><th>Madre</th><td>{{ parto.madre }}</td></tr>
+    <tr><th>Fecha y Hora</th><td>{{ parto.fecha_hora }}</td></tr>
+    <tr><th>Tipo de Parto</th><td>{{ parto.get_tipo_parto_display }}</td></tr>
+    <tr><th>Complicaciones</th><td>{{ parto.complicaciones }}</td></tr>
+    <tr><th>Distócico</th><td>{{ parto.parto_distocico|yesno:"Sí,No" }}</td></tr>
+    <tr><th>Vacuum</th><td>{{ parto.parto_vacuum|yesno:"Sí,No" }}</td></tr>
+    <tr><th>Confirmado</th><td>{{ parto.confirmado|yesno:"Sí,No" }}</td></tr>
+</table>
+<a href="{% url 'lista_partos' %}" class="btn btn-secondary">Volver al listado</a>
+{% endblock %}

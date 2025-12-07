@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Lista de Recién Nacidos</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Madre</th>
+            <th>Parto Asociado</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Sexo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rn in rns %}
+        <tr>
+            <td>{{ rn.id }}</td>
+            <td>{{ rn.madre }}</td>
+            <td>{{ rn.parto_asociado }}</td>
+            <td>{{ rn.fecha_nacimiento }}</td>
+            <td>{{ rn.get_sexo_display }}</td>
+            <td>
+                <a href="{% url 'detalle_rn' rn.id %}">Ver</a> |
+                <a href="{% url 'editar_rn' rn.id %}">Editar</a> |
+                <a href="{% url 'eliminar_rn' rn.id %}">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No hay recién nacidos registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'crear_rn' %}" class="btn btn-primary">Registrar nuevo RN</a>
+{% endblock %}

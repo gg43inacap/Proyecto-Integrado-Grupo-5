@@ -1,8 +1,47 @@
+# Importaciones necesarias
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Parto, RN
+from .forms import PartoForm, RNForm, RNFormSet
+from auditoria.models import registrar_evento_auditoria
+# Vista para crear múltiples RN en una sola pantalla
+# pylint: disable=no-member
+@login_required
+def crear_rns(request):
+    parto_id = request.GET.get('parto_id')
+    initial = {}
+    if parto_id:
+        try:
+            parto = Parto.objects.get(id=parto_id)
+            initial['parto_asociado'] = parto
+            initial['madre'] = parto.madre
+        except Parto.DoesNotExist:
+            parto = None
+    else:
+        parto = None
+    RNFormSetLocal = RNFormSet
+    if request.method == 'POST':
+        formset = RNFormSetLocal(request.POST, queryset=RN.objects.none())
+        if formset.is_valid():
+            rns = formset.save()
+            for rn in rns:
+                registrar_evento_auditoria(
+                    usuario=request.user,
+                    accion_realizada='CREATE',
+                    modelo_afectado='RN',
+                    registro_id=rn.id,
+                    detalles_cambio=f"RN creado para madre ID: {rn.madre.id if rn.madre else ''}",
+                    ip_address=request.META.get('REMOTE_ADDR')
+                )
+            return redirect('lista_rns')
+    else:
+        formset = RNFormSetLocal(queryset=RN.objects.none(), initial=[initial]*RNFormSetLocal.extra)
+    return render(request, 'partos/crear_rns.html', {'formset': formset, 'parto': parto})
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Parto, RN
 from .forms import PartoForm, RNForm
-from gestion_some.models import Madre  # Importación agregada por claridad
 from django.contrib.auth.decorators import login_required
+from auditoria.models import registrar_evento_auditoria
 
 @login_required
 def lista_partos(request):
@@ -11,14 +50,24 @@ def lista_partos(request):
 # Vista para crear un nuevo parto
 @login_required
 def crear_parto(request):
+    parto_guardado = None
     if request.method == 'POST':
         form = PartoForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('lista_partos')
+            parto = form.save()
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='CREATE',
+                modelo_afectado='Parto',
+                registro_id=parto.id,
+                detalles_cambio=f"Parto creado para madre ID: {parto.madre.id if parto.madre else ''}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            parto_guardado = parto
+            form = PartoForm()  # Limpiar el formulario tras guardar
     else:
         form = PartoForm()
-    return render(request, 'partos/crear_parto.html', {'form': form})
+    return render(request, 'partos/crear_parto.html', {'form': form, 'parto_guardado': parto_guardado})
 # Vista para editar un parto existente
 @login_required
 def editar_parto(request, parto_id):
@@ -26,7 +75,15 @@ def editar_parto(request, parto_id):
     if request.method == 'POST':
         form = PartoForm(request.POST, instance=parto)
         if form.is_valid():
-            form.save()
+            parto_edit = form.save()
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='UPDATE',
+                modelo_afectado='Parto',
+                registro_id=parto_edit.id,
+                detalles_cambio=f"Parto editado para madre ID: {parto_edit.madre.id if parto_edit.madre else ''}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             return redirect('lista_partos')
     else:
         form = PartoForm(instance=parto)
@@ -36,7 +93,17 @@ def editar_parto(request, parto_id):
 def eliminar_parto(request, parto_id):
     parto = get_object_or_404(Parto, id=parto_id)
     if request.method == 'POST':
+        madre_id = parto.madre.id if parto.madre else ''
+        id_parto = parto.id
         parto.delete()
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='DELETE',
+            modelo_afectado='Parto',
+            registro_id=id_parto,
+            detalles_cambio=f"Parto eliminado para madre ID: {madre_id}",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
         return redirect('lista_partos')
     return render(request, 'partos/eliminar_parto.html', {'parto': parto})
 
@@ -52,13 +119,30 @@ def lista_rns(request):
 
 @login_required
 def crear_rn(request):
+    parto_id = request.GET.get('parto_id')
+    initial = {}
+    if parto_id:
+        try:
+            parto = Parto.objects.get(id=parto_id)
+            initial['parto_asociado'] = parto
+            initial['madre'] = parto.madre
+        except Parto.DoesNotExist:
+            pass
     if request.method == 'POST':
         form = RNForm(request.POST)
         if form.is_valid():
-            form.save()
+            rn = form.save()
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='CREATE',
+                modelo_afectado='RN',
+                registro_id=rn.id,
+                detalles_cambio=f"RN creado para madre ID: {rn.madre.id if rn.madre else ''}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             return redirect('lista_rns')
     else:
-        form = RNForm()
+        form = RNForm(initial=initial)
     return render(request, 'partos/crear_rn.html', {'form': form})
 
 @login_required
@@ -67,7 +151,15 @@ def editar_rn(request, rn_id):
     if request.method == 'POST':
         form = RNForm(request.POST, instance=rn)
         if form.is_valid():
-            form.save()
+            rn_edit = form.save()
+            registrar_evento_auditoria(
+                usuario=request.user,
+                accion_realizada='UPDATE',
+                modelo_afectado='RN',
+                registro_id=rn_edit.id,
+                detalles_cambio=f"RN editado para madre ID: {rn_edit.madre.id if rn_edit.madre else ''}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             return redirect('lista_rns')
     else:
         form = RNForm(instance=rn)
@@ -77,7 +169,17 @@ def editar_rn(request, rn_id):
 def eliminar_rn(request, rn_id):
     rn = get_object_or_404(RN, id=rn_id)
     if request.method == 'POST':
+        madre_id = rn.madre.id if rn.madre else ''
+        id_rn = rn.id
         rn.delete()
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='DELETE',
+            modelo_afectado='RN',
+            registro_id=id_rn,
+            detalles_cambio=f"RN eliminado para madre ID: {madre_id}",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
         return redirect('lista_rns')
     return render(request, 'partos/eliminar_rn.html', {'rn': rn})
 

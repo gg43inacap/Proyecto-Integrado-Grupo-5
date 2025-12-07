@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Detalle de Recién Nacido</h2>
+<table class="table table-bordered">
+    <tr><th>Madre</th><td>{{ rn.madre }}</td></tr>
+    <tr><th>Parto Asociado</th><td>{{ rn.parto_asociado }}</td></tr>
+    <tr><th>Fecha de Nacimiento</th><td>{{ rn.fecha_nacimiento }}</td></tr>
+    <tr><th>Hora de Nacimiento</th><td>{{ rn.hora_nacimiento }}</td></tr>
+    <tr><th>Apellido Paterno</th><td>{{ rn.apellido_paterno_rn }}</td></tr>
+    <tr><th>Peso</th><td>{{ rn.peso }}</td></tr>
+    <tr><th>Talla</th><td>{{ rn.talla }}</td></tr>
+    <tr><th>Sexo</th><td>{{ rn.get_sexo_display }}</td></tr>
+    <tr><th>Confirmado</th><td>{{ rn.confirmado|yesno:"Sí,No" }}</td></tr>
+</table>
+<a href="{% url 'lista_rns' %}" class="btn btn-secondary">Volver al listado</a>
+{% endblock %}
