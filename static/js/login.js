@@ -9,30 +9,53 @@ document.addEventListener('DOMContentLoaded', function() {
         this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
     });
     
-    // Formatear RUT mientras se escribe
+    // Formatear RUT mientras se escribe SOLO si método RUT está seleccionado
     const usernameInput = document.getElementById('username');
+    const rutRadio = document.getElementById('login_rut');
+    const usernameRadio = document.getElementById('login_username');
+    
+    // Autowipe: limpiar campo al cambiar método de login
+    if (rutRadio) {
+        rutRadio.addEventListener('change', function() {
+            if (this.checked) {
+                usernameInput.value = '';
+            }
+        });
+    }
+    
+    if (usernameRadio) {
+        usernameRadio.addEventListener('change', function() {
+            if (this.checked) {
+                usernameInput.value = '';
+            }
+        });
+    }
     
     usernameInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^0-9kK]/g, '');
-        
-        if (value.length > 0) {
-            // Formatear con puntos y guión
-            let formatted = '';
-            const body = value.slice(0, -1);
-            const dv = value.slice(-1).toUpperCase();
+        // Solo formatear si el método RUT está seleccionado
+        if (rutRadio && rutRadio.checked) {
+            let value = e.target.value.replace(/[^0-9kK]/g, '');
             
-            // Agregar puntos
-            for (let i = body.length - 1, j = 1; i >= 0; i--, j++) {
-                formatted = body.charAt(i) + formatted;
-                if (j % 3 === 0 && i !== 0) {
-                    formatted = '.' + formatted;
+            if (value.length > 0) {
+                // Formatear con puntos y guión
+                let formatted = '';
+                const body = value.slice(0, -1);
+                const dv = value.slice(-1).toUpperCase();
+                
+                // Agregar puntos
+                for (let i = body.length - 1, j = 1; i >= 0; i--, j++) {
+                    formatted = body.charAt(i) + formatted;
+                    if (j % 3 === 0 && i !== 0) {
+                        formatted = '.' + formatted;
+                    }
                 }
+                
+                // Agregar guión y dígito verificador
+                formatted = formatted + '-' + dv;
+                e.target.value = formatted;
             }
-            
-            // Agregar guión y dígito verificador
-            formatted = formatted + '-' + dv;
-            e.target.value = formatted;
         }
+        // Si no es modo RUT, no formatear nada
     });
     
     // Validar formato de RUT antes de enviar
@@ -41,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loginForm.addEventListener('submit', function(e) {
         const username = usernameInput.value;
         
-        // Validar formato de RUT
-        if (!validateRUT(username)) {
+        // Validar formato de RUT SOLO si método RUT está seleccionado
+        if (rutRadio && rutRadio.checked && !validateRUT(username)) {
             e.preventDefault();
             showAlert('Por favor ingrese un RUT válido (Ej: 12.345.678-9)', 'warning');
             usernameInput.focus();

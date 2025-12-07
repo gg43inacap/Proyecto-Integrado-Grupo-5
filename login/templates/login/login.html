@@ -108,24 +108,64 @@
 {% block scripts %}
 <script src="{% static 'js/login.js' %}"></script>
 <script>
-// Cambia el label y placeholder según el método seleccionado
+// Validación SOLO si RUT está seleccionado, el listener se agrega y elimina dinámicamente
 document.addEventListener('DOMContentLoaded', function() {
     const usernameRadio = document.getElementById('login_username');
     const rutRadio = document.getElementById('login_rut');
     const userLabel = document.getElementById('user-label');
     const userInput = document.getElementById('username');
     const userHelp = document.getElementById('user-help');
+    let rutListener = null;
+
+    function validarRut(valor) {
+        const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
+        return rutRegex.test(valor);
+    }
+
+    function limpiarRestricciones() {
+        userInput.setCustomValidity('');
+        userInput.classList.remove('is-invalid');
+    }
+
+    function addRutValidation() {
+        removeRutValidation();
+        rutListener = function() {
+            if (userInput.value && !validarRut(userInput.value)) {
+                userInput.setCustomValidity('Formato de RUT inválido. Ejemplo: 12.345.678-9');
+                userInput.classList.add('is-invalid');
+            } else {
+                userInput.setCustomValidity('');
+                userInput.classList.remove('is-invalid');
+            }
+        };
+        userInput.addEventListener('input', rutListener);
+    }
+
+    function removeRutValidation() {
+        if (rutListener) {
+            userInput.removeEventListener('input', rutListener);
+            rutListener = null;
+        }
+        limpiarRestricciones();
+    }
+
     function updateField() {
+        // Autowipe: limpiar el campo al cambiar método
+        userInput.value = '';
+        
         if (rutRadio.checked) {
             userLabel.textContent = 'RUT';
             userInput.placeholder = 'Ej: 12.345.678-9';
             userHelp.textContent = 'Ingrese su RUT con puntos y guión';
+            addRutValidation();
         } else {
             userLabel.textContent = 'Cuenta de usuario';
             userInput.placeholder = 'Ingrese su cuenta de usuario';
             userHelp.textContent = 'Ingrese su cuenta de usuario';
+            removeRutValidation();
         }
     }
+
     usernameRadio.addEventListener('change', updateField);
     rutRadio.addEventListener('change', updateField);
     updateField();
