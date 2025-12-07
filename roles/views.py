@@ -50,49 +50,62 @@ def dashboard(request): # Muestra el panel correspondiente al rol
 @login_required
 # Vista para listar todos los usuarios registrados
 
-def user_list(request): # Lista todos los usuarios
+def listar_usuario(request): # Lista todos los usuarios
     User = get_user_model() # Obtiene el modelo de usuario
-    users = User.objects.all() # Obtiene todos los usuarios
-    return render(request, 'roles/user_list.html', {'users': users}) # Muestra la lista de usuarios
+    # ADMIN no puede ver ni editar SUPERADMIN ni superuser
+    if getattr(request.user, 'role', None) == 'ADMIN':
+        users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
+    else:
+        users = User.objects.all()
+    return render(request, 'roles/lista_usuarios.html', {'users': users})
 
 @login_required
 # Vista para crear un nuevo usuario
 
-def user_create(request): # Crea un nuevo usuario
+def crear_usuario(request): # Crea un nuevo usuario
     if request.method == 'POST': # Si el formulario fue enviado
         form = CustomUserForm(request.POST) # Crea el formulario con los datos enviados
         if form.is_valid(): # Si el formulario es válido
             form.save() # Guarda el usuario
             messages.success(request, 'Usuario creado correctamente.') # Muestra mensaje de éxito
-            return redirect('user_list') # Redirige a la lista de usuarios
+            return redirect('lista_usuarios') # Redirige a la lista de usuarios
     else:
         form = CustomUserForm() # Crea un formulario vacío
-    return render(request, 'roles/user_form.html', {'form': form}) # Muestra el formulario de creación
+    return render(request, 'roles/form_usuarios.html', {'form': form}) # Muestra el formulario de creación
 
 @login_required
 # Vista para editar los datos de un usuario existente
 
-def user_update(request, pk): # Edita un usuario
+def editar_usuario(request, pk): # Edita un usuario
     User = get_user_model() # Obtiene el modelo de usuario
-    user = User.objects.get(pk=pk) # Obtiene el usuario por su ID
+    user = User.objects.get(pk=pk)
+    # ADMIN no puede editar SUPERADMIN ni superuser
+    if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
+        messages.error(request, 'No tienes permisos para modificar este usuario.')
+        return redirect('lista_usuarios')
     if request.method == 'POST': # Si el formulario fue enviado
         form = CustomUserForm(request.POST, instance=user) # Crea el formulario con los datos enviados
         if form.is_valid(): # Si el formulario es válido
             form.save() # Guarda los cambios
             messages.success(request, 'Usuario actualizado correctamente.') # Muestra mensaje de éxito
-            return redirect('user_list') # Redirige a la lista de usuarios
+            return redirect('lista_usuarios') # Redirige a la lista de usuarios
     else:
         form = CustomUserForm(instance=user) # Crea el formulario con los datos actuales
-    return render(request, 'roles/user_form.html', {'form': form}) # Muestra el formulario de edición
+    return render(request, 'roles/form_usuarios.html', {'form': form}) # Muestra el formulario de edición
 
 @login_required
 # Vista para eliminar un usuario
 
-def user_delete(request, pk): # Elimina un usuario
+def bloquear_usuario(request, pk): # Elimina un usuario
     User = get_user_model() # Obtiene el modelo de usuario
-    user = User.objects.get(pk=pk) # Obtiene el usuario por su ID
-    if request.method == 'POST': # Si se confirma la eliminación
-        user.delete() # Elimina el usuario
-        messages.success(request, 'Usuario eliminado correctamente.') # Muestra mensaje de éxito
-        return redirect('user_list') # Redirige a la lista de usuarios
-    return render(request, 'roles/user_confirm_delete.html', {'user': user}) # Muestra la página de confirmación
+    user = User.objects.get(pk=pk)
+    # ADMIN no puede bloquear/eliminar SUPERADMIN ni superuser
+    if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
+        messages.error(request, 'No tienes permisos para bloquear este usuario.')
+        return redirect('lista_usuarios')
+    if request.method == 'POST':
+        user.is_active = False  # Solo bloquea el usuario
+        user.save()
+        messages.success(request, 'Usuario bloqueado correctamente.')
+        return redirect('lista_usuarios')
+    return render(request, 'roles/bloquear_usuario.html', {'user': user})

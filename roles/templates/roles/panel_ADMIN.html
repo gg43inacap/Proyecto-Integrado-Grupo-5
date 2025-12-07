@@ -2,4 +2,9 @@
 {% block content %}
 <h2>Panel Administrador</h2>
 <p>Bienvenido al panel de usuario ADMIN.</p>
+<div style="margin-top:2rem;">
+	<a href="{% url 'lista_usuarios' %}" class="btn btn-primary">Gestionar Usuarios</a>
+	<a href="{% url 'crear_usuario' %}" class="btn btn-secondary">Crear Usuario</a>
+    <a href="{% url 'bloquear_usuario' %}" class="btn btn-danger">Bloquear Usuario</a>
+</div>
 {% endblock %}
