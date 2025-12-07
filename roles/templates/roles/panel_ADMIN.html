@@ -5,6 +5,10 @@
 <div style="margin-top:2rem;">
 	<a href="{% url 'lista_usuarios' %}" class="btn btn-primary">Gestionar Usuarios</a>
 	<a href="{% url 'crear_usuario' %}" class="btn btn-secondary">Crear Usuario</a>
-    <a href="{% url 'bloquear_usuario' %}" class="btn btn-danger">Bloquear Usuario</a>
+	<a href="{% url 'bloquear_usuario' %}" class="btn btn-danger">Bloquear Usuario</a>
+</div>
+<div class="mt-4">
+	<a href="/" class="btn btn-outline-secondary">Volver al inicio</a>
+	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2">Cerrar sesión</a>
 </div>
 {% endblock %}

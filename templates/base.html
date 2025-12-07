@@ -20,16 +20,31 @@
             <a class="navbar-brand" href="/">
                 <i class="fas fa-hospital me-2"></i>Test Fork Neonatal
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'login' %}">
-                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            {% if user.is_authenticated %}
+            <div class="navbar-nav ms-auto d-flex align-items-center">
+                <span class="nav-link text-white">
+                    <i class="fas fa-user me-2"></i>Bienvenido {{ user.username }}
+                </span>
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                 </a>
             </div>
+            {% endif %}
         </div>
     </nav>
     {% endif %}
 
     <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 

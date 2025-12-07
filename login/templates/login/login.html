@@ -35,21 +35,30 @@
             <form method="post" id="loginForm">
                 {% csrf_token %}
                 
-                <!-- Campo de usuario (RUT) -->
+                <!-- Toggle para tipo de login -->
+                <div class="form-group-custom mb-2">
+                    <label class="form-label-custom"><i class="fas fa-toggle-on"></i> Método de acceso</label>
+                    <div class="d-flex gap-2">
+                        <input type="radio" name="login_type" id="login_username" value="username" checked>
+                        <label for="login_username" style="margin-right:10px;">Cuenta de usuario</label>
+                        <input type="radio" name="login_type" id="login_rut" value="rut">
+                        <label for="login_rut">RUT</label>
+                    </div>
+                </div>
+                <!-- Campo de usuario dinámico -->
                 <div class="form-group-custom">
                     <label for="username" class="form-label-custom">
-                        <i class="fas fa-user"></i> Usuario (RUT)
+                        <i class="fas fa-user"></i> <span id="user-label">Cuenta de usuario</span>
                     </label>
                     <input type="text" 
                         name="username" 
                         id="username" 
                         class="form-control form-control-custom" 
-                        placeholder="Ej: 12.345.678-9" 
+                        placeholder="Ingrese su username" 
                         required
                         autofocus>
-                    <div class="form-text text-muted">Ingrese su RUT con puntos y guión</div>
+                    <div class="form-text text-muted" id="user-help">Ingrese su nombre de usuario</div>
                 </div>
-                
                 <!-- Campo de contraseña -->
                 <div class="form-group-custom">
                     <label for="password" class="form-label-custom">
@@ -67,15 +76,6 @@
                         </button>
                     </div>
                 </div>
-                
-                <!-- Opciones adicionales -->
-                <div class="login-options">
-                    <div class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <label for="rememberMe" class="form-check-label">Recordar mi usuario</label>
-                    </div>
-                </div>
-                
                 <!-- Botón de login -->
                 <div class="d-grid gap-2 mb-3">
                     <button type="submit" class="btn btn-login">
@@ -88,18 +88,7 @@
                     <h6><i class="fas fa-headset"></i> Soporte Técnico</h6>
                     <p>Si tiene problemas con su usuario o contraseña, por favor contacte al área de Tecnologías de la Información (TI) del hospital.</p>
                 </div>
-                
-                <!-- Botón de demo -->
-                <div class="d-grid gap-2">
-                    <a href="{% url 'test_login' %}" class="btn btn-demo-alt">
-                        <i class="fas fa-vial"></i> Acceder al Modo Demo
-                    </a>
-                </div>
-                
-                <!-- Información sobre el modo demo -->
-                <div class="demo-info">
-                    <p class="mb-1"><i class="fas fa-info-circle"></i> <strong>Modo Demo:</strong> Explore las funcionalidades del sistema con datos de prueba sin afectar información real.</p>
-                </div>
+
             </form>
             
             <!-- Footer con información adicional -->
@@ -118,4 +107,28 @@
 
 {% block scripts %}
 <script src="{% static 'js/login.js' %}"></script>
+<script>
+// Cambia el label y placeholder según el método seleccionado
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameRadio = document.getElementById('login_username');
+    const rutRadio = document.getElementById('login_rut');
+    const userLabel = document.getElementById('user-label');
+    const userInput = document.getElementById('username');
+    const userHelp = document.getElementById('user-help');
+    function updateField() {
+        if (rutRadio.checked) {
+            userLabel.textContent = 'RUT';
+            userInput.placeholder = 'Ej: 12.345.678-9';
+            userHelp.textContent = 'Ingrese su RUT con puntos y guión';
+        } else {
+            userLabel.textContent = 'Cuenta de usuario';
+            userInput.placeholder = 'Ingrese su cuenta de usuario';
+            userHelp.textContent = 'Ingrese su cuenta de usuario';
+        }
+    }
+    usernameRadio.addEventListener('change', updateField);
+    rutRadio.addEventListener('change', updateField);
+    updateField();
+});
+</script>
 {% endblock %}

@@ -21,9 +21,11 @@
             <a class="btn btn-light btn-lg" href="{% url 'login' %}" role="button">
                 <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
             </a>
+            {% if user.is_authenticated and user.role == 'SUPERADMIN' %}
             <a class="btn btn-outline-light btn-lg" href="{% url 'test_login' %}" role="button">
                 <i class="fas fa-vial"></i> Modo Demo
             </a>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -34,7 +36,9 @@
         <div class="row align-items-center">
             <div class="col-md-12 text-center">
                 <h5 class="mb-3"><i class="fas fa-info-circle text-primary"></i> Para utilizar la aplicación, debe iniciar sesión</h5>
+                {% if user.is_authenticated and user.role == 'SUPERADMIN' %}
                 <p class="mb-0">Si es su primera vez, utilice el modo demo para explorar las funcionalidades del sistema sin necesidad de credenciales.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -83,6 +87,7 @@
 </section>
 
 <!-- Sección de Demo - Rediseñada -->
+{% if user.is_authenticated and user.role == 'SUPERADMIN' %}
 <section class="demo-section">
     <div class="container">
         <div class="row justify-content-center">
@@ -103,6 +108,7 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- Sección adicional de características -->
 <section class="container pb-5">

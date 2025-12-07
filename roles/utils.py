@@ -3,18 +3,25 @@ def validar_rut(rut):
     Valida un RUT chileno en formato string (con o sin puntos/guion).
     Retorna True si es válido, False si no.
     """
-    rut = rut.replace(".", "").replace(" ", "").replace("-", "")
-    if len(rut) not in [9, 10]:
+    rut = rut.replace('.', '').replace(' ', '').replace('-', '')
+    if len(rut) < 2:
         return False
-    if len(rut) == 9:
-        rut = "0" + rut
-    cuerpo = rut[:8]
-    dv = rut[8:].lower()
-    if not cuerpo.isdigit() or dv not in "0123456789k":
+    cuerpo = rut[:-1]
+    dv = rut[-1].lower()
+    if not cuerpo.isdigit() or dv not in '0123456789k':
         return False
-    tupla_factor = (3,2,7,6,5,4,3,2)
-    suma = sum(int(cuerpo[i]) * tupla_factor[i] for i in range(8))
-    residuo = suma % 11
-    digito_verificador = 11 - residuo
-    dv_esperado = "k" if digito_verificador == 10 else "0" if digito_verificador == 11 else str(digito_verificador)
+    suma = 0
+    factor = 2
+    for c in reversed(cuerpo):
+        suma += int(c) * factor
+        factor += 1
+        if factor > 7:
+            factor = 2
+    res = 11 - (suma % 11)
+    if res == 11:
+        dv_esperado = '0'
+    elif res == 10:
+        dv_esperado = 'k'
+    else:
+        dv_esperado = str(res)
     return dv == dv_esperado

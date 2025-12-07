@@ -13,6 +13,7 @@ ELEGIR_ROL = [ # Opciones de roles para los usuarios
 
 class CustomUser(AbstractUser): # Usuario personalizado con campo 'role'
     role = models.CharField(max_length=20, choices=ELEGIR_ROL) # Rol del usuario, se elige de la lista ELEGIR_ROL
+    rut = models.CharField(max_length=12, unique=True, null=True, blank=True) # RUT chileno
     # Puedes agregar aquí otros campos si los necesitas (foto, etc.)
 
     def __str__(self): # Muestra el usuario como texto en el admin y otros lugares

@@ -11,4 +11,5 @@
     <tr><th>Confirmado</th><td>{{ parto.confirmado|yesno:"Sí,No" }}</td></tr>
 </table>
 <a href="{% url 'lista_partos' %}" class="btn btn-secondary">Volver al listado</a>
+<a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-success ms-2">Registrar Recién Nacidos</a>
 {% endblock %}

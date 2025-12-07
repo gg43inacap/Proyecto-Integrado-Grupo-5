@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Registrar Parto</h2>
-<form method="post">
+<form method="post" novalidate>
 	{% csrf_token %}
-	{{ form.as_p }}
-	<button type="submit">Guardar Parto</button>
-	<a href="{% url 'lista_partos' %}">Cancelar</a>
+	{% for field in form %}
+		<div class="mb-3">
+			<label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+			{{ field }}
+			{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+			{% for error in field.errors %}
+				<div class="invalid-feedback d-block">{{ error }}</div>
+			{% endfor %}
+		</div>
+	{% endfor %}
+	<button type="submit" class="btn btn-primary">Guardar Parto</button>
+	<a href="{% url 'lista_partos' %}" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
 {% if parto_guardado %}
 	<div class="alert alert-success">Parto registrado correctamente.</div>
-	<a href="{% url 'crear_rn' %}?parto_id={{ parto_guardado.id }}" class="btn btn-primary">Registrar Recién Nacido</a>
+	<a href="{% url 'crear_rns' %}?parto_id={{ parto_guardado.id }}" class="btn btn-success">Registrar Recién Nacidos (múltiples)</a>
 {% endif %}
 {% endblock %}

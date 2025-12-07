@@ -21,7 +21,8 @@
             <td>
                 <a href="{% url 'detalle_parto' parto.id %}">Ver</a> |
                 <a href="{% url 'editar_parto' parto.id %}">Editar</a> |
-                <a href="{% url 'eliminar_parto' parto.id %}">Eliminar</a>
+                <a href="{% url 'eliminar_parto' parto.id %}">Eliminar</a> |
+                <a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-sm btn-success">Registrar RN</a>
             </td>
         </tr>
         {% empty %}
