@@ -1,4 +1,5 @@
 from . import views  # Importa las vistas de la aplicación reportes
+from . import exportadores  # Importa las funciones de exportación
 from django.urls import path
   # Sistema de rutas de Django
 
@@ -19,6 +20,17 @@ urlpatterns = [
     path("componentes/selector_reportes/", views.selector_de_reportes, name="selector_reportes"),
     path("componentes/selector_filtros/", views.selector_de_filtros, name="selector_filtros"),
     path('exportar/', views.exportar_reporte, name='exportar_reporte'),  # Ruta para exportar reportes
+    
+    # URLs para exportación de reportes específicos
+    # Reporte de Partos
+    path('exportar/parto/pdf/', exportadores.exportar_reporte_parto_pdf, name='exportar_parto_pdf'),
+    path('exportar/parto/excel/', exportadores.exportar_reporte_parto_excel, name='exportar_parto_excel'),
+    
+    # Reporte de Nacidos Vivos
+    path('exportar/nacidos_vivos/pdf/', exportadores.exportar_reporte_nacidos_vivos_pdf, name='exportar_nacidos_vivos_pdf'),
+    path('exportar/nacidos_vivos/excel/', exportadores.exportar_reporte_nacidos_vivos_excel, name='exportar_nacidos_vivos_excel'),
+    
+    # Reporte de Atención Inmediata
+    path('exportar/atencion_inmediata/pdf/', exportadores.exportar_reporte_atencion_inmediata_pdf, name='exportar_atencion_inmediata_pdf'),
+    path('exportar/atencion_inmediata/excel/', exportadores.exportar_reporte_atencion_inmediata_excel, name='exportar_atencion_inmediata_excel'),
 ]
-
-## PLACEHOLDER - ACA SE TIENE QUE HACER FUNCIONAR EL EXPORTAR EXCEL Y LOS GRAFICOS

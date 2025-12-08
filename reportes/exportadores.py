@@ -3,7 +3,7 @@ import openpyxl
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
-from .models import Parto, RN
+from partos.models import Parto, RN
 
 # === REPORTE 1: Características del Parto ===
 
@@ -156,7 +156,7 @@ def exportar_reporte_atencion_inmediata_pdf(request):
             ["Profilaxis Ocular", RN.objects.filter(profilaxis_ocular=True).count()],
             ["Parto Vaginal", Parto.objects.filter(tipo_parto="vaginal").count()],
             ["Parto Instrumental", Parto.objects.filter(tipo_parto="instrumental").count()],
-            ["Cesárea", Parto.objects.filter(tipo_parto__startswith="cesarea").count()],
+            ["Cesárea", Parto.objects.filter(tipo_parto__in=["cesarea_electiva", "cesarea_urgencia"]).count()],
             ["Parto Extrahospitalario", Parto.objects.filter(tipo_parto="extrahospitalario").count()],
             ["Apgar ≤ 3 al minuto", RN.objects.filter(apgar_1__lte=3).count()],
             ["Apgar ≤ 6 a los 5 minutos", RN.objects.filter(apgar_5__lte=6).count()],
@@ -220,7 +220,7 @@ def exportar_reporte_atencion_inmediata_excel(request):
     for mes_obj in meses:
         mes = mes_obj['mes']
         rn_mes = RN.objects.filter(fecha_nacimiento__month=mes.month, fecha_nacimiento__year=mes.year)
-        parto_mes = Parto.objects.filter(fecha_parto__month=mes.month, fecha_parto__year=mes.year)
+        parto_mes = Parto.objects.filter(fecha_hora__month=mes.month, fecha_hora__year=mes.year)
 
         fila = [
             mes.strftime("%B %Y"),
@@ -229,7 +229,7 @@ def exportar_reporte_atencion_inmediata_excel(request):
             rn_mes.filter(profilaxis_ocular=True).count(),
             parto_mes.filter(tipo_parto="vaginal").count(),
             parto_mes.filter(tipo_parto="instrumental").count(),
-            parto_mes.filter(tipo_parto__startswith="cesarea").count(),
+            parto_mes.filter(tipo_parto__in=["cesarea_electiva", "cesarea_urgencia"]).count(),
             parto_mes.filter(tipo_parto="extrahospitalario").count(),
             rn_mes.filter(apgar_1__lte=3).count(),
             rn_mes.filter(apgar_5__lte=6).count(),
