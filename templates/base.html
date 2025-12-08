@@ -1,47 +1,63 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Test Fork Neonatal{% endblock %}</title>
-    
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS BASE (siempre se cargan) -->
     {% load static %}
+    <!-- CSS base de la nueva estructura -->
     <link rel="stylesheet" href="{% static 'css/base/variables.css' %}">
     <link rel="stylesheet" href="{% static 'css/base/base.css' %}">
     
     <!-- CSS específico por página -->
-    {% block page_css %}{% endblock %}
+    {% block head_extra %}{% endblock %}
 </head>
 
 <body>
-    <!-- Navbar -->
+    {% if not hide_navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="fas fa-hospital me-2"></i>Test Fork Neonatal
             </a>
-            <span class="navbar-text text-white d-none d-md-block">
-                Hospital Herminda Martin de Chillán
-            </span>
+            {% if user.is_authenticated %}
+            <div class="navbar-nav ms-auto d-flex align-items-center">
+                <span class="nav-link text-white">
+                    <i class="fas fa-user me-2"></i>Bienvenido {{ user.username }}
+                </span>
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                </a>
+            </div>
+            {% endif %}
         </div>
     </nav>
+    {% endif %}
 
     <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Bootstrap JS -->
+    <footer class="text-center py-3 bg-light mt-4">
+        <p class="mb-0 text-muted">&copy; 2024 Test Fork Neonatal. Todos los derechos reservados.</p>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- JS específico por página -->
+
     {% block scripts %}{% endblock %}
+
 </body>
 </html>

@@ -10,6 +10,11 @@ body {
     padding-top: 0;
     font-family: var(--font-family-base);
     background-color: #f8f9fa;
+    padding-top: 0;
+    font-family: var(--font-family-base);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%);
+    min-height: 100vh;
+    margin: 0;
 }
 
 .navbar {
@@ -43,4 +48,10 @@ body {
 
 .shadow-card:hover {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
 }

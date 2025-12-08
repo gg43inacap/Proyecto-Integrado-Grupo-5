@@ -4,7 +4,7 @@
 
 {% block title %}Iniciar Sesión - Sistema Neonatal{% endblock %}
 
-{% block page_css %}
+{% block head_extra %}  <!-- CAMBIAR AQUÍ -->
 <!-- CSS específico del login (nueva estructura) -->
 <link rel="stylesheet" href="{% static 'css/apps/login.css' %}">
 {% endblock %}
@@ -86,13 +86,6 @@
                     <button type="submit" class="btn btn-login">
                         <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
                     </button>
-                </div>
-                
-                <!-- Botón de demo -->
-                <div class="d-grid gap-2 mb-3">
-                    <a href="{% url 'test_login' %}" class="btn btn-demo-alt">
-                        <i class="fas fa-vial"></i> Acceder al Modo Demo
-                    </a>
                 </div>
                 
                 <!-- Información de soporte técnico -->
