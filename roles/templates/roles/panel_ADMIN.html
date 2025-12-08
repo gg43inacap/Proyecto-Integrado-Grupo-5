@@ -1,5 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Panel Administrador</h2>
-<p>Bienvenido al panel de usuario ADMIN.</p>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2><i class="fas fa-user-shield"></i> Panel Administrador</h2>
+                    <p class="mb-0">Bienvenido {{ user.username }} - Rol: {{ user.role|default:"ADMIN" }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-users"></i> Gestión de Usuarios</h5>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">
+                                    <i class="fas fa-list"></i> Gestionar Usuarios
+                                </a>
+                                <a href="{% url 'crear_usuario' %}" class="btn btn-success">
+                                    <i class="fas fa-user-plus"></i> Crear Usuario
+                                </a>
+                            </div>
+                        </div>
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-home"></i> Volver al inicio
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

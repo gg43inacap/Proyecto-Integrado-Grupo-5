@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect # Funciones para buscar objetos, mostrar páginas y redirigir
-from .models import Madre # Importa el modelo Madre
+# Importa el modelo Madre
+from .models import Madre
+from auditoria.models import registrar_evento_auditoria
 # pylint: disable=no-member
 # pyright: reportGeneralTypeIssues=false
 
@@ -26,6 +28,14 @@ def editar_madre(request, madre_id): # Edita los datos de una madre
         madre.atenciones_clinicas = request.POST.get('atenciones_clinicas') # Actualiza las atenciones clínicas
         madre.acompanante = request.POST.get('acompanante') # Actualiza el acompañante
         madre.save() # Guarda los cambios en la base de datos
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='UPDATE',
+            modelo_afectado='Madre',
+            registro_id=madre.id,
+            detalles_cambio=f"Madre editada: {madre.nombre} (RUT: {madre.rut})",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
         return redirect('lista_madres') # Redirige a la lista de madres después de guardar
     return render(request, 'gestion_some/editar_madre.html', {'madre': madre}) # Muestra el formulario de edición
 
@@ -34,7 +44,18 @@ def editar_madre(request, madre_id): # Edita los datos de una madre
 def eliminar_madre(request, madre_id): # Elimina una madre
     madre = get_object_or_404(Madre, id=madre_id) # Obtiene la madre o devuelve 404
     if request.method == 'POST': # Si se confirma la eliminación
+        nombre = madre.nombre
+        rut = madre.rut
+        id_madre = madre.id
         madre.delete() # Elimina la madre de la base de datos
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='DELETE',
+            modelo_afectado='Madre',
+            registro_id=id_madre,
+            detalles_cambio=f"Madre eliminada: {nombre} (RUT: {rut})",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
         return redirect('lista_madres') # Redirige a la lista de madres después de eliminar
     return render(request, 'gestion_some/eliminar_madre.html', {'madre': madre}) # Muestra la página de confirmación de eliminación
 
@@ -52,7 +73,7 @@ def crear_madre(request): # Crea una nueva madre
         antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos') # Obtiene los antecedentes obstétricos del formulario
         atenciones_clinicas = request.POST.get('atenciones_clinicas') # Obtiene las atenciones clínicas del formulario
         acompanante = request.POST.get('acompanante') # Obtiene el acompañante del formulario
-        Madre.objects.create(
+        madre = Madre.objects.create(
             nombre=nombre,
             rut=rut,
             fecha_nacimiento=fecha_nacimiento,
@@ -63,6 +84,14 @@ def crear_madre(request): # Crea una nueva madre
             antecedentes_obstetricos=antecedentes_obstetricos,
             atenciones_clinicas=atenciones_clinicas,
             acompanante=acompanante
+        )
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='CREATE',
+            modelo_afectado='Madre',
+            registro_id=madre.id,
+            detalles_cambio=f"Madre creada: {madre.nombre} (RUT: {madre.rut})",
+            ip_address=request.META.get('REMOTE_ADDR')
         )
         return redirect('lista_madres') # Redirige a la lista de madres después de crear
     return render(request, 'gestion_some/crear_madre.html') # Muestra el formulario de creación

@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-baby"></i> Registrar Múltiples Recién Nacidos</h4>
+                    {% if parto %}
+                        <small>Parto asociado: {{ parto }} (Madre: {{ parto.madre }})</small>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{ formset.management_form }}
+                        <div id="formset-container" class="ribbon-container">
+                            {% for form in formset %}
+                            <div class="ribbon-tab mb-4 p-3 border rounded bg-light" data-form-index="{{ forloop.counter0 }}">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="text-primary mb-0"><i class="fas fa-baby"></i> Recién Nacido {{ forloop.counter }}</h5>
+                                    {% if not forloop.first %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn" onclick="removeForm(this)">
+                                        <i class="fas fa-times"></i> Quitar
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    {% for field in form %}
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                                            {{ field }}
+                                            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                                            {% for error in field.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Botón para añadir más RN -->
+                        <div class="text-center mb-4">
+                            <button type="button" id="add-form-btn" class="btn btn-outline-success">
+                                <i class="fas fa-plus-circle"></i> Añadir otro Recién Nacido
+                            </button>
+                            <small class="d-block text-muted mt-2">
+                                <i class="fas fa-info-circle"></i> Para partos múltiples (gemelos, trillizos, octillizos... 😄)
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_rns' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Guardar Todos los RN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let formIndex = {{ formset.total_form_count|default:2 }};
+const maxForms = 10; // Límite máximo de formularios (incluso para la esposa de Apu 😄)
+
+function filtrarPartos() {
+    // Buscar todos los selects de madre y parto en el formset
+    const madreSelects = document.querySelectorAll('[id*="id_"][id*="-madre"]');
+    const partoSelects = document.querySelectorAll('[id*="id_"][id*="-parto_asociado"]');
+    
+    madreSelects.forEach((madreSelect, index) => {
+        const partoSelect = partoSelects[index];
+        const madreId = madreSelect.value;
+        
+        if (partoSelect) {
+            console.log(`Filtrando partos para formulario ${index}, madre ID:`, madreId);
+            
+            // Limpiar opciones actuales del select de partos
+            partoSelect.innerHTML = '<option value="">Cargando...</option>';
+            
+            if (madreId) {
+                const url = `/partos/ajax/filtrar-partos/?madre_id=${madreId}`;
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Limpiar el select
+                        partoSelect.innerHTML = '<option value="">---------</option>';
+                        
+                        if (data.error) {
+                            console.error('Error del servidor:', data.error);
+                            const option = new Option(`Error: ${data.error}`, '');
+                            option.disabled = true;
+                            partoSelect.add(option);
+                        } else {
+                            data.partos.forEach(parto => {
+                                const option = new Option(parto.text, parto.id);
+                                partoSelect.add(option);
+                            });
+                            
+                            if (data.partos.length === 0) {
+                                const option = new Option('No hay partos activos para esta madre', '');
+                                option.disabled = true;
+                                partoSelect.add(option);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error completo:', error);
+                        partoSelect.innerHTML = '<option value="">---------</option>';
+                        const option = new Option(`Error de conexión: ${error.message}`, '');
+                        option.disabled = true;
+                        partoSelect.add(option);
+                    });
+            } else {
+                partoSelect.innerHTML = '<option value="">---------</option>';
+            }
+        }
+    });
+}
+
+function addForm() {
+    if (formIndex >= maxForms) {
+        alert('¡Límite máximo alcanzado! Incluso la esposa de Apu necesitaría un descanso después de 10 bebés 😅');
+        return;
+    }
+    
+    const container = document.getElementById('formset-container');
+    const lastForm = container.querySelector('.ribbon-tab:last-child');
+    
+    if (lastForm) {
+        // Clonar el último formulario
+        const newForm = lastForm.cloneNode(true);
+        
+        // Actualizar el índice del formulario
+        newForm.setAttribute('data-form-index', formIndex);
+        
+        // Actualizar el título
+        const title = newForm.querySelector('h5');
+        title.innerHTML = `<i class="fas fa-baby"></i> Recién Nacido ${formIndex + 1}`;
+        
+        // Limpiar valores de todos los campos
+        const inputs = newForm.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            // Actualizar nombres e IDs
+            const oldName = input.getAttribute('name');
+            const oldId = input.getAttribute('id');
+            
+            if (oldName) {
+                const newName = oldName.replace(/-\d+-/, `-${formIndex}-`);
+                input.setAttribute('name', newName);
+            }
+            
+            if (oldId) {
+                const newId = oldId.replace(/-\d+-/, `-${formIndex}-`);
+                input.setAttribute('id', newId);
+            }
+            
+            // Limpiar valores
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = false;
+            } else {
+                input.value = '';
+            }
+        });
+        
+        // Actualizar labels
+        const labels = newForm.querySelectorAll('label');
+        labels.forEach(label => {
+            const forAttr = label.getAttribute('for');
+            if (forAttr) {
+                const newFor = forAttr.replace(/-\d+-/, `-${formIndex}-`);
+                label.setAttribute('for', newFor);
+            }
+        });
+        
+        // Asegurar que tenga botón de quitar
+        const removeBtn = newForm.querySelector('.remove-form-btn');
+        if (!removeBtn) {
+            const titleDiv = newForm.querySelector('.d-flex');
+            titleDiv.innerHTML += `
+                <button type="button" class="btn btn-sm btn-outline-danger remove-form-btn" onclick="removeForm(this)">
+                    <i class="fas fa-times"></i> Quitar
+                </button>
+            `;
+        }
+        
+        // Agregar al contenedor
+        container.appendChild(newForm);
+        
+        // Configurar eventos para el nuevo formulario
+        const newMadreSelect = newForm.querySelector('[id*="-madre"]');
+        if (newMadreSelect) {
+            newMadreSelect.addEventListener('change', filtrarPartos);
+        }
+        
+        // Incrementar contador
+        formIndex++;
+        
+        // Actualizar el campo TOTAL_FORMS
+        const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+        if (totalFormsInput) {
+            totalFormsInput.value = formIndex;
+        }
+        
+        // Scroll al nuevo formulario
+        newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        console.log(`Formulario añadido. Total forms: ${formIndex}`);
+    }
+}
+
+function removeForm(button) {
+    const form = button.closest('.ribbon-tab');
+    const container = document.getElementById('formset-container');
+    
+    // No permitir eliminar si solo hay un formulario
+    if (container.children.length <= 1) {
+        alert('Debe haber al menos un recién nacido para registrar.');
+        return;
+    }
+    
+    // Confirmar eliminación
+    if (confirm('¿Está seguro de que desea quitar este formulario de recién nacido?')) {
+        form.remove();
+        
+        // Actualizar numeración de títulos
+        updateFormTitles();
+        
+        // Actualizar TOTAL_FORMS
+        const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+        if (totalFormsInput) {
+            totalFormsInput.value = container.children.length;
+        }
+        
+        console.log(`Formulario eliminado. Total forms: ${container.children.length}`);
+    }
+}
+
+function updateFormTitles() {
+    const forms = document.querySelectorAll('.ribbon-tab');
+    forms.forEach((form, index) => {
+        const title = form.querySelector('h5');
+        if (title) {
+            title.innerHTML = `<i class="fas fa-baby"></i> Recién Nacido ${index + 1}`;
+        }
+    });
+}
+
+// Configurar eventos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar botón de añadir formulario
+    const addButton = document.getElementById('add-form-btn');
+    if (addButton) {
+        addButton.addEventListener('click', addForm);
+    }
+    
+    // Configurar eventos de filtrado para formularios existentes
+    const madreSelects = document.querySelectorAll('[id*="id_"][id*="-madre"]');
+    madreSelects.forEach(madreSelect => {
+        madreSelect.addEventListener('change', filtrarPartos);
+        
+        // Ejecutar filtrado inicial si hay una madre preseleccionada
+        if (madreSelect.value) {
+            filtrarPartos();
+        }
+    });
+    
+    console.log('Formset dinámico inicializado. Listo para partos múltiples! 👶👶👶');
+});
+</script>
+
+<style>
+.ribbon-tab {
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef !important;
+}
+
+.ribbon-tab:hover {
+    border-color: #28a745 !important;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.1);
+}
+
+.remove-form-btn {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.remove-form-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+#add-form-btn {
+    border: 2px dashed #28a745;
+    color: #28a745;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#add-form-btn:hover {
+    background-color: #28a745;
+    color: white;
+    border-style: solid;
+}
+</style>
+{% endblock %}

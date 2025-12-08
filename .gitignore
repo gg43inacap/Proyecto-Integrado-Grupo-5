@@ -6,4 +6,11 @@ __pycache__/
 .vscode/
 .idea/
 .env
+db.sqlite3
 poblar_db.py
+test_sistema_completo.py
+test_sistema_completo.py
+test_modo_demo.py
+test_sistema_completo.py
+verificar_reportes_integracion.py
+run_tests.bat

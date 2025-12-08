@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Página no encontrada - Test Fork Neonatal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="card">
+                <div class="card-body py-5">
+                    <div class="error-icon mb-4">
+                        <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
+                    </div>
+                    <h1 class="display-4 text-muted">404</h1>
+                    <h2 class="mb-3">Página no encontrada</h2>
+                    <p class="lead text-muted mb-4">
+                        Lo sentimos, la página que está buscando no existe o ha sido movida.
+                    </p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="/" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home"></i> Ir al Inicio
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="/dashboard/" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-tachometer-alt"></i> Panel Principal
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small><i class="fas fa-hospital"></i> Hospital Herminda Martin - Sistema Neonatal</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

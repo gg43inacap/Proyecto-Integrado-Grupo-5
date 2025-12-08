@@ -1,24 +1,122 @@
+<!-- login/templates/login/test_login.html -->
 {% extends 'base.html' %}
-
-{% block title %}Test Login - Test Fork Neonatal{% endblock %}
+{% block title %}Modo Demo - Sistema Neonatal{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card mt-5">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Iniciar Sesión (Demo)</h2>
-                <hr>
-                <h5 class="text-center mb-3">Acceso directo a paneles de rol (demo)</h5>
-                <div class="d-grid gap-2">
-                    <a href="/dashboard/?rol=SOME" class="btn btn-info">Panel SOME</a>
-                    <a href="/dashboard/?rol=MATRONA" class="btn btn-success">Panel MATRONA</a>
-                    <a href="/dashboard/?rol=SUPERVISOR" class="btn btn-warning">Panel SUPERVISOR</a>
-                    <a href="/dashboard/?rol=AUDITORIA" class="btn btn-secondary">Panel AUDITORIA</a>
-                    <a href="/dashboard/?rol=ADMIN" class="btn btn-dark">Panel ADMIN</a>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white text-center py-4">
+                    <h2><i class="fas fa-vial"></i> Modo Demo - Sistema Neonatal</h2>
+                    <p class="mb-0">Explore las funcionalidades del sistema con diferentes roles</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <!-- Panel ADMIN -->
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100 border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                                    <h5 class="card-title">ADMINISTRADOR</h5>
+                                    <p class="card-text">Gestión completa de usuarios, configuración del sistema y auditoría</p>
+                                    <a href="/dashboard/?rol=ADMIN" class="btn btn-primary">
+                                        <i class="fas fa-play"></i> Probar Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel SOME -->
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100 border-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                                    <h5 class="card-title">SOME</h5>
+                                    <p class="card-text">Gestión de madres, registro de nuevos ingresos y seguimiento</p>
+                                    <a href="/dashboard/?rol=SOME" class="btn btn-success">
+                                        <i class="fas fa-play"></i> Probar SOME
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel MATRONA -->
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100 border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-baby fa-3x text-warning mb-3"></i>
+                                    <h5 class="card-title">MATRONA</h5>
+                                    <p class="card-text">Control de partos, atención obstétrica y cuidado neonatal</p>
+                                    <a href="/dashboard/?rol=MATRONA" class="btn btn-warning">
+                                        <i class="fas fa-play"></i> Probar Matrona
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel SUPERVISOR -->
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100 border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-tie fa-3x text-info mb-3"></i>
+                                    <h5 class="card-title">SUPERVISOR</h5>
+                                    <p class="card-text">Supervisión y coordinación de procesos hospitalarios</p>
+                                    <a href="/dashboard/?rol=SUPERVISOR" class="btn btn-info">
+                                        <i class="fas fa-play"></i> Probar Supervisor
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel AUDITORIA -->
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card role-card h-100 border-secondary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-clipboard-check fa-3x text-secondary mb-3"></i>
+                                    <h5 class="card-title">AUDITORÍA</h5>
+                                    <p class="card-text">Control y verificación de registros médicos</p>
+                                    <a href="/dashboard/?rol=AUDITORIA" class="btn btn-secondary">
+                                        <i class="fas fa-play"></i> Probar Auditoría
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información importante -->
+                    <div class="alert alert-info mt-4">
+                        <h5><i class="fas fa-info-circle"></i> Información Importante</h5>
+                        <ul class="mb-0">
+                            <li>Este es un <strong>entorno de demostración</strong> con datos de prueba.</li>
+                            <li>Los cambios realizados <strong>no afectarán</strong> la información real del sistema.</li>
+                            <li>Cada rol tiene permisos y vistas diferentes para mostrar las capacidades del sistema.</li>
+                            <li>La sesión demo tiene una duración limitada por seguridad.</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Volver al login normal -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Volver al Login Normal
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.role-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+</style>
 {% endblock %}

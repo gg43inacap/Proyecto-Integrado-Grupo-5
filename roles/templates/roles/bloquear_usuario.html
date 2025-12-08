@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Bloquear usuario</h2>
+<p>¿Estás seguro que deseas bloquear al usuario <strong>{{ user.username }}</strong> (RUT: {{ user.rut }})?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirmar bloqueo</button>
+    <a href="{% url 'lista_usuarios' %}">Cancelar</a>
+</form>
+{% endblock %}

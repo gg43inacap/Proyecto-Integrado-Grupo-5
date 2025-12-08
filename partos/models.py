@@ -11,6 +11,11 @@ class Parto(models.Model): # Modelo que representa un parto
         ('cesarea_urgencia', 'Cesárea de Urgencia'),
         ('extrahospitalario', 'Extrahospitalario'),
     ]
+    
+    ESTADO_CHOICES = [
+        ('activo', 'Activo'),
+        ('completado', 'Completado'),
+    ]
     madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='partos') # Relación con la madre
     fecha_hora = models.DateTimeField() # Fecha y hora del parto
     tipo_parto = models.CharField(max_length=20, choices=TIPO_PARTO_CHOICES) # Tipo de parto
@@ -19,6 +24,7 @@ class Parto(models.Model): # Modelo que representa un parto
     parto_distocico = models.BooleanField(default=False) # Indica si el parto fue distócico
     parto_vacuum = models.BooleanField(default=False) # Indica si se usó vacuum en el parto
     confirmado = models.BooleanField(default=False) # Indica si el parto está confirmado
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='activo') # Estado del parto
     objects = models.Manager()
 
     def __str__(self):

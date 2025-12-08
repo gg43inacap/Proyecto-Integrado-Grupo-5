@@ -3,31 +3,107 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.utils import timezone
+from datetime import timedelta
 from .models import Auditoria
 
 # ===============================
-# Auditoría: solo visualización
+# Auditoría: SOLO CONSULTA/VISUALIZACIÓN
 # ===============================
-# Solo usuarios autenticados y con rol AUDITORIA pueden ver los logs.
+# Los registros de auditoría se crean automáticamente por el sistema
+# Los auditores SOLO pueden consultar, NO crear/editar/eliminar
+
+def tiene_acceso_auditoria(user):
+    """Verifica si el usuario tiene acceso a auditoría"""
+    if not user.is_authenticated:
+        return False
+    # Permitir acceso a AUDITORIA, ADMIN, superusers y modo demo
+    return (getattr(user, 'role', None) in ['AUDITORIA', 'ADMIN'] or 
+            user.is_superuser or 
+            hasattr(user, 'is_demo_mode'))
+
+# El dashboard se maneja en la app 'roles' - panel_AUDITORIA.html
+# Esta app solo proporciona vistas de consulta de datos
+
 @login_required
 def lista_auditorias(request):
     """
-    Lista todos los registros de auditoría.
-    Acceso exclusivo para usuarios con rol 'AUDITORIA'.
+    Lista todos los registros de auditoría con filtros.
+    Acceso para usuarios AUDITORIA, ADMIN y superusers.
+    SOLO CONSULTA - No permite crear/editar/eliminar.
     """
-    if getattr(request.user, 'role', None) != 'AUDITORIA':
-        return HttpResponseForbidden('Algo salio mal.')
+    if not tiene_acceso_auditoria(request.user):
+        return HttpResponseForbidden('Acceso denegado. Se requiere rol AUDITORIA o ADMIN.')
+    
+    # Obtener parámetros de filtro
+    accion_filtro = request.GET.get('accion', '').strip()
+    modelo_filtro = request.GET.get('modelo', '').strip()
+    usuario_filtro = request.GET.get('usuario', '').strip()
+    fecha_desde = request.GET.get('fecha_desde', '').strip()
+    fecha_hasta = request.GET.get('fecha_hasta', '').strip()
+    orden = request.GET.get('orden', '-fecha_hora')  # Por defecto más reciente primero
+    
+    # Aplicar filtros
     logs = Auditoria.objects.all()
-    return render(request, 'auditoria/lista_auditorias.html', {'logs': logs})
+    
+    if accion_filtro:
+        logs = logs.filter(accion_realizada=accion_filtro)
+    if modelo_filtro:
+        logs = logs.filter(modelo_afectado=modelo_filtro)
+    if usuario_filtro:
+        logs = logs.filter(usuario__username__icontains=usuario_filtro)
+    if fecha_desde:
+        try:
+            logs = logs.filter(fecha_hora__date__gte=fecha_desde)
+        except:
+            pass  # Ignorar errores de fecha inválida
+    if fecha_hasta:
+        try:
+            logs = logs.filter(fecha_hora__date__lte=fecha_hasta)
+        except:
+            pass  # Ignorar errores de fecha inválida
+    
+    # Aplicar ordenamiento
+    orden_validos = ['fecha_hora', '-fecha_hora', 'usuario__username', '-usuario__username', 
+                     'accion_realizada', '-accion_realizada', 'modelo_afectado', '-modelo_afectado']
+    if orden in orden_validos:
+        logs = logs.order_by(orden)
+    else:
+        logs = logs.order_by('-fecha_hora')
+    
+    # Estadísticas para el contexto
+    total_eventos = logs.count()
+    acciones_disponibles = Auditoria.objects.values_list('accion_realizada', flat=True).distinct().order_by('accion_realizada')
+    
+    # Debug: imprimir acciones disponibles
+    print(f"DEBUG - Acciones disponibles: {list(acciones_disponibles)}")
+    
+    context = {
+        'logs': logs,
+        'total_eventos': total_eventos,
+        'acciones_disponibles': acciones_disponibles,
+        'filtros': {
+            'accion': accion_filtro,
+            'modelo': modelo_filtro, 
+            'usuario': usuario_filtro,
+            'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta,
+            'orden': orden,
+        }
+    }
+    
+    return render(request, 'auditoria/lista_auditorias.html', context)
 
 @login_required
 def detalle_auditoria(request, auditoria_id):
     """
     Muestra el detalle de un registro de auditoría.
-    Acceso exclusivo para usuarios con rol 'AUDITORIA'.
+    Acceso para usuarios AUDITORIA, ADMIN y superusers.
+    SOLO CONSULTA - No permite modificaciones.
     """
-    if getattr(request.user, 'role', None) != 'AUDITORIA':
-        return HttpResponseForbidden('Algo salio mal.')
+    if not tiene_acceso_auditoria(request.user):
+        return HttpResponseForbidden('Acceso denegado. Se requiere rol AUDITORIA o ADMIN.')
     try:
         log = Auditoria.objects.get(pk=auditoria_id)
     except Auditoria.DoesNotExist:
@@ -42,34 +118,13 @@ def detalle_auditoria(request, auditoria_id):
 # ===============================
 
 # ===============================
-# Vista temporal para crear auditoría manualmente
+# NOTA IMPORTANTE:
 # ===============================
-#
-# from django.views.decorators.csrf import csrf_exempt
-# from django.shortcuts import redirect
-#
-# @csrf_exempt
-# @login_required
-# def crear_auditoria(request):
-#     """
-#     Vista temporal para crear un registro de auditoría desde un formulario simple.
-#     Solo para pruebas. Usar SOLO si makemigrations/migrate no crea la tabla correctamente.
-#     Comentar o eliminar después de poblar la base de datos.
-#     """
-#     if request.method == 'POST':
-#         usuario = request.user
-#         accion_realizada = request.POST.get('accion_realizada', 'PRUEBA')
-#         modelo_afectado = request.POST.get('modelo_afectado', 'TestModel')
-#         registro_id = request.POST.get('registro_id', 1)
-#         detalles_cambio = request.POST.get('detalles_cambio', 'Detalle de prueba')
-#         ip_address = request.META.get('REMOTE_ADDR', '127.0.0.1')
-#         Auditoria.objects.create(
-#             usuario=usuario,
-#             accion_realizada=accion_realizada,
-#             modelo_afectado=modelo_afectado,
-#             registro_id=registro_id,
-#             detalles_cambio=detalles_cambio,
-#             ip_address=ip_address
-#         )
-#         return redirect('lista_auditorias')
-#     return render(request, 'auditoria/crear_auditoria.html')
+# Los registros de auditoría se crean AUTOMÁTICAMENTE
+# cuando se realizan acciones en el sistema.
+# Los auditores SOLO pueden CONSULTAR, no crear/editar/eliminar.
+# 
+# Para crear datos de prueba, use el shell de Django:
+# python manage.py shell
+# >>> from auditoria.models import registrar_evento_auditoria
+# >>> registrar_evento_auditoria(...)

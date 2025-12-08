@@ -1,0 +1,292 @@
+/* ========================================================= */
+/* VARIABLES GLOBALES (login.html)                           */
+/* ========================================================= */
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0b5ed7;
+    --hospital-blue: #1a73e8;
+    --hospital-dark: #0d47a1;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* ========================================================= */
+/* ESTILOS BASE (base.html)                                  */
+/* ========================================================= */
+body {
+    padding-top: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================================= */
+/* ESTILOS DE INICIO.HTML  */
+/* ========================================================= */
+.hero-section {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    padding: 60px 0 40px 0;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Fondo con patrón SVG (asegurar de que URL es correcto) */
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3...");
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+}
+
+.features-section {
+    padding: 40px 0;
+}
+
+.feature-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #1a73e8; /* Hospital Blue */
+    margin-bottom: 20px;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+
+/* ========================================================= */
+/* ESTILOS DE LOGIN  */
+/* ========================================================= */
+.login-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+}
+
+.login-header {
+    background: linear-gradient(135deg, var(--hospital-blue), var(--hospital-dark));
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+.login-header h2 {
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.login-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.login-body {
+    padding: 40px;
+}
+
+.form-group-custom {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-custom label {
+    font-weight: 600;
+    color: #333;
+}
+
+.btn-login {
+    background-color: var(--hospital-blue);
+    border-color: var(--hospital-blue);
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--hospital-dark);
+    border-color: var(--hospital-dark);
+    color: white;
+}
+
+.btn-demo {
+    color: var(--hospital-blue);
+    border-color: var(--hospital-blue);
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.btn-demo:hover {
+    background-color: var(--hospital-blue);
+    color: white;
+}
+
+.password-field {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: var(--hospital-blue);
+}
+
+/* ========================================================= */
+/* ESTILOS DE LOGIN DEMO (test_login.html)                   */
+/* ========================================================= */
+.demo-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.demo-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    width: 100%;
+}
+
+.demo-header {
+    background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+.demo-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+.demo-body {
+    padding: 40px;
+}
+
+.role-card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.role-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #0dcaf0; /* Info color */
+}
+
+.role-title {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.role-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    min-height: 40px; /* Asegurar altura uniforme */
+}
+
+.btn-role {
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+.demo-info-box {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff3cd; /* Amarillo claro de Bootstrap warning */
+    border: 1px solid #ffc720;
+    color: #664d03;
+}
+
+.demo-info-box h5 {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #664d03;
+}
+
+.demo-info-box ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.demo-info-box ul li {
+    margin-bottom: 5px;
+}
