@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>REM A24 - Información General RN Vivos</title>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
-    th { background: #eee; }
-    h2 { text-align: center; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Reporte: Información general RN vivos</title>
+    <style>
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        img { display: block; margin: 0 auto; max-width: 500px; max-height: 400px; }
+    </style>
 </head>
 <body>
-  <h2>Reporte 2: Información General de Recién Nacidos Vivos</h2>
-  <table>
-    <thead>
-      <tr><th>Rango de Peso (g)</th><th>Cantidad</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Menos de 500</td><td>{{ data.peso."<500" }}</td></tr>
-      <tr><td>500 a 999</td><td>{{ data.peso."500-999" }}</td></tr>
-      <tr><td>1.000 a 1.499</td><td>{{ data.peso."1000-1499" }}</td></tr>
-      <tr><td>1.500 a 1.999</td><td>{{ data.peso."1500-1999" }}</td></tr>
-      <tr><td>2.000 a 2.499</td><td>{{ data.peso."2000-2499" }}</td></tr>
-      <tr><td>2.500 a 2.999</td><td>{{ data.peso."2500-2999" }}</td></tr>
-      <tr><td>3.000 a 3.999</td><td>{{ data.peso."3000-3999" }}</td></tr>
-      <tr><td>4.000 y más</td><td>{{ data.peso."4000+" }}</td></tr>
-      <tr><td>Total nacidos vivos</td><td>{{ data.total }}</td></tr>
-      <tr><td>Con anomalía congénita</td><td>{{ data.anomalias }}</td></tr>
-    </tbody>
-  </table>
+    <h2>Información general RN vivos</h2>
+
+    {% if data.grafico_base64 %}
+        <img src="{{ data.grafico_base64 }}" alt="Gráfico del reporte" />
+        <p style="text-align:center; margin-top:10px;">Gráfico exportado desde la vista seleccionada</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    {% for header in data.headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data.rows %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 </body>
 </html>

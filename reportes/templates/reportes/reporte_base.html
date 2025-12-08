@@ -3,6 +3,8 @@
 {% block content %}
   <h2 class="mb-4 text-center">{{ data.titulo }}</h2>
 
+  
+
   <div class="btn-group mb-3">
     <button class="btn btn-outline-primary" onclick="mostrar('tabla')">Tabla</button>
     <button class="btn btn-outline-success" onclick="mostrar('barras')">Gráfico de Barras</button>
@@ -37,9 +39,7 @@
     <canvas id="graficoTorta" style="max-height:400px;"></canvas>
   </div>
 
-  <button class="btn btn-secondary mt-3" data-bs-toggle="modal" data-bs-target="#modalExportacion">
-    Exportar reporte
-  </button>
+
 
   {% include "reportes/fragmentos/modal_exportacion.html" %}
 {% endblock %}

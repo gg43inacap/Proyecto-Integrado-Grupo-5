@@ -39,9 +39,11 @@ def reporte_parto(request):
             ["Cesárea Urgencia", Parto.objects.filter(tipo_parto="cesarea_urgencia").count()],
             ["Lactancia precoz (≥2500 g)", RN.objects.filter(peso__gte=2500, lactancia_antes_60=True).count()],
         ],
-        "reporte_nombre":"rem_24_caracteristicas_parto"
+        # Antes: "rem_24_caracteristicas_parto"
+        "reporte_nombre": "reporte_parto",
     }
     return render(request, "reportes/predefinidos/rem_24_caracteristicas_parto.html", {"data": data})
+
 
 def reporte_nacidos_vivos(request):
     data = {
@@ -58,9 +60,11 @@ def reporte_nacidos_vivos(request):
             ["Total nacidos vivos", RN.objects.count()],
             ["Con anomalía congénita", RN.objects.filter(anomalia_congenita=True).count()],
         ],
-        "reporte_nombre":"rem_a24_info_gral_rn_vivos"
+        # Antes: "rem_a24_info_gral_rn_vivos"
+        "reporte_nombre": "reporte_nacidos_vivos",
     }
     return render(request, "reportes/predefinidos/rem_a24_info_gral_rn_vivos.html", {"data": data})
+
 
 def reporte_atencion_inmediata(request):
     data = {
@@ -79,10 +83,10 @@ def reporte_atencion_inmediata(request):
             ["Reanimación Avanzada", RN.objects.filter(reanimacion_avanzada=True).count()],
             ["EHI Grado II y III", RN.objects.filter(ehi_grado_ii_iii=True).count()],
         ],
-        "reporte_nombre":"rem_a24_atencion_inmediata_rn"
+        # Antes: "rem_a24_atencion_inmediata_rn"
+        "reporte_nombre": "reporte_atencion_inmediata",
     }
     return render(request, "reportes/predefinidos/rem_a24_atencion_inmediata_rn.html", {"data": data})
-
 
 
 def panel_supervisor(request):
@@ -100,7 +104,7 @@ def exportar_reporte(request):
     if request.method == 'POST':
         formato = request.POST.get('formato')
         reporte = request.POST.get('reporte')
-
+        print("Recibido:", reporte, "como", formato)
         if reporte == 'reporte_parto':
             if formato == 'pdf':
                 return exportar_reporte_parto_pdf(request)

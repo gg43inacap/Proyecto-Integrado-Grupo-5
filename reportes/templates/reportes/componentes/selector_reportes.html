@@ -8,7 +8,7 @@
       <div class="border rounded p-3 h-100">
         <h5 class="mb-2">Características del Parto</h5>
         <p class="text-muted">Visualiza la cantidad de partos naturales, cesáreas y otros tipos realizados.</p>
-        <a href="{% url 'reporte_parto' %}" class="btn btn-primary btn-sm">Ver reporte</a>
+        <a href="{% url 'reportes:reporte_parto' %}" class="btn btn-primary btn-sm">Ver reporte</a>
       </div>
     </div>
 
@@ -16,7 +16,7 @@
       <div class="border rounded p-3 h-100">
         <h5 class="mb-2">Información General RN Vivos</h5>
         <p class="text-muted">Consulta datos generales de los recién nacidos vivos.</p>
-        <a href="{% url 'reporte_nacidos_vivos' %}" class="btn btn-warning btn-sm">Ver reporte</a>
+        <a href="{% url 'reportes:reporte_nacidos_vivos' %}" class="btn btn-warning btn-sm">Ver reporte</a>
       </div>
     </div>
 
@@ -24,13 +24,13 @@
       <div class="border rounded p-3 h-100">
         <h5 class="mb-2">Atención Inmediata RN</h5>
         <p class="text-muted">Consulta la atención inmediata brindada a los recién nacidos.</p>
-        <a href="{% url 'reporte_atencion_inmediata' %}" class="btn btn-danger btn-sm">Ver reporte</a>
+        <a href="{% url 'reportes:reporte_atencion_inmediata' %}" class="btn btn-danger btn-sm">Ver reporte</a>
       </div>
     </div>
   </div>
 
   <div class="mt-4">
-    <a href="{% url 'panel_supervisor' %}" class="btn btn-link">← Volver al panel</a>
+    <a href="{% url 'reportes:panel_supervisor' %}" class="btn btn-link">← Volver al panel</a>
   </div>
 </div>
 {% endblock %}

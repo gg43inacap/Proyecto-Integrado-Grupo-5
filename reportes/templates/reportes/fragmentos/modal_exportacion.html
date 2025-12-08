@@ -37,24 +37,38 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('#modalExportacion form');
-    form.addEventListener('submit', function () {
-        const formato = document.querySelector('input[name="formato"]:checked').value;
+  const form = document.querySelector('#modalExportacion form');
+  form.addEventListener('submit', function () {
+    const formato = document.querySelector('input[name="formato"]:checked').value;
 
-        if (formato === 'pdf') {
-            let canvas = null;
+    // Resetea por defecto
+    document.getElementById('grafico_base64').value = '';
 
-            if (document.getElementById('vista-barras').style.display !== 'none') {
-                canvas = document.getElementById('graficoBarras');
-            } else if (document.getElementById('vista-torta').style.display !== 'none') {
-                canvas = document.getElementById('graficoTorta');
-            }
+    if (formato === 'pdf') {
+      let canvas = null;
 
-            if (canvas) {
-                const imagenBase64 = canvas.toDataURL('image/png');
-                document.getElementById('grafico_base64').value = imagenBase64;
-            }
-        }
-    });
+      if (document.getElementById('barras').style.display !== 'none') {
+        canvas = document.getElementById('graficoBarras');
+      } else if (document.getElementById('torta').style.display !== 'none') {
+        canvas = document.getElementById('graficoTorta');
+      }
+
+      if (canvas) {
+        const imagenBase64 = canvas.toDataURL('image/png');
+        document.getElementById('grafico_base64').value = imagenBase64;
+      }
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = document.getElementById('modalExportacion');
+  modal.addEventListener('show.bs.modal', function () {
+    const input = document.getElementById('reporteSeleccionado');
+    input.value = "{{ data.reporte_nombre }}"; // ejemplo: "reporte_parto"
+    console.log('Reporte seleccionado:', input.value);
+  });
 });
 </script>
