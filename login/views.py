@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 from roles.models import CustomUser
 from roles.utils import validar_rut
+from auditoria.models import registrar_evento_auditoria
 # pylint: disable=no-member
 def login_view(request):
 	if request.method == 'POST':
@@ -29,7 +30,31 @@ def login_view(request):
 			user = authenticate(request, username=username, password=password)
 		if user is not None:
 			auth_login(request, user)
-			return redirect('inicio')
+			
+			# Registrar login exitoso
+			registrar_evento_auditoria(
+				usuario=user,
+				accion_realizada='LOGIN_SUCCESS',
+				modelo_afectado='Usuario',
+				registro_id=user.id,
+				detalles_cambio=f'Usuario {user.username} ({user.role if hasattr(user, "role") else "Sin rol"}) inició sesión exitosamente',
+				ip_address=request.META.get('REMOTE_ADDR')
+			)
+			
+			# Solo superuser va al inicio (para activar demo), otros van directo a dashboard
+			if user.is_superuser or getattr(user, 'role', None) == 'SUPERADMIN':
+				return redirect('inicio')
+			else:
+				return redirect('dashboard')
 		else:
+			# Registrar intento de login fallido
+			registrar_evento_auditoria(
+				usuario=None,
+				accion_realizada='LOGIN_FAILED',
+				modelo_afectado='Usuario',
+				registro_id=None,
+				detalles_cambio=f'Intento de login fallido para usuario: {username or user_input}',
+				ip_address=request.META.get('REMOTE_ADDR')
+			)
 			messages.error(request, 'Usuario o contraseña incorrectos. Por favor intente nuevamente.')
 	return render(request, 'login/login.html')

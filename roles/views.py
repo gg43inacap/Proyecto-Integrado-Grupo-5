@@ -10,9 +10,19 @@ from auditoria.models import registrar_evento_auditoria
 # Si se pasa el parámetro 'rol', muestra el panel de ese rol para pruebas
 # Si no, muestra el panel según el rol del usuario logueado
 
+@login_required
 def dashboard(request): # Muestra el panel correspondiente al rol
+    # Verificación de seguridad: solo usuarios autenticados con rol válido
+    if not request.user.is_authenticated:
+        return render(request, 'roles/no_autorizado.html')
+    
     rol_param = request.GET.get('rol') # Obtiene el parámetro de rol si existe
     if rol_param:
+        # Solo superuser puede usar modo demo
+        if not (request.user.is_superuser or getattr(request.user, 'role', None) == 'SUPERADMIN'):
+            messages.error(request, 'No tiene permisos para acceder al modo demo.')
+            return render(request, 'roles/no_autorizado.html')
+        
         User = get_user_model() # Obtiene el modelo de usuario
         superuser = User.objects.filter(is_superuser=True).first() # Busca el primer superusuario
         if superuser:
@@ -21,7 +31,7 @@ def dashboard(request): # Muestra el panel correspondiente al rol
         rol = rol_param # Usa el rol del parámetro
         # Muestra el panel según el rol
         if rol == 'ADMIN' or rol == 'SUPERADMIN':
-            return render(request, 'roles/panel_ADMIN.html') # Panel de admin
+            return render(request, 'roles/panel_admin.html') # Panel de admin
         elif rol == 'SOME':
             return render(request, 'roles/panel_some.html') # Panel de SOME
         elif rol == 'MATRONA':
@@ -32,21 +42,29 @@ def dashboard(request): # Muestra el panel correspondiente al rol
             return render(request, 'roles/panel_auditoria.html') # Panel de auditoria
         else:
             return render(request, 'roles/no_autorizado.html') # Panel de no autorizado
-    # Si no es demo, flujo normal
+    # Si no es demo, flujo normal - verificar rol del usuario autenticado
     rol = getattr(request.user, 'role', None) # Obtiene el rol del usuario
+    
+    # Verificación adicional de seguridad
+    if not rol or rol == '':
+        messages.error(request, 'Usuario sin rol asignado. Contacte al administrador.')
+        return render(request, 'roles/no_autorizado.html')
+    
+    # Renderizar panel según rol verificado
     if rol == 'SUPERADMIN':
-        return render(request, 'roles/panel_ADMIN.html')
+        return render(request, 'roles/panel_admin.html', {'user_role_display': 'Super Administrador'})
     elif rol == 'SOME':
-        return render(request, 'roles/panel_some.html')
+        return render(request, 'roles/panel_some.html', {'user_role_display': 'SOME'})
     elif rol == 'MATRONA':
-        return render(request, 'roles/panel_matrona.html')
+        return render(request, 'roles/panel_matrona.html', {'user_role_display': 'Matrona'})
     elif rol == 'SUPERVISOR':
-        return render(request, 'roles/panel_supervisor.html')
+        return render(request, 'roles/panel_supervisor.html', {'user_role_display': 'Supervisor'})
     elif rol == 'AUDITORIA':
-        return render(request, 'roles/panel_auditoria.html')
+        return render(request, 'roles/panel_auditoria.html', {'user_role_display': 'Auditoría'})
     elif rol == 'ADMIN':
-        return render(request, 'roles/panel_ADMIN.html')
+        return render(request, 'roles/panel_admin.html', {'user_role_display': 'Administrador'})
     else:
+        messages.error(request, f'Rol no reconocido: {rol}. Acceso denegado.')
         return render(request, 'roles/no_autorizado.html') # Si no tiene rol válido
 
 @login_required
@@ -135,3 +153,11 @@ def bloquear_usuario(request, pk): # Elimina un usuario
         messages.success(request, 'Usuario bloqueado correctamente.')
         return redirect('lista_usuarios')
     return render(request, 'roles/bloquear_usuario.html', {'user': user})
+
+def no_autorizado(request):
+    """
+    Vista para mostrar página de acceso no autorizado.
+    Esta vista se puede usar tanto para usuarios no autenticados
+    como para demostrar las medidas de seguridad del sistema.
+    """
+    return render(request, 'roles/no_autorizado.html')

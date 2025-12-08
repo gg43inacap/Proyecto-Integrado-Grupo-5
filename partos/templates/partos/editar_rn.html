@@ -1,10 +1,118 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Editar Recién Nacido</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar cambios</button>
-    <a href="{% url 'lista_rns' %}">Cancelar</a>
-</form>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> Editar Recién Nacido</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                                {{ field }}
+                                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_rns' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filtrarPartos() {
+    const madreSelect = document.getElementById('id_madre');
+    const partoSelect = document.getElementById('id_parto_asociado');
+    
+    if (!madreSelect || !partoSelect) {
+        console.log('No se encontraron los selects de madre o parto');
+        return;
+    }
+    
+    const madreId = madreSelect.value;
+    console.log('Madre seleccionada ID:', madreId);
+    
+    // Limpiar opciones actuales del select de partos
+    partoSelect.innerHTML = '<option value="">Cargando...</option>';
+    
+    if (madreId) {
+        const url = `/partos/ajax/filtrar-partos/?madre_id=${madreId}`;
+        console.log('URL petición:', url);
+        
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data);
+                
+                // Limpiar el select
+                partoSelect.innerHTML = '<option value="">---------</option>';
+                
+                if (data.error) {
+                    console.error('Error del servidor:', data.error);
+                    const option = new Option(`Error: ${data.error}`, '');
+                    option.disabled = true;
+                    partoSelect.add(option);
+                } else {
+                    data.partos.forEach(parto => {
+                        const option = new Option(parto.text, parto.id);
+                        partoSelect.add(option);
+                    });
+                    
+                    // Mostrar mensaje si no hay partos activos
+                    if (data.partos.length === 0) {
+                        const option = new Option('No hay partos activos para esta madre', '');
+                        option.disabled = true;
+                        partoSelect.add(option);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error completo:', error);
+                partoSelect.innerHTML = '<option value="">---------</option>';
+                const option = new Option(`Error de conexión: ${error.message}`, '');
+                option.disabled = true;
+                partoSelect.add(option);
+            });
+    } else {
+        partoSelect.innerHTML = '<option value="">---------</option>';
+    }
+}
+
+// Configurar evento onchange y ejecutar filtrado inicial
+document.addEventListener('DOMContentLoaded', function() {
+    const madreSelect = document.getElementById('id_madre');
+    if (madreSelect) {
+        madreSelect.addEventListener('change', filtrarPartos);
+        
+        // Ejecutar filtrado inicial si hay una madre preseleccionada
+        if (madreSelect.value) {
+            filtrarPartos();
+        }
+    }
+});
+</script>
 {% endblock %}

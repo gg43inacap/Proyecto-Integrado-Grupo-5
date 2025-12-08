@@ -1,34 +1,75 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Lista de Partos</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Madre</th>
-            <th>Fecha y Hora</th>
-            <th>Tipo de Parto</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for parto in partos %}
-        <tr>
-            <td>{{ parto.id }}</td>
-            <td>{{ parto.madre }}</td>
-            <td>{{ parto.fecha_hora }}</td>
-            <td>{{ parto.get_tipo_parto_display }}</td>
-            <td>
-                <a href="{% url 'detalle_parto' parto.id %}">Ver</a> |
-                <a href="{% url 'editar_parto' parto.id %}">Editar</a> |
-                <a href="{% url 'eliminar_parto' parto.id %}">Eliminar</a> |
-                <a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-sm btn-success">Registrar RN</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No hay partos registrados.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'crear_parto' %}" class="btn btn-primary">Registrar nuevo parto</a>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-list"></i> Lista de Partos</h4>
+                    <a href="{% url 'crear_parto' %}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> Registrar nuevo parto
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Madre</th>
+                                    <th>Fecha y Hora</th>
+                                    <th>Tipo de Parto</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for parto in partos %}
+                                <tr class="{% if parto.estado == 'completado' %}table-secondary{% endif %}">
+                                    <td>{{ parto.id }}</td>
+                                    <td>{{ parto.madre }}</td>
+                                    <td>{{ parto.fecha_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ parto.get_tipo_parto_display }}</td>
+                                    <td>
+                                        {% if parto.estado == 'activo' %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Completado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'detalle_parto' parto.id %}" class="btn btn-sm btn-info" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'editar_parto' parto.id %}" class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if parto.estado == 'activo' %}
+                                                <a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-sm btn-success" title="Registrar RN">
+                                                    <i class="fas fa-baby"></i>
+                                                </a>
+                                                <a href="{% url 'completar_parto' parto.id %}" class="btn btn-sm btn-secondary" title="Marcar como completado">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted small">Parto finalizado</span>
+                                            {% endif %}
+                                            <a href="{% url 'eliminar_parto' parto.id %}" class="btn btn-sm btn-danger" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center text-muted">No hay partos registrados.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

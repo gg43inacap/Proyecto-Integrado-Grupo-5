@@ -21,7 +21,7 @@
             <a class="btn btn-light btn-lg" href="{% url 'login' %}" role="button">
                 <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
             </a>
-            {% if user.is_authenticated and user.role == 'SUPERADMIN' %}
+            {% if user.is_authenticated and user.is_superuser or user.role == 'SUPERADMIN' %}
             <a class="btn btn-outline-light btn-lg" href="{% url 'test_login' %}" role="button">
                 <i class="fas fa-vial"></i> Modo Demo
             </a>
@@ -36,8 +36,19 @@
         <div class="row align-items-center">
             <div class="col-md-12 text-center">
                 <h5 class="mb-3"><i class="fas fa-info-circle text-primary"></i> Para utilizar la aplicación, debe iniciar sesión</h5>
-                {% if user.is_authenticated and user.role == 'SUPERADMIN' %}
+                {% if user.is_authenticated and user.is_superuser or user.role == 'SUPERADMIN' %}
                 <p class="mb-0">Si es su primera vez, utilice el modo demo para explorar las funcionalidades del sistema sin necesidad de credenciales.</p>
+                {% endif %}
+                
+                <!-- Debug info - remover en producción -->
+                {% if user.is_authenticated %}
+                <div class="small text-muted mt-2">
+                    Usuario: {{ user.username }} | Rol: {{ user.role|default:"Sin rol" }} | Superuser: {{ user.is_superuser|yesno:"Sí,No" }}
+                </div>
+                {% else %}
+                <div class="small text-muted mt-2">
+                    Usuario no autenticado
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -87,7 +98,7 @@
 </section>
 
 <!-- Sección de Demo - Rediseñada -->
-{% if user.is_authenticated and user.role == 'SUPERADMIN' %}
+{% if user.is_authenticated and user.is_superuser or user.role == 'SUPERADMIN' %}
 <section class="demo-section">
     <div class="container">
         <div class="row justify-content-center">

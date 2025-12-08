@@ -7,7 +7,11 @@
 	<a href="{% url 'lista_partos' %}" class="btn btn-secondary">Ver Listado de Partos</a>
 </div>
 <div class="mt-4">
-	<a href="/" class="btn btn-outline-secondary">Volver al inicio</a>
-	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2">Cerrar sesión</a>
+	<a href="/" class="btn btn-outline-secondary">
+		<i class="fas fa-home"></i> Volver al inicio
+	</a>
+	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
+		<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+	</a>
 </div>
 {% endblock %}

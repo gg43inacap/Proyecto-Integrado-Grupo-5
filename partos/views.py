@@ -38,6 +38,7 @@ def crear_rns(request):
         formset = RNFormSetLocal(queryset=RN.objects.none(), initial=[initial]*RNFormSetLocal.extra)
     return render(request, 'partos/crear_rns.html', {'formset': formset, 'parto': parto})
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from .models import Parto, RN
 from .forms import PartoForm, RNForm
 from django.contrib.auth.decorators import login_required
@@ -45,7 +46,8 @@ from auditoria.models import registrar_evento_auditoria
 
 @login_required
 def lista_partos(request):
-    partos = Parto.objects.select_related('madre').all()
+    # Mostrar todos los partos, pero destacar los activos
+    partos = Parto.objects.select_related('madre').all().order_by('-fecha_hora')
     return render(request, 'partos/lista_partos.html', {'partos': partos})
 # Vista para crear un nuevo parto
 @login_required
@@ -143,8 +145,34 @@ def crear_rn(request):
             return redirect('lista_rns')
     else:
         form = RNForm(initial=initial)
-    return render(request, 'partos/crear_rn.html', {'form': form})
+        return render(request, 'partos/crear_rn.html', {'form': form})
 
+@login_required
+def filtrar_partos_por_madre(request):
+    """Vista AJAX para filtrar partos activos por madre seleccionada"""
+    try:
+        madre_id = request.GET.get('madre_id')
+        print(f"Debug: madre_id recibido = {madre_id}")  # Debug
+        
+        if madre_id:
+            partos = Parto.objects.filter(madre_id=madre_id, estado='activo')
+            print(f"Debug: partos encontrados = {partos.count()}")  # Debug
+            
+            partos_list = []
+            for parto in partos:
+                partos_list.append({
+                    'id': parto.id,
+                    'text': f"Parto {parto.id} - {parto.fecha_hora.strftime('%d/%m/%Y %H:%M')} - {parto.get_tipo_parto_display()}"
+                })
+        else:
+            partos_list = []
+        
+        print(f"Debug: enviando {len(partos_list)} partos")  # Debug
+        return JsonResponse({'partos': partos_list})
+        
+    except Exception as e:
+        print(f"Error en filtrar_partos_por_madre: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
 @login_required
 def editar_rn(request, rn_id):
     rn = get_object_or_404(RN, id=rn_id)
@@ -182,6 +210,28 @@ def eliminar_rn(request, rn_id):
         )
         return redirect('lista_rns')
     return render(request, 'partos/eliminar_rn.html', {'rn': rn})
+
+@login_required
+def completar_parto(request, parto_id):
+    """Vista para marcar un parto como completado"""
+    parto = get_object_or_404(Parto, id=parto_id)
+    if request.method == 'POST':
+        parto.estado = 'completado'
+        parto.save()
+        
+        registrar_evento_auditoria(
+            usuario=request.user,
+            accion_realizada='UPDATE',
+            modelo_afectado='Parto',
+            registro_id=parto.id,
+            detalles_cambio=f"Parto marcado como completado para madre ID: {parto.madre.id if parto.madre else ''}",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        return redirect('lista_partos')
+    
+    return render(request, 'partos/completar_parto.html', {'parto': parto})
+
+
 
 @login_required
 def detalle_rn(request, rn_id):
