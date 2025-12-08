@@ -47,10 +47,15 @@
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-outline-primary" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            {% if user.is_active and not user.is_superuser %}
+                                            {% comment "Solo superuser puede editar SUPERADMIN o superuser" %}
+                                            {% if request.user.is_superuser or user.role != 'SUPERADMIN' and not user.is_superuser %}
+                                                <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-outline-primary" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            {% comment "Solo superuser puede bloquear SUPERADMIN o superuser" %}
+                                            {% if user.is_active and request.user.is_superuser or user.is_active and not user.is_superuser and user.role != 'SUPERADMIN' %}
                                                 <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-outline-danger" title="Bloquear">
                                                     <i class="fas fa-ban"></i>
                                                 </a>

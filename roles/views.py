@@ -72,11 +72,13 @@ def dashboard(request): # Muestra el panel correspondiente al rol
 
 def listar_usuario(request): # Lista todos los usuarios
     User = get_user_model() # Obtiene el modelo de usuario
-    # ADMIN no puede ver ni editar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN':
-        users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
-    else:
+    
+    # Solo superuser puede ver otros superuser y SUPERADMIN
+    if request.user.is_superuser:
         users = User.objects.all()
+    else:
+        # Ocultar SUPERADMIN y superuser para todos los demás (incluye ADMIN y AUDITORIA)
+        users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
     return render(request, 'roles/lista_usuarios.html', {'users': users})
 
 @login_required
@@ -106,9 +108,15 @@ def crear_usuario(request): # Crea un nuevo usuario
 
 def editar_usuario(request, pk): # Edita un usuario
     User = get_user_model() # Obtiene el modelo de usuario
-    user = User.objects.get(pk=pk)
-    # ADMIN no puede editar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
+    
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        messages.error(request, 'Usuario no encontrado.')
+        return redirect('lista_usuarios')
+    
+    # Solo superuser puede editar SUPERADMIN o otros superuser
+    if not request.user.is_superuser and (user.role == 'SUPERADMIN' or user.is_superuser):
         messages.error(request, 'No tienes permisos para modificar este usuario.')
         return redirect('lista_usuarios')
     if request.method == 'POST': # Si el formulario fue enviado
@@ -134,9 +142,15 @@ def editar_usuario(request, pk): # Edita un usuario
 
 def bloquear_usuario(request, pk): # Elimina un usuario
     User = get_user_model() # Obtiene el modelo de usuario
-    user = User.objects.get(pk=pk)
-    # ADMIN no puede bloquear/eliminar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
+    
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        messages.error(request, 'Usuario no encontrado.')
+        return redirect('lista_usuarios')
+    
+    # Solo superuser puede bloquear SUPERADMIN o otros superuser
+    if not request.user.is_superuser and (user.role == 'SUPERADMIN' or user.is_superuser):
         messages.error(request, 'No tienes permisos para bloquear este usuario.')
         return redirect('lista_usuarios')
     if request.method == 'POST':

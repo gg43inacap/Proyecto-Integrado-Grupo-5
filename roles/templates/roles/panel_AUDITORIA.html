@@ -206,23 +206,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function cargarEstadisticas() {
-    // Simulación de carga de estadísticas (en un entorno real, esto sería una llamada AJAX)
-    fetch('{% url "lista_auditorias" %}')
+    // Mostrar estado de carga
+    document.getElementById('total-eventos').textContent = 'Cargando...';
+    document.getElementById('eventos-hoy').textContent = 'Cargando...';
+    document.getElementById('eventos-semana').textContent = 'Cargando...';
+    
+    // Obtener estadísticas reales del servidor
+    fetch('/auditoria/api/estadisticas/')
     .then(response => {
-        // Actualizar contadores (esto se haría con una API real)
-        document.getElementById('total-eventos').textContent = 'Calculando...';
-        document.getElementById('eventos-hoy').textContent = 'Calculando...';
-        document.getElementById('eventos-semana').textContent = 'Calculando...';
+        if (!response.ok) {
+            throw new Error('Error al cargar estadísticas');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Actualizar contadores con datos reales
+        document.getElementById('total-eventos').textContent = data.total_eventos || 0;
+        document.getElementById('eventos-hoy').textContent = data.eventos_hoy || 0;
+        document.getElementById('eventos-semana').textContent = data.eventos_semana || 0;
         
-        // Simular valores (en implementación real, vendría del servidor)
-        setTimeout(() => {
-            document.getElementById('total-eventos').textContent = Math.floor(Math.random() * 1000) + 100;
-            document.getElementById('eventos-hoy').textContent = Math.floor(Math.random() * 50) + 10;
-            document.getElementById('eventos-semana').textContent = Math.floor(Math.random() * 300) + 50;
-        }, 1000);
+        console.log('Estadísticas cargadas:', data);
     })
     .catch(error => {
-        console.log('Error cargando estadísticas:', error);
+        console.error('Error cargando estadísticas:', error);
         document.getElementById('total-eventos').textContent = 'Error';
         document.getElementById('eventos-hoy').textContent = 'Error';
         document.getElementById('eventos-semana').textContent = 'Error';
@@ -230,17 +236,92 @@ function cargarEstadisticas() {
 }
 
 function cargarUltimosEventos() {
-    // En un entorno real, esto cargaría los últimos eventos vía AJAX
-    setTimeout(() => {
+    // Cargar los últimos eventos reales del servidor
+    fetch('/auditoria/api/estadisticas/')
+    .then(response => response.json())
+    .then(data => {
+        const eventosContainer = document.getElementById('ultimos-eventos');
+        
+        if (data.ultimos_eventos && data.ultimos_eventos.length > 0) {
+            let eventosHtml = '<div class="table-responsive"><table class="table table-sm"><tbody>';
+            
+            data.ultimos_eventos.forEach(evento => {
+                let badgeClass = 'secondary';
+                let accionTraducida = evento.accion;
+                
+                // Traducir acciones al español y asignar colores
+                if (evento.accion === 'CREATE') {
+                    badgeClass = 'success';
+                    accionTraducida = '📝 Creación';
+                } else if (evento.accion === 'UPDATE') {
+                    badgeClass = 'warning';
+                    accionTraducida = '✏️ Modificación';
+                } else if (evento.accion === 'DELETE') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🗑️ Eliminación';
+                } else if (evento.accion === 'VIEW') {
+                    badgeClass = 'info';
+                    accionTraducida = '👁️ Visualización';
+                } else if (evento.accion === 'LOGIN_SUCCESS') {
+                    badgeClass = 'success';
+                    accionTraducida = '✅ Login Exitoso';
+                } else if (evento.accion === 'LOGIN_FAILED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '❌ Login Fallido';
+                } else if (evento.accion === 'LOGOUT') {
+                    badgeClass = 'secondary';
+                    accionTraducida = '🚪 Cierre Sesión';
+                } else if (evento.accion === 'USER_BLOCKED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🚫 Usuario Bloqueado';
+                } else if (evento.accion === 'ACCESS_DENIED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '⛔ Acceso Denegado';
+                }
+                
+                eventosHtml += `
+                    <tr>
+                        <td><span class="badge bg-${badgeClass}">${accionTraducida}</span></td>
+                        <td>${evento.modelo}</td>
+                        <td><small>${evento.usuario}</small></td>
+                        <td><small class="text-muted">${evento.fecha}</small></td>
+                    </tr>
+                `;
+            });
+            
+            eventosHtml += '</tbody></table></div>';
+            eventosHtml += `
+                <div class="text-center mt-3">
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-list"></i> Ver Lista Completa
+                    </a>
+                    <small class="text-muted d-block mt-2">Actualizado: ${data.fecha_consulta}</small>
+                </div>
+            `;
+            
+            eventosContainer.innerHTML = eventosHtml;
+        } else {
+            eventosContainer.innerHTML = `
+                <div class="text-center">
+                    <p class="text-muted">No hay eventos registrados</p>
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Ver Lista Completa de Eventos
+                    </a>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error cargando eventos:', error);
         document.getElementById('ultimos-eventos').innerHTML = `
-            <div class="text-center">
-                <p class="text-muted">Últimos eventos del sistema aparecerán aquí</p>
+            <div class="text-center text-danger">
+                <p>Error al cargar eventos</p>
                 <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
-                    <i class="fas fa-list"></i> Ver Lista Completa de Eventos
+                    <i class="fas fa-list"></i> Ver Lista Completa
                 </a>
             </div>
         `;
-    }, 2000);
+    });
 }
 </script>
 
