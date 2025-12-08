@@ -18,7 +18,7 @@ class Madre(models.Model): # Modelo que representa a una madre
     telefono = models.CharField(max_length=20) # Teléfono
     antecedentes_obstetricos = models.TextField() # Antecedentes obstétricos
     atenciones_clinicas = models.TextField() # Atenciones clínicas
-    acompanante = models.CharField(max_length=100, blank=True, default="Sin Acompañante") # Nombre del acompañante
+    acompanante = models.CharField(max_length=100, blank=True, null=True, default="Sin Acompañante") # Nombre del acompañante
 
     def __str__(self): # Muestra la madre como texto
         return f"{self.nombre} ({self.rut})" # Ejemplo: Ana Pérez (12345678-9)

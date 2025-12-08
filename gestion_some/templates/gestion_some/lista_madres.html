@@ -1,28 +1,103 @@
 {% extends 'base.html' %}
+
+{% block title %}Listado de Madres Registradas{% endblock %}
+
 {% block content %}
-<h2>Listado de Madres</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>RUT</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for madre in madres %}
-    <tr>
-      <td>{{ madre.nombre }}</td>
-      <td>{{ madre.rut }}</td>
-      <td>
-        <a href="{% url 'detalle_madre' madre.id %}" class="btn btn-info btn-sm">Ver detalles</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="3">No hay madres registradas.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container mt-4 mb-5">
+    
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mb-3">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel SOME
+    </a>
+    
+    <div class="card shadow-lg border-0">
+        
+        <div class="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center">
+            <h1 class="card-title mb-0"><i class="fas fa-users me-2"></i> Gestión de Madres Registradas</h1>
+            <a href="{% url 'crear_madre' %}" class="btn btn-success">
+                <i class="fas fa-plus-circle me-2"></i> Registrar Nueva Madre
+            </a>
+        </div>
+        
+        <div class="card-body p-4">
+            
+            {% comment %}
+            Aquí podrías incluir un formulario de búsqueda si existiera
+            <div class="mb-4">
+                <input type="text" class="form-control" placeholder="Buscar por Nombre, RUT o Comuna...">
+            </div>
+            {% endcomment %}
+
+            <div class="table-responsive">
+                
+                <table class="table table-striped table-hover table-sm align-middle">
+                    
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col"><i class="fas fa-user-tag me-1"></i> Nombre Completo</th>
+                            <th scope="col"><i class="fas fa-id-card me-1"></i> RUT</th>
+                            <th scope="col"><i class="fas fa-map-marker-alt me-1"></i> Comuna</th>
+                            <th scope="col"><i class="fas fa-calendar-alt me-1"></i> F. Nacimiento</th>
+                            <th scope="col" class="text-center"><i class="fas fa-check-circle me-1"></i> Confirmado</th>
+                            <th scope="col" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for madre in madres %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th> 
+                            
+                            <td>
+                                <strong>{{ madre.nombre }}</strong>
+                            </td>
+                            <td>{{ madre.rut }}</td>
+                            
+                            <td>{{ madre.comuna|default:"N/A" }}</td>
+                            <td>{{ madre.fecha_nacimiento|date:"d M Y"|default:"N/A" }}</td>
+                            
+                            <td class="text-center">
+                                {% if madre.confirmado %}
+                                    <span class="badge bg-success"><i class="fas fa-check"></i> Sí</span>
+                                {% else %}
+                                    <span class="badge bg-secondary"><i class="fas fa-times"></i> No</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-center">
+                                <a href="{% url 'detalle_madre' madre.id %}" class="btn btn-info btn-sm me-1" title="Ver Detalle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'editar_madre' madre.id %}" class="btn btn-warning btn-sm" title="Editar Registro">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% comment %}
+                                <a href="{% url 'eliminar_madre' madre.id %}" class="btn btn-danger btn-sm" title="Eliminar Registro">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                {% endcomment %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="fas fa-box-open fa-2x d-block mb-2"></i>
+                                No hay madres registradas. Utilice el botón Registrar Nueva Madre para comenzar.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        
+        {% comment %}
+        <div class="card-footer bg-light">
+            <nav aria-label="Paginación">...</nav>
+        </div>
+        {% endcomment %}
+        
+    </div>
+</div>
 {% endblock %}

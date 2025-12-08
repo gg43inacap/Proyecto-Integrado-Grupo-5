@@ -1,31 +1,108 @@
 {% extends 'base.html' %}
+
+{% block title %}Editar Madre: {{ madre.nombre }}{% endblock %}
+
 {% block content %}
-  <h2>Editar Madre</h2>
-  <form method="post">
-    {% csrf_token %}
-    <label>Nombre:</label><br>
-    <input type="text" name="nombre" value="{{ madre.nombre }}" required><br>
-    <label>RUT:</label><br>
-    <input type="text" name="rut" value="{{ madre.rut }}" required><br>
-    <label>Fecha de nacimiento:</label><br>
-    <input type="date" name="fecha_nacimiento" value="{{ madre.fecha_nacimiento }}" required><br>
-    <label>Comuna:</label><br>
-    <input type="text" name="comuna" value="{{ madre.comuna }}"><br>
-    <label>CESFAM:</label><br>
-    <input type="text" name="cesfam" value="{{ madre.cesfam }}"><br>
-    <label>Previsión:</label><br>
-    <input type="text" name="prevision" value="{{ madre.prevision }}"><br>
-    <label>Dirección:</label><br>
-    <input type="text" name="direccion" value="{{ madre.direccion }}"><br>
-    <label>Teléfono:</label><br>
-    <input type="text" name="telefono" value="{{ madre.telefono }}"><br>
-    <label>Antecedentes obstétricos:</label><br>
-    <textarea name="antecedentes_obstetricos">{{ madre.antecedentes_obstetricos }}</textarea><br>
-    <label>Atenciones clínicas:</label><br>
-    <textarea name="atenciones_clinicas">{{ madre.atenciones_clinicas }}</textarea><br>
-    <label>Acompañante:</label><br>
-    <input type="text" name="acompañante" value="{{ madre.acompañante }}"><br>
-    <button type="submit">Guardar cambios</button>
-  </form>
-  <a href="{% url 'lista_madres' %}">Volver al listado</a>
+<div class="container mt-4 mb-5">
+    <div class="card shadow-lg border-0">
+        
+        <div class="card-header bg-warning text-dark p-4">
+            <h1 class="card-title mb-0"><i class="fas fa-edit me-2"></i> Editando Registro de Madre</h1>
+            <p class="mb-0">Modificando datos de: <strong class="fw-bold">{{ madre.nombre }} (RUT: {{ madre.rut }})</strong></p>
+        </div>
+        
+        <div class="card-body p-4 p-md-5">
+            <form method="post">
+                {% csrf_token %}
+                
+                <h4 class="mb-4 text-primary"><i class="fas fa-id-card me-2"></i> Datos de Identificación Requeridos</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_nombre" class="form-label fw-bold">Nombre Completo: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ madre.nombre }}" required placeholder="Nombre completo">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_rut" class="form-label fw-bold">RUT: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="id_rut" name="rut" value="{{ madre.rut }}" required placeholder="RUT sin puntos ni guión (opcional)">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento: <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="id_fecha_nacimiento" name="fecha_nacimiento" value="{{ madre.fecha_nacimiento|date:'Y-m-d' }}" required>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <h4 class="mb-4 text-primary"><i class="fas fa-hospital-user me-2"></i> Información de Contacto y Clínica</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_direccion" class="form-label">Dirección:</label>
+                        <input type="text" class="form-control" id="id_direccion" name="direccion" value="{{ madre.direccion }}" placeholder="Calle, número, departamento...">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_comuna" class="form-label">Comuna:</label>
+                        <input type="text" class="form-control" id="id_comuna" name="comuna" value="{{ madre.comuna }}" placeholder="Ej: Santiago">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_telefono" class="form-label">Teléfono:</label>
+                        <input type="text" class="form-control" id="id_telefono" name="telefono" value="{{ madre.telefono }}" placeholder="Ej: +569 1234 5678">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_cesfam" class="form-label">CESFAM/Centro de Salud:</label>
+                        <input type="text" class="form-control" id="id_cesfam" name="cesfam" value="{{ madre.cesfam }}" placeholder="Ej: CESFAM Dr. Raúl Silva">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="id_prevision" class="form-label">Previsión (Salud):</label>
+                        <input type="text" class="form-control" id="id_prevision" name="prevision" value="{{ madre.prevision }}" placeholder="Ej: FONASA B / Isapre">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_acompañante" class="form-label"><i class="fas fa-handshake me-1"></i> Nombre del Acompañante/Contacto de Emergencia:</label>
+                    <input type="text" class="form-control" id="id_acompañante" name="acompañante" value="{{ madre.acompañante }}" placeholder="Ej: Juan Pérez - Marido/Hermano">
+                </div>
+                
+                <hr class="my-4">
+                
+                <h4 class="mb-4 text-primary"><i class="fas fa-notes-medical me-2"></i> Antecedentes Clínicos para Actualizar</h4>
+                
+                <div class="mb-3">
+                    <label for="id_antecedentes_obstetricos" class="form-label">Antecedentes Obstétricos (Historial de Partos):</label>
+                    <textarea class="form-control" id="id_antecedentes_obstetricos" name="antecedentes_obstetricos" rows="3" placeholder="G: P: A: C: Información relevante sobre embarazos y partos anteriores...">{{ madre.antecedentes_obstetricos }}</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_atenciones_clinicas" class="form-label">Atenciones Clínicas Actuales (Detalle):</label>
+                    <textarea class="form-control" id="id_atenciones_clinicas" name="atenciones_clinicas" rows="3" placeholder="Diagnósticos, tratamientos en curso, alergias, medicamentos...">{{ madre.atenciones_clinicas }}</textarea>
+                </div>
+
+                {% comment %}
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="id_confirmado" name="confirmado" role="switch" {% if madre.confirmado %}checked{% endif %}>
+                    <label class="form-check-label" for="id_confirmado">Registro Confirmado/Validado</label>
+                </div>
+                {% endcomment %}
+                
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                    <a href="{% url 'lista_madres' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Volver al Listado
+                    </a>
+                    <button type="submit" class="btn btn-warning btn-lg text-dark">
+                        <i class="fas fa-save me-2"></i> **Guardar Cambios**
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

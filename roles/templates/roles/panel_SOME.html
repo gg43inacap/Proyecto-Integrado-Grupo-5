@@ -1,18 +1,24 @@
 {% extends 'base.html' %}
-{% block content %}
-<h2>Panel SOME</h2>
-<p>Bienvenido al panel de usuario SOME.</p>
 
-<div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-	<a href="{% url 'crear_madre' %}" class="btn btn-primary">Agregar Madre Nueva</a>
-	<a href="{% url 'lista_madres' %}" class="btn btn-secondary">Ver Listado de Madres</a>
-</div>
-<div class="mt-4">
-	<a href="/" class="btn btn-outline-secondary">
-		<i class="fas fa-home"></i> Volver al inicio
-	</a>
-	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-		<i class="fas fa-sign-out-alt"></i> Cerrar sesión
-	</a>
-</div>
+{% block title %}Panel SOME{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <h1 class="mb-4"><i class="fas fa-user-shield me-2"></i> Panel SOME</h1>
+    
+    <p class="lead mb-4">Bienvenido al panel de usuario SOME. Utilice las siguientes opciones para la gestión de madres.</p>
+
+    <hr class="my-4">
+    
+    <div class="d-flex flex-wrap gap-3 mb-5">
+        <a href="{% url 'crear_madre' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle me-2"></i> Agregar Madre Nueva
+        </a>
+        <a href="{% url 'lista_madres' %}" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-list-alt me-2"></i> Ver Listado de Madres
+        </a>
+    </div>
+
+    </div>
 {% endblock %}
