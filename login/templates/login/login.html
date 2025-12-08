@@ -1,7 +1,7 @@
 <!-- login/templates/login/login.html -->
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Iniciar Sesión - Test Fork Neonatal{% endblock %}
+{% block title %}Iniciar Sesión - Sistema Neonatal{% endblock %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -15,7 +15,7 @@
             <div class="hospital-icon">
                 <i class="fas fa-hospital"></i>
             </div>
-            <h1>Test Fork Neonatal</h1>
+            <h1>Sistema Neonatal</h1>
             <h3>Hospital Herminda Martin de Chillán</h3>
             <p class="mt-3">Administración de partos, madres y recién nacidos</p>
         </div>
@@ -107,68 +107,4 @@
 
 {% block scripts %}
 <script src="{% static 'js/login.js' %}"></script>
-<script>
-// Validación SOLO si RUT está seleccionado, el listener se agrega y elimina dinámicamente
-document.addEventListener('DOMContentLoaded', function() {
-    const usernameRadio = document.getElementById('login_username');
-    const rutRadio = document.getElementById('login_rut');
-    const userLabel = document.getElementById('user-label');
-    const userInput = document.getElementById('username');
-    const userHelp = document.getElementById('user-help');
-    let rutListener = null;
-
-    function validarRut(valor) {
-        const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
-        return rutRegex.test(valor);
-    }
-
-    function limpiarRestricciones() {
-        userInput.setCustomValidity('');
-        userInput.classList.remove('is-invalid');
-    }
-
-    function addRutValidation() {
-        removeRutValidation();
-        rutListener = function() {
-            if (userInput.value && !validarRut(userInput.value)) {
-                userInput.setCustomValidity('Formato de RUT inválido. Ejemplo: 12.345.678-9');
-                userInput.classList.add('is-invalid');
-            } else {
-                userInput.setCustomValidity('');
-                userInput.classList.remove('is-invalid');
-            }
-        };
-        userInput.addEventListener('input', rutListener);
-    }
-
-    function removeRutValidation() {
-        if (rutListener) {
-            userInput.removeEventListener('input', rutListener);
-            rutListener = null;
-        }
-        limpiarRestricciones();
-    }
-
-    function updateField() {
-        // Autowipe: limpiar el campo al cambiar método
-        userInput.value = '';
-        
-        if (rutRadio.checked) {
-            userLabel.textContent = 'RUT';
-            userInput.placeholder = 'Ej: 12.345.678-9';
-            userHelp.textContent = 'Ingrese su RUT con puntos y guión';
-            addRutValidation();
-        } else {
-            userLabel.textContent = 'Cuenta de usuario';
-            userInput.placeholder = 'Ingrese su cuenta de usuario';
-            userHelp.textContent = 'Ingrese su cuenta de usuario';
-            removeRutValidation();
-        }
-    }
-
-    usernameRadio.addEventListener('change', updateField);
-    rutRadio.addEventListener('change', updateField);
-    updateField();
-});
-</script>
 {% endblock %}

@@ -1,140 +1,133 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Alternar visibilidad de contraseña
+
+    // ==========================================================
+    // 1. Lógica de Alternancia de Contraseña
+    // ==========================================================
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
-    
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-    });
-    
-    // Formatear RUT mientras se escribe SOLO si método RUT está seleccionado
-    const usernameInput = document.getElementById('username');
-    const rutRadio = document.getElementById('login_rut');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            // Toggle the icon
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+    }
+
+    // ==========================================================
+    // 2. Lógica de Cambio y Validación de RUT/Usuario
+    // (Script recién agregado)
+    // ==========================================================
     const usernameRadio = document.getElementById('login_username');
-    
-    // Autowipe: limpiar campo al cambiar método de login
-    if (rutRadio) {
-        rutRadio.addEventListener('change', function() {
-            if (this.checked) {
-                usernameInput.value = '';
-            }
-        });
+    const rutRadio = document.getElementById('login_rut');
+    const userLabel = document.getElementById('user-label');
+    const userInput = document.getElementById('username');
+    const userHelp = document.getElementById('user-help');
+    let rutListener = null;
+
+    function validarRut(valor) {
+        // Regex para formato XX.XXX.XXX-X (simple, asumiendo que el guión ya existe)
+        const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
+        return rutRegex.test(valor);
     }
-    
-    if (usernameRadio) {
-        usernameRadio.addEventListener('change', function() {
-            if (this.checked) {
-                usernameInput.value = '';
-            }
-        });
+
+    function limpiarRestricciones() {
+        if (userInput) {
+            userInput.setCustomValidity('');
+            userInput.classList.remove('is-invalid');
+        }
     }
-    
-    usernameInput.addEventListener('input', function(e) {
-        // Solo formatear si el método RUT está seleccionado
-        if (rutRadio && rutRadio.checked) {
-            let value = e.target.value.replace(/[^0-9kK]/g, '');
-            
-            if (value.length > 0) {
-                // Formatear con puntos y guión
-                let formatted = '';
-                const body = value.slice(0, -1);
-                const dv = value.slice(-1).toUpperCase();
-                
-                // Agregar puntos
-                for (let i = body.length - 1, j = 1; i >= 0; i--, j++) {
-                    formatted = body.charAt(i) + formatted;
-                    if (j % 3 === 0 && i !== 0) {
-                        formatted = '.' + formatted;
-                    }
-                }
-                
-                // Agregar guión y dígito verificador
-                formatted = formatted + '-' + dv;
-                e.target.value = formatted;
+
+    function addRutValidation() {
+        if (!userInput) return;
+
+        removeRutValidation(); // Asegura que no se dupliquen listeners
+        rutListener = function() {
+            // Solo validar si hay valor y el formato es incorrecto
+            if (userInput.value && !validarRut(userInput.value)) {
+                userInput.setCustomValidity('Formato de RUT inválido. Ejemplo: 12.345.678-9');
+                userInput.classList.add('is-invalid');
+            } else {
+                userInput.setCustomValidity('');
+                userInput.classList.remove('is-invalid');
             }
+        };
+        userInput.addEventListener('input', rutListener);
+    }
+
+    function removeRutValidation() {
+        if (userInput && rutListener) {
+            userInput.removeEventListener('input', rutListener);
+            rutListener = null;
         }
-        // Si no es modo RUT, no formatear nada
-    });
-    
-    // Validar formato de RUT antes de enviar
-    const loginForm = document.getElementById('loginForm');
-    
-    loginForm.addEventListener('submit', function(e) {
-        const username = usernameInput.value;
+        limpiarRestricciones();
+    }
+
+    function updateField() {
+        if (!userInput || !userLabel || !userHelp || !rutRadio) return;
+
+        // Autowipe: limpiar el campo al cambiar método
+        userInput.value = '';
         
-        // Validar formato de RUT SOLO si método RUT está seleccionado
-        if (rutRadio && rutRadio.checked && !validateRUT(username)) {
-            e.preventDefault();
-            showAlert('Por favor ingrese un RUT válido (Ej: 12.345.678-9)', 'warning');
-            usernameInput.focus();
-            return false;
-        }
-        
-        // Guardar en localStorage si "Recordar" está activado
-        const rememberMe = document.getElementById('rememberMe');
-        if (rememberMe.checked) {
-            localStorage.setItem('neonatal_username', username);
+        if (rutRadio.checked) {
+            userLabel.textContent = 'RUT';
+            userInput.placeholder = 'Ej: 12.345.678-9';
+            userHelp.textContent = 'Ingrese su RUT con puntos y guión';
+            userInput.setAttribute('maxlength', '12'); // Limitar longitud para RUT
+            addRutValidation();
         } else {
-            localStorage.removeItem('neonatal_username');
+            userLabel.textContent = 'Cuenta de usuario';
+            userInput.placeholder = 'Ingrese su cuenta de usuario';
+            userHelp.textContent = 'Ingrese su cuenta de usuario';
+            userInput.removeAttribute('maxlength'); // Quitar límite para nombre de usuario
+            removeRutValidation();
         }
-        
-        return true;
-    });
-    
-    // Cargar usuario guardado si existe
-    const savedUsername = localStorage.getItem('neonatal_username');
-    if (savedUsername) {
-        usernameInput.value = savedUsername;
-        document.getElementById('rememberMe').checked = true;
     }
-    
-    // Función para validar RUT
-    function validateRUT(rut) {
-        // Eliminar puntos y guión
-        const cleanRut = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
-        
-        // Validar formato básico
-        if (!/^[0-9]+[0-9K]$/.test(cleanRut)) {
-            return false;
-        }
-        
-        // El RUT debe tener al menos 2 caracteres (número + dígito verificador)
-        if (cleanRut.length < 2) {
-            return false;
-        }
-        
-        return true;
+
+    // Inicialización de la lógica RUT/Usuario
+    if (usernameRadio && rutRadio) {
+        usernameRadio.addEventListener('change', updateField);
+        rutRadio.addEventListener('change', updateField);
+        updateField(); // Llamar al inicio para establecer el estado inicial
     }
-    
-    // Función para mostrar alertas
-    function showAlert(message, type) {
-        // Crear elemento de alerta
+
+    // ==========================================================
+    // 3. Lógica de Notificaciones (del código anterior)
+    // ==========================================================
+
+    // Función para mostrar notificaciones (mensajes de error/éxito)
+    function showNotificationJS(message, type) {
+        if (typeof bootstrap === 'undefined') {
+            console.error("Bootstrap JS no está cargado. No se pueden mostrar notificaciones.");
+            return;
+        }
+
         const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        // Usamos la clase personalizada 'alert-custom-js' definida en style.css
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show alert-custom-js`; 
+        alertDiv.setAttribute('role', 'alert');
         alertDiv.innerHTML = `
-            <i class="fas ${type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} me-2"></i>
+            <i class="fas ${type === 'warning' || type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'} me-2 alert-icon"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
+
+        // Insertar en un lugar visible (usando document.body.prepend para que flote)
+        document.body.prepend(alertDiv);
         
-        // Insertar después del título
-        const title = document.querySelector('.login-body h2');
-        if (title) {
-            title.parentNode.insertBefore(alertDiv, title.nextSibling);
-        }
-        
+
         // Auto-eliminar después de 5 segundos
         setTimeout(() => {
             if (alertDiv.parentNode) {
-                const bsAlert = new bootstrap.Alert(alertDiv);
+                // Usar la API de Bootstrap para un cierre suave
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alertDiv);
                 bsAlert.close();
             }
         }, 5000);
     }
     
-    // Efecto de entrada para el formulario
+    // Efecto de entrada para el formulario (del código anterior)
     const formGroups = document.querySelectorAll('.form-group-custom');
     formGroups.forEach((group, index) => {
         group.style.opacity = '0';
@@ -147,13 +140,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100 + (index * 100));
     });
 
-    // Si hay mensajes de Django, mostrarlos como notificación
+    // Si hay mensajes de Django, mostrarlos como notificación (del código anterior)
     const messagesElement = document.getElementById('django-messages');
     if (messagesElement) {
-        // Asume que los mensajes están codificados como JSON en el atributo data
-        const messagesData = JSON.parse(messagesElement.getAttribute('data-messages'));
-        messagesData.forEach(msg => {
-            showNotificationJS(msg.message, msg.tags);
-        });
+        try {
+            const messagesData = JSON.parse(messagesElement.getAttribute('data-messages'));
+            messagesData.forEach(msg => {
+                // Mapear tags de Django a tipos de alerta de Bootstrap
+                let alertType = msg.tags;
+                if (alertType === 'error') alertType = 'danger'; 
+                
+                showNotificationJS(msg.message, alertType);
+            });
+        } catch (e) {
+            console.error("Error al parsear mensajes de Django:", e);
+        }
     }
 });
