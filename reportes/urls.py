@@ -7,7 +7,8 @@ app_name = 'reportes'
 
 
 urlpatterns = [
-    path('', views.lista_reportes, name='lista_reportes'),  # Ruta para listar reportes
+    path('', views.selector_de_reportes, name='lista_reportes'),  # Ruta principal que muestra selector de reportes
+    path('dashboard/', views.selector_de_reportes, name='reportes_dashboard'),  # Dashboard de reportes para supervisor
 
     path("reporte_parto/", views.reporte_parto, name="reporte_parto"),
     path("reporte_nacidos_vivos/", views.reporte_nacidos_vivos, name="reporte_nacidos_vivos"),

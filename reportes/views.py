@@ -1,29 +1,10 @@
 from django.shortcuts import render # Mostrar páginas
 from django.http import HttpResponse # Responder texto plano
 from django.db.models import Count, Q
-from .models import Parto, RN
+from partos.models import Parto, RN
 from .exportadores import (exportar_reporte_parto_pdf, exportar_reporte_parto_excel,
                             exportar_reporte_nacidos_vivos_pdf, exportar_reporte_nacidos_vivos_excel,
                             exportar_reporte_atencion_inmediata_pdf, exportar_reporte_atencion_inmediata_excel)
-
-
-# Las siguientes vistas son placeholders para el CRUD de reportes
-# Se pueden modificar para agregar lógica real según las necesidades del proyecto
-
-def lista_reportes(request): # Lista todos los reportes
-    return HttpResponse('Listado de reportes (placeholder)') # Responde con texto plano
-
-def crear_reporte(request): # Crea un nuevo reporte
-    return HttpResponse('Crear reporte (placeholder)') # Responde con texto plano
-
-def detalle_reporte(request, reporte_id): # Muestra los detalles de un reporte
-    return HttpResponse(f'Detalle reporte {reporte_id} (placeholder)') # Responde con texto plano
-
-def editar_reporte(request, reporte_id): # Edita un reporte
-    return HttpResponse(f'Editar reporte {reporte_id} (placeholder)') # Responde con texto plano
-
-def eliminar_reporte(request, reporte_id): # Elimina un reporte
-    return HttpResponse(f'Eliminar reporte {reporte_id} (placeholder)') # Responde con texto plano
 
 
 
@@ -75,7 +56,7 @@ def reporte_atencion_inmediata(request):
             ["Profilaxis Ocular", RN.objects.filter(profilaxis_ocular=True).count()],
             ["Parto Vaginal", Parto.objects.filter(tipo_parto="vaginal").count()],
             ["Parto Instrumental", Parto.objects.filter(tipo_parto="instrumental").count()],
-            ["Cesárea", Parto.objects.filter(tipo_parto__startswith="cesarea").count()],
+            ["Cesárea", Parto.objects.filter(tipo_parto__in=["cesarea_electiva", "cesarea_urgencia"]).count()],
             ["Parto Extrahospitalario", Parto.objects.filter(tipo_parto="extrahospitalario").count()],
             ["Apgar ≤ 3 al minuto", RN.objects.filter(apgar_1__lte=3).count()],
             ["Apgar ≤ 6 a los 5 minutos", RN.objects.filter(apgar_5__lte=6).count()],
