@@ -1,9 +1,12 @@
 <!-- templates/inicio.html -->
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Inicio - Test Fork Neonatal{% endblock %}
 
-{% block head_extra %}
+{% block page_css %}
+<!-- CSS específico de la página inicio -->
+<link rel="stylesheet" href="{% static 'css/apps/inicio.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -25,6 +28,10 @@
             <a class="btn btn-outline-light btn-lg" href="{% url 'test_login' %}" role="button">
                 <i class="fas fa-vial"></i> Modo Demo
             </a>
+            {% else %}
+            <a class="btn btn-outline-light btn-lg" href="{% url 'test_login' %}" role="button">
+                <i class="fas fa-vial"></i> Modo Demo
+            </a>
             {% endif %}
         </div>
     </div>
@@ -36,9 +43,7 @@
         <div class="row align-items-center">
             <div class="col-md-12 text-center">
                 <h5 class="mb-3"><i class="fas fa-info-circle text-primary"></i> Para utilizar la aplicación, debe iniciar sesión</h5>
-                {% if user.is_authenticated and user.is_superuser or user.role == 'SUPERADMIN' %}
-                <p class="mb-0">Si es su primera vez, utilice el modo demo para explorar las funcionalidades del sistema sin necesidad de credenciales.</p>
-                {% endif %}
+                <p class="mb-0">Explore las funcionalidades del sistema usando el modo demo.</p>
                 
                 <!-- Debug info - remover en producción -->
                 {% if user.is_authenticated %}
@@ -46,8 +51,8 @@
                     Usuario: {{ user.username }} | Rol: {{ user.role|default:"Sin rol" }} | Superuser: {{ user.is_superuser|yesno:"Sí,No" }}
                 </div>
                 {% else %}
-                <div class="small text-muted mt-2">
-                    Usuario no autenticado
+                <div class="small text-muted mt-2">                    
+                    <i class="fas fa-lock me-1"></i> Acceso no autenticado
                 </div>
                 {% endif %}
             </div>
@@ -68,7 +73,7 @@
                         <i class="fas fa-baby"></i>
                     </div>
                     <h4 class="feature-title">Gestión Neonatal</h4>
-                    <p>Control completo de historiales médicos de recién nacidos, seguimiento de desarrollo y atención especializada.</p>
+                    <p class="feature-description">Control completo de historiales médicos de recién nacidos, seguimiento de desarrollo y atención especializada.</p>
                 </div>
             </div>
             
@@ -79,7 +84,7 @@
                         <i class="fas fa-user-injured"></i>
                     </div>
                     <h4 class="feature-title">Control de Partos</h4>
-                    <p>Seguimiento en tiempo real de partos, historial obstétrico y coordinación de equipos médicos.</p>
+                    <p class="feature-description">Seguimiento en tiempo real de partos, historial obstétrico y coordinación de equipos médicos.</p>
                 </div>
             </div>
             
@@ -90,7 +95,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h4 class="feature-title">Reportes y Estadísticas</h4>
-                    <p>Generación automática de reportes, análisis estadísticos y visualización de datos hospitalarios.</p>
+                    <p class="feature-description">Generación automática de reportes, análisis estadísticos y visualización de datos hospitalarios.</p>
                 </div>
             </div>
         </div>
@@ -98,20 +103,19 @@
 </section>
 
 <!-- Sección de Demo - Rediseñada -->
-{% if user.is_authenticated and user.is_superuser or user.role == 'SUPERADMIN' %}
 <section class="demo-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card">
+                <div class="card demo-card">
                     <div class="card-body text-center">
                         <h3 class="mb-3"><i class="fas fa-vial text-info"></i> ¿Primera vez en el sistema?</h3>
-                        <p class="lead mb-4">Explore todas las funcionalidades sin necesidad de credenciales usando nuestro modo demo.</p>
+                        <p class="lead mb-4">Explore todas las funcionalidades usando nuestro modo demo.</p>
                         <a href="{% url 'test_login' %}" class="btn btn-info btn-lg px-4">
                             <i class="fas fa-play-circle"></i> Probar Modo Demo
                         </a>
                         <p class="text-muted mt-3 mb-0">
-                            <i class="fas fa-shield-alt"></i> Acceso completo con datos de prueba a todos los roles del sistema.
+                            <i class="fas fa-shield-alt"></i> Acceso con datos de prueba a todos los roles del sistema.
                         </p>
                     </div>
                 </div>
@@ -119,7 +123,6 @@
         </div>
     </div>
 </section>
-{% endif %}
 
 <!-- Sección adicional de características -->
 <section class="container pb-5">
@@ -128,12 +131,12 @@
         <div class="col-md-6">
             <div class="feature-card">
                 <div class="d-flex align-items-start">
-                    <div class="feature-icon me-3" style="font-size: 2rem;">
+                    <div class="feature-icon me-3">
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div>
                         <h4 class="feature-title">Seguridad y Permisos</h4>
-                        <p>Sistema de permisos por roles, auditoría de accesos y protección de datos sensibles del hospital.</p>
+                        <p class="feature-description">Sistema de permisos por roles, auditoría de accesos y protección de datos sensibles del hospital.</p>
                     </div>
                 </div>
             </div>
@@ -143,12 +146,12 @@
         <div class="col-md-6">
             <div class="feature-card">
                 <div class="d-flex align-items-start">
-                    <div class="feature-icon me-3" style="font-size: 2rem;">
+                    <div class="feature-icon me-3">
                         <i class="fas fa-mobile-alt"></i>
                     </div>
                     <div>
                         <h4 class="feature-title">Acceso Multiplataforma</h4>
-                        <p>Interfaz responsive adaptada a diferentes dispositivos para acceso desde cualquier lugar del hospital.</p>
+                        <p class="feature-description">Interfaz responsive adaptada a diferentes dispositivos para acceso desde cualquier lugar del hospital.</p>
                     </div>
                 </div>
             </div>
@@ -158,5 +161,6 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- JS de inicio (en su ubicación original) -->
 <script src="{% static 'js/inicio.js' %}"></script>
 {% endblock %}
