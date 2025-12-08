@@ -1,16 +1,34 @@
-{% extends "reporte/reporte_base.html" %}
+{% extends "reportes/reporte_base.html" %}
 
-{% block contenido_reporte %}
-<h2 class="text-center">Reporte 3: Atención Inmediata del Recién Nacido</h2>
+{% block graficos_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Labels y valores desde los rows
+  const labels = [{% for row in data.rows %}"{{ row.0 }}",{% endfor %}];
+  const valores = [{% for row in data.rows %}{{ row.1 }},{% endfor %}];
+  const colores = [
+    "#198754", "#dc3545", "#ffc107", "#0d6efd",
+    "#6f42c1", "#fd7e14", "#20c997", "#6610f2",
+    "#e83e8c", "#17a2b8", "#ff69b4", "#8b0000"
+  ];
 
-{% include "reportes/componentes/tabla_estilizada_atencion_inmediata.html" with data=data %}
+  // Gráfico de barras
+  new Chart(document.getElementById("graficoBarras"), {
+    type: "bar",
+    data: { labels, datasets:[{ data: valores, backgroundColor: colores }] },
+    options: {
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{ y:{ beginAtZero:true } }
+    }
+  });
 
-<div class="text-center mt-3">
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalExportacion">
-        <i class="fas fa-file-export"></i> Exportar
-    </button>
-</div>
-
-
-{% include "reportes/fragmentos/modal_exportacion.html" %}
+  // Gráfico de torta
+  new Chart(document.getElementById("graficoTorta"), {
+    type: "pie",
+    data: { labels, datasets:[{ data: valores, backgroundColor: colores }] },
+    options: { responsive:true }
+  });
+});
+</script>
 {% endblock %}

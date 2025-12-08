@@ -1,27 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reportes REM-24</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    });
-</script>
+{% extends "base.html" %}
 
-<body class="container py-4">
-    <!-- Selector de reportes -->
-    {% include "reportes/componentes/selector_visualizacion.html" %}
-    
-    <!-- Contenido dinámico del reporte -->
-    <div class="mt-4">
-        {% block contenido_reporte %}{% endblock %}
-    </div>
-</body>
-</html>
+{% block content %}
+  <h2 class="mb-4 text-center">{{ data.titulo }}</h2>
+
+  <div class="btn-group mb-3">
+    <button class="btn btn-outline-primary" onclick="mostrar('tabla')">Tabla</button>
+    <button class="btn btn-outline-success" onclick="mostrar('barras')">Gráfico de Barras</button>
+    <button class="btn btn-outline-danger" onclick="mostrar('torta')">Gráfico de Torta</button>
+  </div>
+
+  <div id="tabla">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          {% for header in data.headers %}
+            <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data.rows %}
+          <tr>
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="barras" style="display:none;">
+    <canvas id="graficoBarras" style="max-height:400px;"></canvas>
+  </div>
+
+  <div id="torta" style="display:none;">
+    <canvas id="graficoTorta" style="max-height:400px;"></canvas>
+  </div>
+
+  <button class="btn btn-secondary mt-3" data-bs-toggle="modal" data-bs-target="#modalExportacion">
+    Exportar reporte
+  </button>
+
+  {% include "reportes/fragmentos/modal_exportacion.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function mostrar(seccion) {
+  ["tabla","barras","torta"].forEach(id => document.getElementById(id).style.display="none");
+  document.getElementById(seccion).style.display="block";
+}
+</script>
+{% block graficos_js %}{% endblock %}
+{% endblock %}

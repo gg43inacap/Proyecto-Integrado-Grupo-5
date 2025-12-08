@@ -1,70 +1,60 @@
+<div class="container my-4 d-flex justify-content-center">
+    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalExportacion">
+        Exportar reporte
+    </button>
+</div>
+
 <div class="modal fade" id="modalExportacion" tabindex="-1" aria-labelledby="modalExportacionLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
-        
-        <div class="modal-header">
-            <h5 class="modal-title" id="modalExportacionLabel">Exportar Reporte</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        
-        <div class="modal-body">
-            <p>Seleccione el formato en el que desea exportar este reporte:</p>
-            <div class="d-grid gap-2">
-            {% if data.reporte_nombre == "reporte_parto" %}
-                <a href="{% url 'exportar_reporte_parto_pdf' %}" 
-                class="btn btn-danger" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en PDF">
-                <i class="fas fa-file-pdf"></i> Exportar a PDF
-                </a>
-                <a href="{% url 'exportar_reporte_parto_excel' %}" 
-                class="btn btn-success" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en Excel">
-                <i class="fas fa-file-excel"></i> Exportar a Excel
-                </a>
-            {% elif data.reporte_nombre == "reporte_nacidos_vivos" %}
-                <a href="{% url 'exportar_reporte_nacidos_vivos_pdf' %}" 
-                class="btn btn-danger" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en PDF">
-                <i class="fas fa-file-pdf"></i> Exportar a PDF
-                </a>
-                <a href="{% url 'exportar_reporte_nacidos_vivos_excel' %}" 
-                class="btn btn-success" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en Excel">
-                <i class="fas fa-file-excel"></i> Exportar a Excel
-                </a>
-            {% elif data.reporte_nombre == "reporte_atencion_inmediata" %}
-                <a href="{% url 'exportar_reporte_atencion_inmediata_pdf' %}" 
-                class="btn btn-danger" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en PDF">
-                <i class="fas fa-file-pdf"></i> Exportar a PDF
-                </a>
-                <a href="{% url 'exportar_reporte_atencion_inmediata_excel' %}" 
-                class="btn btn-success" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                title="Descargar en Excel">
-                <i class="fas fa-file-excel"></i> Exportar a Excel
-                </a>
-            {% endif %}
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="Cerrar ventana">
-            <i class="fas fa-times"></i> Cerrar
-            </button>
-        </div>
+            <form method="POST" action="{% url 'reportes:exportar_reporte' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalExportacionLabel">Exportar reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="reporte" id="reporteSeleccionado">
+                    <input type="hidden" name="grafico_base64" id="grafico_base64">
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="formato" value="pdf" id="formatoPdf" checked>
+                        <label class="form-check-label" for="formatoPdf">PDF</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="formato" value="excel" id="formatoExcel">
+                        <label class="form-check-label" for="formatoExcel">Excel</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Descargar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#modalExportacion form');
+    form.addEventListener('submit', function () {
+        const formato = document.querySelector('input[name="formato"]:checked').value;
+
+        if (formato === 'pdf') {
+            let canvas = null;
+
+            if (document.getElementById('vista-barras').style.display !== 'none') {
+                canvas = document.getElementById('graficoBarras');
+            } else if (document.getElementById('vista-torta').style.display !== 'none') {
+                canvas = document.getElementById('graficoTorta');
+            }
+
+            if (canvas) {
+                const imagenBase64 = canvas.toDataURL('image/png');
+                document.getElementById('grafico_base64').value = imagenBase64;
+            }
+        }
+    });
+});
+</script>

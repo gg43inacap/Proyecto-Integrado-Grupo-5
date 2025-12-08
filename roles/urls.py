@@ -7,4 +7,8 @@ urlpatterns = [
     path('users/create/', views.user_create, name='user_create'),  # Ruta para crear usuario
     path('users/<int:pk>/edit/', views.user_update, name='user_update'),  # Ruta para editar usuario
     path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),  # Ruta para eliminar usuario
+
+
 ]
+
+

@@ -2,6 +2,11 @@ from django.shortcuts import render # Mostrar páginas
 from django.http import HttpResponse # Responder texto plano
 from django.db.models import Count, Q
 from .models import Parto, RN
+from .exportadores import (exportar_reporte_parto_pdf, exportar_reporte_parto_excel,
+                            exportar_reporte_nacidos_vivos_pdf, exportar_reporte_nacidos_vivos_excel,
+                            exportar_reporte_atencion_inmediata_pdf, exportar_reporte_atencion_inmediata_excel)
+
+
 # Las siguientes vistas son placeholders para el CRUD de reportes
 # Se pueden modificar para agregar lógica real según las necesidades del proyecto
 
@@ -78,13 +83,41 @@ def reporte_atencion_inmediata(request):
     }
     return render(request, "reportes/predefinidos/rem_a24_atencion_inmediata_rn.html", {"data": data})
 
-from django.shortcuts import render
+
 
 def panel_supervisor(request):
-    return render(request, "roles/panel_SUPERVISOR.html")
+    return render(request, "roles/panel_supervisor.html")
 
 def selector_de_reportes(request):
     return render(request, "reportes/componentes/selector_reportes.html")  # pantalla donde eliges qué reporte ver
 
 def selector_de_filtros(request):
     return render(request, "reportes/componentes/selector_filtros.html")  # placeholder (lo llenamos luego)
+
+
+
+def exportar_reporte(request):
+    if request.method == 'POST':
+        formato = request.POST.get('formato')
+        reporte = request.POST.get('reporte')
+
+        if reporte == 'reporte_parto':
+            if formato == 'pdf':
+                return exportar_reporte_parto_pdf(request)
+            elif formato == 'excel':
+                return exportar_reporte_parto_excel(request)
+
+        elif reporte == 'reporte_nacidos_vivos':
+            if formato == 'pdf':
+                return exportar_reporte_nacidos_vivos_pdf(request)
+            elif formato == 'excel':
+                return exportar_reporte_nacidos_vivos_excel(request)
+        elif reporte == 'reporte_atencion_inmediata':
+            if formato == 'pdf':
+                return exportar_reporte_atencion_inmediata_pdf(request)
+            elif formato == 'excel':
+                return exportar_reporte_atencion_inmediata_excel(request)
+
+        return HttpResponse("Reporte o formato no válido", status=400)
+
+    return HttpResponse("Método no permitido", status=405)
