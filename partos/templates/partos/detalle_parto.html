@@ -1,15 +1,52 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/apps/detalle_parto.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Detalle de Parto</h2>
-<table class="table table-bordered">
-    <tr><th>Madre</th><td>{{ parto.madre }}</td></tr>
-    <tr><th>Fecha y Hora</th><td>{{ parto.fecha_hora }}</td></tr>
-    <tr><th>Tipo de Parto</th><td>{{ parto.get_tipo_parto_display }}</td></tr>
-    <tr><th>Complicaciones</th><td>{{ parto.complicaciones }}</td></tr>
-    <tr><th>Distócico</th><td>{{ parto.parto_distocico|yesno:"Sí,No" }}</td></tr>
-    <tr><th>Vacuum</th><td>{{ parto.parto_vacuum|yesno:"Sí,No" }}</td></tr>
-    <tr><th>Confirmado</th><td>{{ parto.confirmado|yesno:"Sí,No" }}</td></tr>
-</table>
-<a href="{% url 'lista_partos' %}" class="btn btn-secondary">Volver al listado</a>
-<a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-success ms-2">Registrar Recién Nacidos</a>
+<div class="container mt-4">
+    <h2>Detalle de Parto</h2>
+    
+    <table class="table table-bordered">
+        <tr>
+            <th>Madre</th>
+            <td data-label="Madre">{{ parto.madre }}</td>
+        </tr>
+        <tr>
+            <th>Fecha y Hora</th>
+            <td data-label="Fecha y Hora">{{ parto.fecha_hora }}</td>
+        </tr>
+        <tr>
+            <th>Tipo de Parto</th>
+            <td data-label="Tipo de Parto">{{ parto.get_tipo_parto_display }}</td>
+        </tr>
+        <tr>
+            <th>Complicaciones</th>
+            <td data-label="Complicaciones">{{ parto.complicaciones }}</td>
+        </tr>
+        <tr>
+            <th>Distócico</th>
+            <td data-label="Distócico">{{ parto.parto_distocico|yesno:"Sí,No" }}</td>
+        </tr>
+        <tr>
+            <th>Vacuum</th>
+            <td data-label="Vacuum">{{ parto.parto_vacuum|yesno:"Sí,No" }}</td>
+        </tr>
+        <tr>
+            <th>Confirmado</th>
+            <td data-label="Confirmado">{{ parto.confirmado|yesno:"Sí,No" }}</td>
+        </tr>
+    </table>
+    
+    <div class="btn-container">
+        <a href="{% url 'lista_partos' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+        <a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" class="btn btn-success ms-2">
+            <i class="fas fa-baby"></i> Registrar Recién Nacidos
+        </a>
+    </div>
+</div>
 {% endblock %}

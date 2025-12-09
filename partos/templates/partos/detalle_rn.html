@@ -1,16 +1,158 @@
 {% extends 'base.html' %}
+{% load static %}  <!-- Añadir esto -->
+
+{% block head_extra %}  <!-- Añadir este bloque -->
+<link rel="stylesheet" href="{% static 'css/apps/crear_rn.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Detalle de Recién Nacido</h2>
-<table class="table table-bordered">
-    <tr><th>Madre</th><td>{{ rn.madre }}</td></tr>
-    <tr><th>Parto Asociado</th><td>{{ rn.parto_asociado }}</td></tr>
-    <tr><th>Fecha de Nacimiento</th><td>{{ rn.fecha_nacimiento }}</td></tr>
-    <tr><th>Hora de Nacimiento</th><td>{{ rn.hora_nacimiento }}</td></tr>
-    <tr><th>Apellido Paterno</th><td>{{ rn.apellido_paterno_rn }}</td></tr>
-    <tr><th>Peso</th><td>{{ rn.peso }}</td></tr>
-    <tr><th>Talla</th><td>{{ rn.talla }}</td></tr>
-    <tr><th>Sexo</th><td>{{ rn.get_sexo_display }}</td></tr>
-    <tr><th>Confirmado</th><td>{{ rn.confirmado|yesno:"Sí,No" }}</td></tr>
-</table>
-<a href="{% url 'lista_rns' %}" class="btn btn-secondary">Volver al listado</a>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-baby"></i> Crear Recién Nacido</h4>
+                    <small class="opacity-90">Registro de neonato en el sistema neonatal</small>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    {{ field.label }}
+                                    {% if field.field.required %} 
+                                    <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+                                
+                                {{ field }}
+                                
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                                
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a href="{% url 'lista_rns' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Recién Nacido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="alert alert-info mt-3">
+                <small>
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Nota:</strong> Si no encuentra el parto asociado, asegúrese de que el parto esté 
+                    marcado como "Activo" y pertenezca a la madre seleccionada.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filtrarPartos() {
+    const madreSelect = document.getElementById('id_madre');
+    const partoSelect = document.getElementById('id_parto_asociado');
+    const madreId = madreSelect.value;
+    
+    console.log('Madre seleccionada ID:', madreId); // Debug
+    
+    // Limpiar opciones actuales del select de partos
+    partoSelect.innerHTML = '<option value="">Cargando...</option>';
+    partoSelect.disabled = true;
+    
+    if (madreId) {
+        const url = `/partos/ajax/filtrar-partos/?madre_id=${madreId}`;
+        console.log('URL petición:', url); // Debug
+        
+        // Hacer petición AJAX para obtener partos de la madre seleccionada
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status); // Debug
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data); // Debug
+                
+                // Limpiar el select
+                partoSelect.innerHTML = '<option value="">---------</option>';
+                partoSelect.disabled = false;
+                
+                if (data.error) {
+                    console.error('Error del servidor:', data.error);
+                    const option = new Option(`Error: ${data.error}`, '');
+                    option.disabled = true;
+                    partoSelect.add(option);
+                } else {
+                    data.partos.forEach(parto => {
+                        const option = new Option(parto.text, parto.id);
+                        partoSelect.add(option);
+                    });
+                    
+                    // Mostrar mensaje si no hay partos activos
+                    if (data.partos.length === 0) {
+                        const option = new Option('No hay partos activos para esta madre', '');
+                        option.disabled = true;
+                        option.style.color = '#dc3545';
+                        option.style.fontStyle = 'italic';
+                        partoSelect.add(option);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error completo:', error);
+                partoSelect.innerHTML = '<option value="">---------</option>';
+                partoSelect.disabled = false;
+                const option = new Option(`Error de conexión: ${error.message}`, '');
+                option.disabled = true;
+                option.style.color = '#dc3545';
+                partoSelect.add(option);
+            });
+    } else {
+        partoSelect.innerHTML = '<option value="">---------</option>';
+        partoSelect.disabled = true;
+    }
+}
+
+// Ejecutar filtrado inicial si hay una madre preseleccionada
+document.addEventListener('DOMContentLoaded', function() {
+    const madreSelect = document.getElementById('id_madre');
+    const partoSelect = document.getElementById('id_parto_asociado');
+    
+    // Añadir evento change al select de madre
+    if (madreSelect) {
+        madreSelect.addEventListener('change', filtrarPartos);
+    }
+    
+    // Ejecutar filtrado inicial si hay valor
+    if (madreSelect && madreSelect.value) {
+        filtrarPartos();
+    }
+    
+    // Mejorar UI del select de parto si está vacío inicialmente
+    if (partoSelect && !partoSelect.value) {
+        partoSelect.innerHTML = '<option value="">Seleccione una madre primero</option>';
+        partoSelect.disabled = true;
+    }
+});
+</script>
 {% endblock %}

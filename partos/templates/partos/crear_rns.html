@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/apps/crear_rns.css' %}">
+{% endblock %}
+
 {% block title %}RegistrarRecién Nacidos - Sistema Neonatal{% endblock %}
 
 {% block content %}
@@ -67,43 +72,6 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block styles %}
-<style>
-.ribbon-tab {
-    transition: all 0.3s ease;
-    border: 2px solid #e9ecef !important;
-}
-
-.ribbon-tab:hover {
-    border-color: #28a745 !important;
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.1);
-}
-
-.remove-form-btn {
-    border: 1px solid #dc3545;
-    color: #dc3545;
-}
-
-.remove-form-btn:hover {
-    background-color: #dc3545;
-    color: white;
-}
-
-#add-form-btn {
-    border: 2px dashed #28a745;
-    color: #28a745;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-#add-form-btn:hover {
-    background-color: #28a745;
-    color: white;
-    border-style: solid;
-}
-</style>
 {% endblock %}
 
 {% block scripts %}

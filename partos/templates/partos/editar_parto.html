@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/apps/editar_parto.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Editar Parto</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar cambios</button>
-    <a href="{% url 'lista_partos' %}">Cancelar</a>
-</form>
+<div class="container mt-4">
+    <h2>Editar Parto</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <p>
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Guardar cambios
+            </button>
+            <a href="{% url 'lista_partos' %}" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </p>
+    </form>
+</div>
 {% endblock %}
