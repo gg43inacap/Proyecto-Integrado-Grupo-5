@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
+
+{% block title %}Panel Supervisor{% endblock %}
+
 {% block content %}
-<h2>Panel Supervisor</h2>
-<p>Bienvenido al panel de usuario SUPERVISOR.</p>
-<div style="margin-top:2rem;">
-	<a href="{% url 'reportes_dashboard' %}" class="btn btn-primary">Ver Reportes</a>
-</div>
-<div class="mt-4">
-	<a href="/" class="btn btn-outline-secondary">
-		<i class="fas fa-home"></i> Volver al inicio
-	</a>
-	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-		<i class="fas fa-sign-out-alt"></i> Cerrar sesión
-	</a>
-</div>
+<div class="container mt-4">
+    
+    <h1 class="mb-4"><i class="fas fa-eye me-2"></i> Panel Supervisor</h1>
+    
+    <p class="lead mb-4">Bienvenido al panel de usuario SUPERVISOR. Utilice la siguiente opción para la revisión y generación de informes clínicos.</p>
+
+    <hr class="my-4">
+    
+    <div class="d-flex flex-wrap gap-3 mb-5">
+        <a href="{% url 'reportes_dashboard' %}" class="btn btn-warning btn-lg">
+            <i class="fas fa-chart-line me-2"></i> Ver Dashboard y Reportes
+        </a>
+    </div>
+
+    </div>
 {% endblock %}

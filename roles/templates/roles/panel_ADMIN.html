@@ -1,38 +1,50 @@
 {% extends 'base.html' %}
+{% block title %}Panel de Administrador{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h2><i class="fas fa-user-shield"></i> Panel Administrador</h2>
-                    <p class="mb-0">Bienvenido {{ user.username }} - Rol: {{ user.role|default:"ADMIN" }}</p>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5><i class="fas fa-users"></i> Gestión de Usuarios</h5>
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">
-                                    <i class="fas fa-list"></i> Gestionar Usuarios
-                                </a>
-                                <a href="{% url 'crear_usuario' %}" class="btn btn-success">
-                                    <i class="fas fa-user-plus"></i> Crear Usuario
-                                </a>
-                            </div>
+<div class="container mt-5">
+    
+    <h1 class="mb-4"><i class="fas fa-user-shield me-2 text-dark"></i> Panel de Administración</h1>
+
+    <div class="card shadow-lg border-0 rounded-3">
+        
+        <div class="card-header bg-dark text-white rounded-top-3 p-3">
+            <h4 class="mb-1">Bienvenido, {{ user.username }}.</h4>
+            <p class="mb-0 text-muted small">Rol: <span class="badge bg-secondary">{{ user.role|default:"ADMINISTRADOR" }}</span></p>
+        </div>
+        
+        <div class="card-body p-4">
+            
+            <div class="row g-4 justify-content-center">
+                
+                <div class="col-md-6">
+                    <div class="p-4 rounded border-start border-5 border-primary bg-light shadow-sm">
+                        
+                        <h5 class="text-primary mb-3"><i class="fas fa-users me-2"></i> Gestión de Usuarios</h5>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">
+                                <i class="fas fa-list me-2"></i> Gestionar Usuarios
+                            </a>
+                            <a href="{% url 'crear_usuario' %}" class="btn btn-success">
+                                <i class="fas fa-user-plus me-2"></i> Crear Usuario
+                            </a>
                         </div>
-                    <hr class="my-4">
-                    
-                    <div class="d-flex justify-content-between">
-                        <a href="/" class="btn btn-outline-secondary">
-                            <i class="fas fa-home"></i> Volver al inicio
-                        </a>
-                        <a href="{% url 'logout' %}" class="btn btn-outline-danger" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                        </a>
                     </div>
                 </div>
+                
+            </div> <hr class="my-5">
+            
+            <div class="d-flex justify-content-between flex-wrap">
+                <a href="{% url 'inicio' %}" class="btn btn-outline-secondary w-100 w-md-auto mb-2 mb-md-0">
+                    <i class="fas fa-home me-2"></i> Volver al Inicio
+                </a>
+                
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 w-md-auto" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
+                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                </a>
             </div>
+            
         </div>
     </div>
 </div>
