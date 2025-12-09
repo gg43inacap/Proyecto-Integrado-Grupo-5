@@ -1,19 +1,37 @@
 {% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}Gestión de Usuarios - Listado{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card shadow-sm">
+                
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3><i class="fas fa-users"></i> Lista de Usuarios</h3>
-                    <a href="{% url 'crear_usuario' %}" class="btn btn-success">
+                    <h1 class="mb-0 text-hospital">
+                        <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
+                    </h1>
+                    <a href="{% url 'crear_usuario' %}" class="btn btn-success transition-all">
                         <i class="fas fa-user-plus"></i> Crear nuevo usuario
                     </a>
                 </div>
+                
                 <div class="card-body">
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
                     {% if users %}
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-striped table-hover align-middle">
                             <thead class="table-dark">
                                 <tr>
                                     <th><i class="fas fa-user"></i> Usuario</th>
@@ -26,11 +44,11 @@
                             </thead>
                             <tbody>
                                 {% for user in users %}
-                                <tr>
+                                <tr class="{% if not user.is_active %}table-danger{% endif %}">
                                     <td>
                                         <strong>{{ user.username }}</strong>
                                         {% if user.is_superuser %}
-                                            <span class="badge bg-danger ms-1">Superusuario</span>
+                                            <span class="badge bg-dark ms-1" title="Superusuario del Sistema">Superusuario</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ user.rut|default:"-" }}</td>
@@ -50,8 +68,13 @@
                                             <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-outline-primary" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            
                                             {% if user.is_active and not user.is_superuser %}
-                                                <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-outline-danger" title="Bloquear">
+                                                <a href="{% url 'bloquear_usuario' user.pk %}" 
+                                                   class="btn btn-outline-danger" 
+                                                   title="Bloquear"
+                                                   onclick="return confirm('¿Está seguro de que desea bloquear a {{ user.username }}?')"
+                                                >
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             {% endif %}
@@ -63,16 +86,17 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No hay usuarios registrados</h5>
-                        <p class="text-muted">Comience creando su primer usuario</p>
-                        <a href="{% url 'crear_usuario' %}" class="btn btn-primary">
+                    <div class="text-center py-5 border rounded bg-light">
+                        <i class="fas fa-users-slash fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No hay usuarios registrados que mostrar.</h4>
+                        <p class="text-muted">Comience creando su primer usuario.</p>
+                        <a href="{% url 'crear_usuario' %}" class="btn btn-primary mt-3 transition-all">
                             <i class="fas fa-user-plus"></i> Crear primer usuario
                         </a>
                     </div>
                     {% endif %}
                 </div>
+                
                 <div class="card-footer">
                     <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Volver al panel

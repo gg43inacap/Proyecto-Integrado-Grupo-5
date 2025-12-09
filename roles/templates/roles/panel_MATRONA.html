@@ -1,17 +1,26 @@
 {% extends 'base.html' %}
+
+{% block title %}Panel Matrona{% endblock %}
+
 {% block content %}
-<h2>Panel Matrona</h2>
-<p>Bienvenido al panel de usuario MATRONA.</p>
-<div style="margin-top:2rem;">
-	<a href="{% url 'crear_parto' %}" class="btn btn-primary">Registrar Parto</a>
-	<a href="{% url 'lista_partos' %}" class="btn btn-secondary">Ver Listado de Partos</a>
-</div>
-<div class="mt-4">
-	<a href="/" class="btn btn-outline-secondary">
-		<i class="fas fa-home"></i> Volver al inicio
-	</a>
-	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-		<i class="fas fa-sign-out-alt"></i> Cerrar sesión
-	</a>
-</div>
+<div class="container mt-4">
+    
+    <h1 class="mb-4 text-success"><i class="fas fa-user-nurse me-2"></i> Panel Matrona</h1>
+    
+    <p class="lead mb-4">Bienvenido al panel de usuario MATRONA. Desde aquí puede gestionar el registro de partos y visualizar el historial clínico de las pacientes.</p>
+
+    <hr class="my-4">
+    
+    <div class="d-flex flex-wrap gap-3 mb-5">
+        
+        <a href="{% url 'crear_parto' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-baby me-2"></i> Registrar Nuevo Parto
+        </a>
+        
+        <a href="{% url 'lista_partos' %}" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-list-alt me-2"></i> Ver Listado de Partos
+        </a>
+    </div>
+
+    </div>
 {% endblock %}

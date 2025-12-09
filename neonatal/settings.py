@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'reportes',
     'roles',
     'gestion_some',
-    'login'
+    'login',
+    'widget_tweaks',
 ]
 
 AUTH_USER_MODEL = 'roles.CustomUser'
