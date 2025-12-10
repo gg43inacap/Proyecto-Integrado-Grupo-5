@@ -13,12 +13,16 @@
     
     <div class="d-flex flex-wrap gap-3 mb-5">
         
-        <a href="{% url 'crear_parto' %}" class="btn btn-success btn-lg">
-            <i class="fas fa-baby me-2"></i> Registrar Nuevo Parto
+        <a href="{% url 'lista_partos' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-baby me-2"></i> Ver listado de Partos
+        </a>
+
+        <a href="{% url 'lista_rns' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-baby me-2"></i> Ver Listado de Recien nacidos
         </a>
         
-        <a href="{% url 'lista_partos' %}" class="btn btn-outline-secondary btn-lg">
-            <i class="fas fa-list-alt me-2"></i> Ver Listado de Partos
+        <a href="{% url 'crear_parto' %}" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-list-alt me-2"></i> Registrar Nuevo Parto
         </a>
     </div>
 
