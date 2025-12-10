@@ -128,3 +128,62 @@ def detalle_auditoria(request, auditoria_id):
 # python manage.py shell
 # >>> from auditoria.models import registrar_evento_auditoria
 # >>> registrar_evento_auditoria(...)
+
+@login_required
+def api_estadisticas_auditoria(request):
+    """
+    API REST que retorna estadísticas reales de auditoría en JSON.
+    Acceso para usuarios AUDITORIA, ADMIN y superusers.
+    """
+    from django.http import JsonResponse
+    
+    if not tiene_acceso_auditoria(request.user):
+        return JsonResponse({'error': 'Acceso denegado'}, status=403)
+    
+    try:
+        hoy = timezone.now().date()
+        hace_una_semana = hoy - timedelta(days=7)
+        
+        # Conteos totales
+        total_eventos = Auditoria.objects.count()
+        eventos_hoy = Auditoria.objects.filter(fecha_hora__date=hoy).count()
+        eventos_semana = Auditoria.objects.filter(
+            fecha_hora__date__gte=hace_una_semana,
+            fecha_hora__date__lte=hoy
+        ).count()
+        
+        # Conteo por acción
+        acciones = Auditoria.objects.values('accion_realizada').annotate(
+            count=Count('id')
+        ).order_by('-count')
+        
+        # Conteo por rol de usuario
+        roles_usuarios = Auditoria.objects.values(
+            'usuario__role'
+        ).annotate(
+            count=Count('id')
+        ).order_by('-count')
+        
+        # Conteo por modelo afectado
+        modelos = Auditoria.objects.values('modelo_afectado').annotate(
+            count=Count('id')
+        ).order_by('-count')
+        
+        # Últimos 10 eventos
+        ultimos_eventos = Auditoria.objects.all().order_by('-fecha_hora')[:10].values(
+            'id', 'accion_realizada', 'modelo_afectado', 'usuario__username',
+            'fecha_hora', 'ip_address'
+        )
+        
+        return JsonResponse({
+            'total_eventos': total_eventos,
+            'eventos_hoy': eventos_hoy,
+            'eventos_semana': eventos_semana,
+            'acciones': list(acciones),
+            'roles_usuarios': list(roles_usuarios),
+            'modelos': list(modelos),
+            'ultimos_eventos': list(ultimos_eventos),
+            'timestamp': timezone.now().isoformat()
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
