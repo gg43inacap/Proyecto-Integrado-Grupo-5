@@ -25,11 +25,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('username');
     const userHelp = document.getElementById('user-help');
     let rutListener = null;
+    let usernameListener = null;
 
+    function formatearRut(valor) {
+        // Limpiar el valor de entrada (solo números y K)
+        let rutLimpio = valor.replace(/[^0-9kK]/g, '').toLowerCase();
+        
+        // Limitar a máximo 9 caracteres
+        if (rutLimpio.length > 9) {
+            rutLimpio = rutLimpio.substring(0, 9);
+        }
+        
+        // Si tiene menos de 2 caracteres, no formatear
+        if (rutLimpio.length < 2) {
+            return rutLimpio;
+        }
+        
+        // Separar cuerpo y dígito verificador
+        const dv = rutLimpio.slice(-1);
+        const cuerpo = rutLimpio.slice(0, -1);
+        
+        // Formatear el cuerpo con puntos
+        let cuerpoFormateado = '';
+        const cuerpoRevertido = cuerpo.split('').reverse().join('');
+        
+        for (let i = 0; i < cuerpoRevertido.length; i++) {
+            if (i > 0 && i % 3 === 0) {
+                cuerpoFormateado = '.' + cuerpoFormateado;
+            }
+            cuerpoFormateado = cuerpoRevertido[i] + cuerpoFormateado;
+        }
+        
+        // Retornar formato completo
+        return cuerpoFormateado + '-' + dv;
+    }
+    
     function validarRut(valor) {
-        // Regex para formato XX.XXX.XXX-X (simple, asumiendo que el guión ya existe)
-        const rutRegex = /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/;
-        return rutRegex.test(valor);
+        // Validación básica para mostrar feedback visual
+        if (!valor || valor.trim().length < 3) return false;
+        
+        // Verificar que termine con guión y dígito verificador
+        if (!/.*-[0-9kK]$/.test(valor)) return false;
+        
+        return true;
     }
 
     function limpiarRestricciones() {
@@ -44,12 +82,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
         removeRutValidation(); // Asegura que no se dupliquen listeners
         rutListener = function() {
-            // Solo validar si hay valor y el formato es incorrecto
-            if (userInput.value && !validarRut(userInput.value)) {
-                userInput.setCustomValidity('Formato de RUT inválido. Ejemplo: 12.345.678-9');
-                userInput.classList.add('is-invalid');
+            const cursorPos = userInput.selectionStart;
+            const valorAntes = userInput.value;
+            
+            // Formatear automáticamente mientras el usuario escribe
+            const valorFormateado = formatearRut(userInput.value);
+            
+            // Solo actualizar si el valor cambió
+            if (valorFormateado !== valorAntes) {
+                userInput.value = valorFormateado;
+                
+                // Ajustar posición del cursor
+                let nuevaPos = cursorPos;
+                if (valorFormateado.length > valorAntes.length && (valorFormateado[cursorPos-1] === '.' || valorFormateado[cursorPos-1] === '-')) {
+                    nuevaPos = cursorPos + 1;
+                }
+                userInput.setSelectionRange(nuevaPos, nuevaPos);
+            }
+            
+            // Mostrar indicación visual
+            if (userInput.value.trim()) {
+                if (!validarRut(userInput.value)) {
+                    userInput.classList.add('is-invalid');
+                } else {
+                    userInput.classList.remove('is-invalid');
+                }
             } else {
-                userInput.setCustomValidity('');
                 userInput.classList.remove('is-invalid');
             }
         };
@@ -64,6 +122,32 @@ document.addEventListener('DOMContentLoaded', function() {
         limpiarRestricciones();
     }
 
+    function addUsernameFormatting() {
+        if (!userInput) return;
+
+        // Remover cualquier listener anterior
+        removeUsernameFormatting();
+        
+        usernameListener = function() {
+            const cursorPos = userInput.selectionStart;
+            const valorAntes = userInput.value;
+            const valorLowercase = userInput.value.toLowerCase();
+            
+            if (valorLowercase !== valorAntes) {
+                userInput.value = valorLowercase;
+                userInput.setSelectionRange(cursorPos, cursorPos);
+            }
+        };
+        userInput.addEventListener('input', usernameListener);
+    }
+
+    function removeUsernameFormatting() {
+        if (userInput && usernameListener) {
+            userInput.removeEventListener('input', usernameListener);
+            usernameListener = null;
+        }
+    }
+
     function updateField() {
         if (!userInput || !userLabel || !userHelp || !rutRadio) return;
 
@@ -72,16 +156,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (rutRadio.checked) {
             userLabel.textContent = 'RUT';
-            userInput.placeholder = 'Ej: 12.345.678-9';
-            userHelp.textContent = 'Ingrese su RUT con puntos y guión';
-            userInput.setAttribute('maxlength', '12'); // Limitar longitud para RUT
+            userInput.placeholder = 'Ej: 123456789 (se formateará automáticamente)';
+            userHelp.textContent = 'Escriba solo números y K - se formatearán automáticamente con puntos y guión';
+            userInput.setAttribute('maxlength', '12');
+            removeUsernameFormatting();
             addRutValidation();
         } else {
             userLabel.textContent = 'Cuenta de usuario';
-            userInput.placeholder = 'Ingrese su cuenta de usuario';
-            userHelp.textContent = 'Ingrese su cuenta de usuario';
-            userInput.removeAttribute('maxlength'); // Quitar límite para nombre de usuario
+            userInput.placeholder = 'Ingrese su cuenta de usuario (en minúsculas)';
+            userHelp.textContent = 'Ingrese su cuenta de usuario (se convertirá a minúsculas automáticamente)';
+            userInput.removeAttribute('maxlength');
             removeRutValidation();
+            addUsernameFormatting();
         }
     }
 
