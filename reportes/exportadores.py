@@ -37,36 +37,29 @@ def exportar_reporte_parto_excel(request):
     ws = wb.active
     ws.title = "Características del Parto"
 
-    headers = ["Tipo de Parto", "Cantidad"]
-    rows = [
-        ["Total Partos", Parto.objects.count()],
-        ["Vaginal", Parto.objects.filter(tipo_parto="vaginal").count()],
-        ["Instrumental", Parto.objects.filter(tipo_parto="instrumental").count()],
-        ["Cesárea Electiva", Parto.objects.filter(tipo_parto="cesarea_electiva").count()],
-        ["Cesárea Urgencia", Parto.objects.filter(tipo_parto="cesarea_urgencia").count()],
-        ["Lactancia precoz (≥2500 g)", RN.objects.filter(peso__gte=2500, lactancia_antes_60=True).count()],
+    # Encabezados
+    headers = [
+        "Características del Parto",
+        "Lactancia materna en los primeros 60 minutos (RN ≥ 2500 g)"
     ]
-
-    # Estilos
-    from openpyxl.styles import Font, Alignment, PatternFill
-    header_font = Font(bold=True)
-    header_fill = PatternFill(start_color="DDDDDD", end_color="DDDDDD", fill_type="solid")
-    center_align = Alignment(horizontal="center")
-
     ws.append(headers)
-    for cell in ws[1]:
-        cell.font = header_font
-        cell.fill = header_fill
-        cell.alignment = center_align
+
+    # Filtrar RN con lactancia precoz
+    rn_filtrados = RN.objects.filter(peso__gte=2500, lactancia_antes_60=True)
+
+    # Filas con tipo de parto y lactancia precoz
+    rows = [
+        ["Total Partos", rn_filtrados.count()],
+        ["Vaginal", rn_filtrados.filter(parto_asociado__tipo_parto="vaginal").count()],
+        ["Instrumental", rn_filtrados.filter(parto_asociado__tipo_parto="instrumental").count()],
+        ["Cesárea Electiva", rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_electiva").count()],
+        ["Cesárea Urgencia", rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()],
+    ]
 
     for row in rows:
         ws.append(row)
 
-    # Ajuste de ancho
-    for column_cells in ws.columns:
-        length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
-        ws.column_dimensions[column_cells[0].column_letter].width = length + 2
-
+    # Preparar respuesta
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = 'attachment; filename="reporte_parto.xlsx"'
     wb.save(response)

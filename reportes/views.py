@@ -10,17 +10,35 @@ from .exportadores import (exportar_reporte_parto_pdf, exportar_reporte_parto_ex
 
 
 def reporte_parto(request):
+    # Total partos por tipo
+    total_partos = Parto.objects.count()
+    vaginal = Parto.objects.filter(tipo_parto="vaginal").count()
+    instrumental = Parto.objects.filter(tipo_parto="instrumental").count()
+    cesarea_electiva = Parto.objects.filter(tipo_parto="cesarea_electiva").count()
+    cesarea_urgencia = Parto.objects.filter(tipo_parto="cesarea_urgencia").count()
+
+    # RN ≥ 2500 g con lactancia precoz por tipo de parto
+    rn_filtrados = RN.objects.filter(peso__gte=2500, lactancia_antes_60=True)
+    total_lactancia = rn_filtrados.count()
+    lactancia_vaginal = rn_filtrados.filter(parto_asociado__tipo_parto="vaginal").count()
+    lactancia_instrumental = rn_filtrados.filter(parto_asociado__tipo_parto="instrumental").count()
+    lactancia_electiva = rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_electiva").count()
+    lactancia_urgencia = rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()
+
+
+    # Construimos la tabla con dos columnas
     data = {
-        "headers": ["Tipo de Parto", "Cantidad"],
-        "rows": [
-            ["Total Partos", Parto.objects.count()],
-            ["Vaginal", Parto.objects.filter(tipo_parto="vaginal").count()],
-            ["Instrumental", Parto.objects.filter(tipo_parto="instrumental").count()],
-            ["Cesárea Electiva", Parto.objects.filter(tipo_parto="cesarea_electiva").count()],
-            ["Cesárea Urgencia", Parto.objects.filter(tipo_parto="cesarea_urgencia").count()],
-            ["Lactancia precoz (≥2500 g)", RN.objects.filter(peso__gte=2500, lactancia_antes_60=True).count()],
+        "headers": [
+            "Características del Parto",
+            "Lactancia materna en los primeros 60 minutos (RN ≥ 2500 g)"
         ],
-        # Antes: "rem_24_caracteristicas_parto"
+        "rows": [
+            ["Total Partos", total_lactancia],
+            ["Vaginal", lactancia_vaginal],
+            ["Instrumental", lactancia_instrumental],
+            ["Cesárea Electiva", lactancia_electiva],
+            ["Cesárea Urgencia", lactancia_urgencia],
+        ],
         "reporte_nombre": "reporte_parto",
     }
     return render(request, "reportes/predefinidos/rem_24_caracteristicas_parto.html", {"data": data})
