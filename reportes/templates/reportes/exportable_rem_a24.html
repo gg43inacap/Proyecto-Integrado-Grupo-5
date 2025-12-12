@@ -18,6 +18,12 @@
 
     <h3>{{ seccion_d1.titulo }}</h3>
     <table>
+        <thead>
+            <tr>
+                <th>Indicador</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
         <tbody>
             {% for row in seccion_d1.rows %}
             <tr>
@@ -30,6 +36,12 @@
 
     <h3>{{ seccion_d2.titulo }}</h3>
     <table>
+        <thead>
+            <tr>
+                <th>Indicador</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
         <tbody>
             {% for row in seccion_d2.rows %}
             <tr>
@@ -42,6 +54,12 @@
 
     <h3>{{ seccion_d3.titulo }}</h3>
     <table>
+        <thead>
+            <tr>
+                <th>Indicador</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
         <tbody>
             {% for row in seccion_d3.rows %}
             <tr>
@@ -51,6 +69,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {% include "reportes/exportables/rem_24.html" %}
 </body>
 </html>

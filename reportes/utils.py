@@ -47,23 +47,25 @@ def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
             ["Profilaxis Ocular", rn_vivos.filter(profilaxis_ocular=True).count()],
             ["Parto Vaginal", rn_vivos.filter(parto_asociado__tipo_parto="vaginal").count()],
             ["Parto Instrumental", rn_vivos.filter(parto_asociado__tipo_parto="instrumental").count()],
-            ["Cesárea", rn_vivos.filter(parto_asociado__tipo_parto="cesarea").count()],
+            ["Cesárea", rn_vivos.filter(parto_asociado__tipo_parto__startswith="cesarea").count()],
             ["Parto extrahospitalario", rn_vivos.filter(parto_asociado__tipo_parto="extrahospitalario").count()],
-            ["Apgar ≤ 3 al minuto", rn_vivos.filter(apgar_minuto__lte=3).count()],
-            ["Apgar ≤ 6 a los 5 minutos", rn_vivos.filter(apgar_5min__lte=6).count()],
-            ["Reanimación Básica", rn_vivos.filter(reanimacion="basica").count()],
-            ["Reanimación Avanzada", rn_vivos.filter(reanimacion="avanzada").count()],
-            ["EHI Grado II y III", rn_vivos.filter(ehi_grado__in=[2,3]).count()],
-            ["Distócico", rn_vivos.filter(parto_asociado__tipo_parto="distocico").count()],
-            ["Vacuum", rn_vivos.filter(parto_asociado__tipo_parto="vacuum").count()],
+            ["Apgar ≤ 3 al minuto", rn_vivos.filter(apgar_1__lte=3).count()],
+            ["Apgar ≤ 6 a los 5 minutos", rn_vivos.filter(apgar_5__lte=6).count()],
+            ["Reanimación Básica", rn_vivos.filter(reanimacion_basica=True).count()],
+            ["Reanimación Avanzada", rn_vivos.filter(reanimacion_avanzada=True).count()],
+            ["EHI Grado II y III", rn_vivos.filter(ehi_grado_ii_iii=True).count()],
+            ["Distócico", rn_vivos.filter(parto_asociado__parto_distocico=True).count()],
+            ["Vacuum", rn_vivos.filter(parto_asociado__parto_vacuum=True).count()],
             ["Cesárea Urgencia", rn_vivos.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()],
             ["Cesárea Electiva", rn_vivos.filter(parto_asociado__tipo_parto="cesarea_electiva").count()],
             ["Total Partos", rn_vivos.count()],
         ]
     }
 
+
     # --- Sección D.3: Lactancia precoz ---
     rn_lactancia = rn_vivos.filter(peso__gte=2500, lactancia_antes_60=True)
+
     seccion_d3 = {
         "titulo": "SECCIÓN D.3: Lactancia materna en los primeros 60 minutos (RN ≥ 2500 g)",
         "rows": [
@@ -74,8 +76,7 @@ def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
             ["Cesárea Urgencia", rn_lactancia.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()],
         ]
     }
-
-    # --- Retorno global ---
+        # --- Retorno global ---
     periodo = f"{anio}-{mes:02d}" if mes and anio else (f"{inicio} a {fin}" if inicio and fin else "Sin filtro")
     return {
         "titulo": "REM A24 — Atención del Recién Nacido",

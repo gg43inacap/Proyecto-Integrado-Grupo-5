@@ -1,145 +1,145 @@
-from django.http import JsonResponse
-from django.utils import timezone
-def api_estadisticas_reportes(request):
-    """Devuelve estadísticas globales de reportes para el panel supervisor."""
-    hoy = timezone.now().date()
-    mes_actual = hoy.month
-    anio_actual = hoy.year
+# reportes/views.py
+from django.http import HttpResponse
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from .utils import get_reporte_rem24_completo
+from django.template.loader import render_to_string
+import io
+from xhtml2pdf import pisa
+from django.shortcuts import render
+from datetime import datetime
 
-    total_reportes = Parto.objects.count() + RN.objects.count()
-    reportes_hoy = Parto.objects.filter(fecha_hora__date=hoy).count() + RN.objects.filter(parto_asociado__fecha_hora__date=hoy).count()
-    reportes_mes = Parto.objects.filter(fecha_hora__year=anio_actual, fecha_hora__month=mes_actual).count() + RN.objects.filter(parto_asociado__fecha_hora__year=anio_actual, parto_asociado__fecha_hora__month=mes_actual).count()
-    tipos_reportes = 3  # Parto, Nacidos Vivos, Atención Inmediata
+def exportar_rem_a24_excel(request):
+    # --- Capturar filtros desde GET ---
+    mes = request.GET.get("mes")
+    anio = request.GET.get("anio")
+    inicio = request.GET.get("inicio")
+    fin = request.GET.get("fin")
 
-    return JsonResponse({
-        "total_reportes": total_reportes,
-        "reportes_hoy": reportes_hoy,
-        "reportes_mes": reportes_mes,
-        "tipos_reportes": tipos_reportes
+    mes = int(mes) if mes else None
+    anio = int(anio) if anio else None
+    inicio = date.fromisoformat(inicio) if inicio else None
+    fin = date.fromisoformat(fin) if fin else None
+
+    # --- Obtener datos del reporte ---
+    data = get_reporte_rem24_completo(mes=mes, anio=anio, inicio=inicio, fin=fin)
+
+    # --- Crear Excel ---
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "REM A24"
+
+    # Estilos
+    bold = Font(bold=True)
+    center = Alignment(horizontal="center")
+    header_fill = PatternFill("solid", fgColor="F2F2F2")
+    thin = Border(left=Side(style="thin"), right=Side(style="thin"),
+                  top=Side(style="thin"), bottom=Side(style="thin"))
+
+    # Título y periodo
+    ws["A1"] = data["titulo"]
+    ws["A2"] = f"Periodo: {data['periodo']}"
+    ws["A1"].font = Font(bold=True, size=14)
+    ws["A2"].font = Font(bold=True)
+
+    row_start = 4
+
+    # --- Sección D.1 ---
+    ws[f"A{row_start}"] = data["seccion_d1"]["titulo"]
+    ws[f"A{row_start}"].font = bold
+    row_start += 1
+    for row in data["seccion_d1"]["rows"]:
+        ws.append(row)
+    row_start = ws.max_row + 2
+
+    # --- Sección D.2 ---
+    ws[f"A{row_start}"] = data["seccion_d2"]["titulo"]
+    ws[f"A{row_start}"].font = bold
+    row_start += 1
+    for row in data["seccion_d2"]["rows"]:
+        ws.append(row)
+    row_start = ws.max_row + 2
+
+    # --- Sección D.3 ---
+    ws[f"A{row_start}"] = data["seccion_d3"]["titulo"]
+    ws[f"A{row_start}"].font = bold
+    row_start += 1
+    for row in data["seccion_d3"]["rows"]:
+        ws.append(row)
+
+    # Ajustar ancho de columnas
+    ws.column_dimensions["A"].width = 40
+    ws.column_dimensions["B"].width = 20
+
+    # --- Respuesta HTTP ---
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="REM_A24_{data["periodo"]}.xlsx"'
+    wb.save(response)
+    return response
+
+def exportar_rem_a24_pdf(request):
+    # --- Capturar filtros desde POST o GET ---
+    mes = request.POST.get("mes") or request.GET.get("mes")
+    anio = request.POST.get("anio") or request.GET.get("anio")
+    inicio = request.POST.get("inicio") or request.GET.get("inicio")
+    fin = request.POST.get("fin") or request.GET.get("fin")
+
+    mes = int(mes) if mes else None
+    anio = int(anio) if anio else None
+    inicio = date.fromisoformat(inicio) if inicio else None
+    fin = date.fromisoformat(fin) if fin else None
+
+    # --- Obtener datos del reporte ---
+    data = get_reporte_rem24_completo(mes=mes, anio=anio, inicio=inicio, fin=fin)
+
+    # --- Renderizar template HTML ---
+    html = render_to_string("reportes/exportable_rem_a24.html", {
+        "titulo": data["titulo"],
+        "periodo": data["periodo"],
+        "seccion_d1": data["seccion_d1"],
+        "seccion_d2": data["seccion_d2"],
+        "seccion_d3": data["seccion_d3"],
     })
-from django.shortcuts import render # Mostrar páginas
-from django.http import HttpResponse # Responder texto plano
-from django.db.models import Count, Q
-from partos.models import Parto, RN
-from .exportadores import (exportar_reporte_parto_pdf, exportar_reporte_parto_excel,
-                            exportar_reporte_nacidos_vivos_pdf, exportar_reporte_nacidos_vivos_excel,
-                            exportar_reporte_atencion_inmediata_pdf, exportar_reporte_atencion_inmediata_excel)
 
+    # --- Convertir a PDF ---
+    result = io.BytesIO()
+    pisa.CreatePDF(html, dest=result)
 
+    # --- Respuesta HTTP ---
+    response = HttpResponse(result.getvalue(), content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="REM_A24_{data["periodo"]}.pdf"'
+    return response
 
+def rem_24(request):
+    mes = request.GET.get("mes")
+    anio = request.GET.get("anio")
 
-def reporte_parto(request):
-    # Total partos por tipo
-    total_partos = Parto.objects.count()
-    vaginal = Parto.objects.filter(tipo_parto="vaginal").count()
-    instrumental = Parto.objects.filter(tipo_parto="instrumental").count()
-    cesarea_electiva = Parto.objects.filter(tipo_parto="cesarea_electiva").count()
-    cesarea_urgencia = Parto.objects.filter(tipo_parto="cesarea_urgencia").count()
+    now = datetime.now()
+    mes = int(mes) if mes else now.month
+    anio = int(anio) if anio else now.year
 
-    # RN ≥ 2500 g con lactancia precoz por tipo de parto
-    rn_filtrados = RN.objects.filter(peso__gte=2500, lactancia_antes_60=True)
-    total_lactancia = rn_filtrados.count()
-    lactancia_vaginal = rn_filtrados.filter(parto_asociado__tipo_parto="vaginal").count()
-    lactancia_instrumental = rn_filtrados.filter(parto_asociado__tipo_parto="instrumental").count()
-    lactancia_electiva = rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_electiva").count()
-    lactancia_urgencia = rn_filtrados.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()
-
-
-    # Construimos la tabla con dos columnas
-    data = {
-        "headers": [
-            "Características del Parto",
-            "Lactancia materna en los primeros 60 minutos (RN ≥ 2500 g)"
-        ],
-        "rows": [
-            ["Total Partos", total_lactancia],
-            ["Vaginal", lactancia_vaginal],
-            ["Instrumental", lactancia_instrumental],
-            ["Cesárea Electiva", lactancia_electiva],
-            ["Cesárea Urgencia", lactancia_urgencia],
-        ],
-        "reporte_nombre": "reporte_parto",
+    # Diccionario de meses en español
+    meses_nombres = {
+        1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
+        5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
+        9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
     }
-    return render(request, "reportes/predefinidos/rem_24_caracteristicas_parto.html", {"data": data})
 
+    periodo_legible = f"{meses_nombres[mes]} {anio}"
 
-def reporte_nacidos_vivos(request):
-    data = {
-        "headers": ["Rango de Peso (g)", "Cantidad"],
-        "rows": [
-            ["Menos de 500", RN.objects.filter(peso__lt=500).count()],
-            ["500 a 999", RN.objects.filter(peso__gte=500, peso__lte=999).count()],
-            ["1.000 a 1.499", RN.objects.filter(peso__gte=1000, peso__lte=1499).count()],
-            ["1.500 a 1.999", RN.objects.filter(peso__gte=1500, peso__lte=1999).count()],
-            ["2.000 a 2.499", RN.objects.filter(peso__gte=2000, peso__lte=2499).count()],
-            ["2.500 a 2.999", RN.objects.filter(peso__gte=2500, peso__lte=2999).count()],
-            ["3.000 a 3.999", RN.objects.filter(peso__gte=3000, peso__lte=3999).count()],
-            ["4.000 y más", RN.objects.filter(peso__gte=4000).count()],
-            ["Total nacidos vivos", RN.objects.count()],
-            ["Con anomalía congénita", RN.objects.filter(anomalia_congenita=True).count()],
-        ],
-        # Antes: "rem_a24_info_gral_rn_vivos"
-        "reporte_nombre": "reporte_nacidos_vivos",
-    }
-    return render(request, "reportes/predefinidos/rem_a24_info_gral_rn_vivos.html", {"data": data})
+    data = get_reporte_rem24_completo(mes=mes, anio=anio)
 
+    lista_anios = range(now.year - 5, now.year + 1)
 
-def reporte_atencion_inmediata(request):
-    data = {
-        "headers": ["Indicador", "Cantidad"],
-        "rows": [
-            ["Total nacidos vivos", RN.objects.count()],
-            ["Profilaxis Hepatitis B", RN.objects.filter(vacuna_hepatitis_b=True).count()],
-            ["Profilaxis Ocular", RN.objects.filter(profilaxis_ocular=True).count()],
-            ["Parto Vaginal", Parto.objects.filter(tipo_parto="vaginal").count()],
-            ["Parto Instrumental", Parto.objects.filter(tipo_parto="instrumental").count()],
-            ["Cesárea", Parto.objects.filter(tipo_parto__in=["cesarea_electiva", "cesarea_urgencia"]).count()],
-            ["Parto Extrahospitalario", Parto.objects.filter(tipo_parto="extrahospitalario").count()],
-            ["Apgar ≤ 3 al minuto", RN.objects.filter(apgar_1__lte=3).count()],
-            ["Apgar ≤ 6 a los 5 minutos", RN.objects.filter(apgar_5__lte=6).count()],
-            ["Reanimación Básica", RN.objects.filter(reanimacion_basica=True).count()],
-            ["Reanimación Avanzada", RN.objects.filter(reanimacion_avanzada=True).count()],
-            ["EHI Grado II y III", RN.objects.filter(ehi_grado_ii_iii=True).count()],
-        ],
-        # Antes: "rem_a24_atencion_inmediata_rn"
-        "reporte_nombre": "reporte_atencion_inmediata",
-    }
-    return render(request, "reportes/predefinidos/rem_a24_atencion_inmediata_rn.html", {"data": data})
-
-
-def panel_supervisor(request):
-    return render(request, "roles/panel_supervisor.html")
-
-def selector_de_reportes(request):
-    return render(request, "reportes/componentes/selector_reportes.html")  # pantalla donde eliges qué reporte ver
-
-def selector_de_filtros(request):
-    return render(request, "reportes/componentes/selector_filtros.html")  # placeholder (lo llenamos luego)
-
-
-
-def exportar_reporte(request):
-    if request.method == 'POST':
-        formato = request.POST.get('formato')
-        reporte = request.POST.get('reporte')
-        print("Recibido:", reporte, "como", formato)
-        if reporte == 'reporte_parto':
-            if formato == 'pdf':
-                return exportar_reporte_parto_pdf(request)
-            elif formato == 'excel':
-                return exportar_reporte_parto_excel(request)
-
-        elif reporte == 'reporte_nacidos_vivos':
-            if formato == 'pdf':
-                return exportar_reporte_nacidos_vivos_pdf(request)
-            elif formato == 'excel':
-                return exportar_reporte_nacidos_vivos_excel(request)
-        elif reporte == 'reporte_atencion_inmediata':
-            if formato == 'pdf':
-                return exportar_reporte_atencion_inmediata_pdf(request)
-            elif formato == 'excel':
-                return exportar_reporte_atencion_inmediata_excel(request)
-
-        return HttpResponse("Reporte o formato no válido", status=400)
-
-    return HttpResponse("Método no permitido", status=405)
+    return render(request, "reportes/rem_24.html", {
+        "titulo": data["titulo"],
+        "periodo": periodo_legible,  # usamos el texto legible
+        "seccion_d1": data["seccion_d1"],
+        "seccion_d2": data["seccion_d2"],
+        "seccion_d3": data["seccion_d3"],
+        "lista_anios": lista_anios,
+        "mes_seleccionado": mes,
+        "anio_seleccionado": anio,
+    })
