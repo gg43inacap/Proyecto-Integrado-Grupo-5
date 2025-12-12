@@ -21,6 +21,7 @@ urlpatterns = [
     path("componentes/selector_filtros/", views.selector_de_filtros, name="selector_filtros"),
     path('exportar/', views.exportar_reporte, name='exportar_reporte'),  # Ruta para exportar reportes
     
+    path('api/estadisticas/', views.api_estadisticas_reportes, name='api_estadisticas_reportes'),
     # URLs para exportación de reportes específicos
     # Reporte de Partos
     path('exportar/parto/pdf/', exportadores.exportar_reporte_parto_pdf, name='exportar_parto_pdf'),

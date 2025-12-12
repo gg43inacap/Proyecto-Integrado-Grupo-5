@@ -1,3 +1,22 @@
+from django.http import JsonResponse
+from django.utils import timezone
+def api_estadisticas_reportes(request):
+    """Devuelve estadísticas globales de reportes para el panel supervisor."""
+    hoy = timezone.now().date()
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+
+    total_reportes = Parto.objects.count() + RN.objects.count()
+    reportes_hoy = Parto.objects.filter(fecha_hora__date=hoy).count() + RN.objects.filter(parto_asociado__fecha_hora__date=hoy).count()
+    reportes_mes = Parto.objects.filter(fecha_hora__year=anio_actual, fecha_hora__month=mes_actual).count() + RN.objects.filter(parto_asociado__fecha_hora__year=anio_actual, parto_asociado__fecha_hora__month=mes_actual).count()
+    tipos_reportes = 3  # Parto, Nacidos Vivos, Atención Inmediata
+
+    return JsonResponse({
+        "total_reportes": total_reportes,
+        "reportes_hoy": reportes_hoy,
+        "reportes_mes": reportes_mes,
+        "tipos_reportes": tipos_reportes
+    })
 from django.shortcuts import render # Mostrar páginas
 from django.http import HttpResponse # Responder texto plano
 from django.db.models import Count, Q
