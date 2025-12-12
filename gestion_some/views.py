@@ -14,8 +14,6 @@ def api_madre_por_rut(request):
             'found': True,
             'nombre': madre.nombre,
             'fecha_nacimiento': madre.fecha_nacimiento,
-            'fecha_ingreso': madre.fecha_ingreso,
-            'hora_ingreso': madre.hora_ingreso,
             'comuna': madre.comuna,
             'cesfam': madre.cesfam,
             'prevision': madre.prevision,
@@ -59,8 +57,6 @@ def editar_madre(request, madre_id): # Edita los datos de una madre
         madre.direccion = request.POST.get('direccion')
         madre.telefono = request.POST.get('telefono')
         madre.antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos')
-        madre.fecha_ingreso = request.POST.get('fecha_ingreso')
-        madre.hora_ingreso = request.POST.get('hora_ingreso')
         madre.migrante = request.POST.get('migrante') == 'True'
         madre.pueblo_originario = request.POST.get('pueblo_originario') == 'True'
         madre.alergias = request.POST.get('alergias') == 'True'
@@ -96,8 +92,6 @@ def crear_madre(request): # Crea una nueva madre
             direccion=request.POST.get('direccion'),
             telefono=request.POST.get('telefono'),
             antecedentes_obstetricos=request.POST.get('antecedentes_obstetricos'),
-            fecha_ingreso=request.POST.get('fecha_ingreso'),
-            hora_ingreso=request.POST.get('hora_ingreso'),
             migrante=request.POST.get('migrante') == 'True',
             pueblo_originario=request.POST.get('pueblo_originario') == 'True',
             alergias=request.POST.get('alergias') == 'True',
@@ -124,12 +118,6 @@ def api_estadisticas_madres(request):
     anio_actual = hoy.year
 
     total_madres = Madre.objects.count()
-    madres_hoy = Madre.objects.filter(fecha_ingreso=hoy).count()
-    madres_mes = Madre.objects.filter(fecha_ingreso__year=anio_actual, fecha_ingreso__month=mes_actual).count()
-
     return JsonResponse({
-        "total_madres": total_madres,
-        "madres_hoy": madres_hoy,
-        "madres_mes": madres_mes,
-        "madres_activas": madres_activas
+        "total_madres": total_madres
     })
