@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class='btn btn-success mt-3' id='btn-editar'>Editar datos</button>\
                     </div>`;
                     document.getElementById('btn-editar').onclick = function() {
-                        window.location.href = `/gestion_some/madres/${rut}/editar/`;
+                        window.location.href = `/gestion_some/madres/${data.id}/editar/`;
                     };
                 } else {
                     resultDiv.innerHTML = `<div class='alert alert-warning'>\

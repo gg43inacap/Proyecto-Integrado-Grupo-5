@@ -12,6 +12,7 @@ def api_madre_por_rut(request):
         madre = Madre.objects.get(rut=rut)
         data = {
             'found': True,
+            'id': madre.id,
             'nombre': madre.nombre,
             'fecha_nacimiento': madre.fecha_nacimiento,
             'comuna': madre.comuna,
