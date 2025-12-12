@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-4 mb-5">
     
-    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mb-3">
+    <a href="{% url 'dashboard' %}?rol=SOME" class="btn btn-outline-secondary mb-3">
         <i class="fas fa-arrow-left me-2"></i> Volver al Panel SOME
     </a>
     
@@ -38,7 +38,6 @@
                             <th scope="col"><i class="fas fa-id-card me-1"></i> RUT</th>
                             <th scope="col"><i class="fas fa-map-marker-alt me-1"></i> Comuna</th>
                             <th scope="col"><i class="fas fa-calendar-alt me-1"></i> F. Nacimiento</th>
-                            <th scope="col" class="text-center"><i class="fas fa-check-circle me-1"></i> Confirmado</th>
                             <th scope="col" class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -56,13 +55,6 @@
                             <td>{{ madre.comuna|default:"N/A" }}</td>
                             <td>{{ madre.fecha_nacimiento|date:"d M Y"|default:"N/A" }}</td>
                             
-                            <td class="text-center">
-                                {% if madre.confirmado %}
-                                    <span class="badge bg-success"><i class="fas fa-check"></i> Sí</span>
-                                {% else %}
-                                    <span class="badge bg-secondary"><i class="fas fa-times"></i> No</span>
-                                {% endif %}
-                            </td>
                             
                             <td class="text-center">
                                 <a href="{% url 'detalle_madre' madre.id %}" class="btn btn-info btn-sm me-1" title="Ver Detalle">
@@ -80,7 +72,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
+                            <td colspan="6" class="text-center py-4 text-muted">
                                 <i class="fas fa-box-open fa-2x d-block mb-2"></i>
                                 No hay madres registradas. Utilice el botón Registrar Nueva Madre para comenzar.
                             </td>
