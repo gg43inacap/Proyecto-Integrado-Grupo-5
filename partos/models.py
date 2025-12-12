@@ -15,12 +15,15 @@ class Parto(models.Model): # Modelo que representa un parto
     ]
     madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='partos') # Relación con la madre
     fecha_hora = models.DateTimeField() # Fecha y hora del parto
+    fecha_ingreso = models.DateField(help_text="Fecha de ingreso de la madre al evento", null=True, blank=True)
+    hora_ingreso = models.TimeField(help_text="Hora de ingreso de la madre al evento", null=True, blank=True)
     tipo_parto = models.CharField(max_length=20, choices=TIPO_PARTO_CHOICES) # Tipo de parto
-    tipo_parto_clasificado = models.CharField(max_length=20, blank=True, null=True) # Tipo de parto clasificado
     complicaciones = models.TextField(blank=True, null=True) # Complicaciones durante el parto
     parto_distocico = models.BooleanField(default=False) # Indica si el parto fue distócico
     parto_vacuum = models.BooleanField(default=False) # Indica si se usó vacuum en el parto
     confirmado = models.BooleanField(default=False) # Indica si el parto está confirmado
+    tiene_acompanante = models.BooleanField(default=False, help_text="¿Tiene acompañante?")
+    nombre_acompanante = models.CharField(max_length=100, blank=True, null=True, default="") # Nombre del acompañante si corresponde
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='activo') # Estado del parto
     objects = models.Manager()
 
@@ -56,7 +59,6 @@ class RN(models.Model): # Modelo que representa un recién nacido
     reanimacion_basica = models.BooleanField(default=False) # Indica si se realizó reanimación básica
     reanimacion_avanzada = models.BooleanField(default=False) # Indica si se realizó reanimación avanzada
     ehi_grado_ii_iii = models.BooleanField(default=False) # Indica si hay EHI grado II o III
-    confirmado = models.BooleanField(default=False)  # Solo Matrona puede confirmar
     objects = models.Manager()
 
     def __str__(self):

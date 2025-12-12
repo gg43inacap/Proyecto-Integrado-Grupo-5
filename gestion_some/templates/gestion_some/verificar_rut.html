@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Verificar RUT de Madre{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white p-4">
+                    <h1 class="card-title mb-0"><i class="fas fa-id-card me-2"></i> Ingrese RUT de la Madre</h1>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form id="form-verificar-rut" method="get" autocomplete="off">
+                        <div class="mb-4">
+                            <label for="rut" class="form-label fw-bold">RUT de la Madre:</label>
+                            <input type="text" class="form-control form-control-lg" id="rut" name="rut" placeholder="Ej: 12345678-9" required autofocus>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i> Verificar RUT
+                            </button>
+                        </div>
+                    </form>
+                    <div id="rut-result" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/verificar_rut.js"></script>
+{% endblock %}

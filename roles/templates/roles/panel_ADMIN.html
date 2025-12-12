@@ -1,51 +1,307 @@
+
 {% extends 'base.html' %}
 {% block title %}Panel de Administrador{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    
-    <h1 class="mb-4"><i class="fas fa-user-shield me-2 text-dark"></i> Panel de Administración</h1>
-
-    <div class="card shadow-lg border-0 rounded-3">
-        
-        <div class="card-header bg-dark text-white rounded-top-3 p-3">
-            <h4 class="mb-1">Bienvenido, {{ user.username }}.</h4>
-            <p class="mb-0 text-muted small">Rol: <span class="badge bg-secondary">{{ user.role|default:"ADMINISTRADOR" }}</span></p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="mb-0 text-dark"><i class="fas fa-user-shield me-3"></i> Panel de Administración</h1>
+            <p class="lead text-muted mt-1">Gestión y monitoreo de usuarios y actividad del sistema.</p>
         </div>
-        
-        <div class="card-body p-4">
-            
-            <div class="row g-4 justify-content-center">
-                
-                <div class="col-md-6">
-                    <div class="p-4 rounded border-start border-5 border-primary bg-light shadow-sm">
-                        
-                        <h5 class="text-primary mb-3"><i class="fas fa-users me-2"></i> Gestión de Usuarios</h5>
-                        
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">
-                                <i class="fas fa-list me-2"></i> Gestionar Usuarios
-                            </a>
-                            <a href="{% url 'crear_usuario' %}" class="btn btn-success">
-                                <i class="fas fa-user-plus me-2"></i> Crear Usuario
-                            </a>
+        <div class="text-end">
+            <span class="badge bg-secondary text-white">ADMIN</span>
+            <br>
+            <small class="text-muted">Usuario: <strong>{{ user.username }}</strong></small>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-dark shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                Usuarios Totales</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="usuarios-totales">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-dark opacity-50"></i>
                         </div>
                     </div>
                 </div>
-                
-            </div> <hr class="my-5">
-            
-            <div class="d-flex justify-content-between flex-wrap">
-                <a href="{% url 'inicio' %}" class="btn btn-outline-secondary w-100 w-md-auto mb-2 mb-md-0">
-                    <i class="fas fa-home me-2"></i> Volver al Inicio
-                </a>
-                
-                <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 w-md-auto" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-                </a>
             </div>
-            
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Usuarios Bloqueados</div>
+                            <div class="h5 mb-0 font-weight-bold text-danger" id="usuarios-bloqueados">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-slash fa-2x text-danger opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-navy shadow h-100 py-2" style="border-color: #001f3f !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold" style="color: #001f3f; text-transform: uppercase; margin-bottom: 0.25rem;">
+                                Usuarios Nuevos (Hoy)</div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #001f3f;" id="usuarios-nuevos">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-plus fa-2x" style="color: #001f3f; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-purple shadow h-100 py-2" style="border-color: #6f42c1 !important;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold" style="color: #6f42c1; text-transform: uppercase; margin-bottom: 0.25rem;">
+                                Usuarios Modificados (Semana)</div>
+                            <div class="h5 mb-0 font-weight-bold" style="color: #6f42c1;" id="usuarios-modificados">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-edit fa-2x" style="color: #6f42c1; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="row mb-5 g-4">
+        <div class="col-xl-2 col-md-4" id="rol-admin">
+            <div class="card border-start border-5 shadow h-100 py-2" style="border-color: #ff8800 !important;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold" style="color: #ff8800; text-transform: uppercase; margin-bottom: 0.25rem;">Admin</div>
+                    <div class="h5 mb-0 font-weight-bold" style="color: #ff8800;" id="usuarios-admin">-</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4" id="rol-some">
+            <div class="card border-start border-5 border-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">SOME</div>
+                    <div class="h5 mb-0 font-weight-bold text-primary" id="usuarios-some">-</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4" id="rol-matrona">
+            <div class="card border-start border-5 border-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Matrona</div>
+                    <div class="h5 mb-0 font-weight-bold text-success" id="usuarios-matrona">-</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4" id="rol-supervisor">
+            <div class="card border-start border-5 border-navy shadow h-100 py-2" style="border-color: #001f3f !important;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold" style="color: #001f3f; text-transform: uppercase; margin-bottom: 0.25rem;">Supervisor</div>
+                    <div class="h5 mb-0 font-weight-bold" style="color: #001f3f;" id="usuarios-supervisor">-</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4" id="rol-auditoria">
+            <div class="card border-start border-5 border-purple shadow h-100 py-2" style="border-color: #6f42c1 !important;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold" style="color: #6f42c1; text-transform: uppercase; margin-bottom: 0.25rem;">Auditoría</div>
+                    <div class="h5 mb-0 font-weight-bold" style="color: #6f42c1;" id="usuarios-auditoria">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs"></i> Funciones de Gestión
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-start border-4 border-primary">
+                                <div class="card-body">
+                                    <h6 class="text-primary"><i class="fas fa-list-ul me-1"></i> Listado de Usuarios</h6>
+                                    <p class="text-muted small mb-3">Ver todos los usuarios registrados en el sistema</p>
+                                    <a href="{% url 'lista_usuarios' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-search"></i> Ver Usuarios
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-start border-4 border-success">
+                                <div class="card-body">
+                                    <h6 class="text-success"><i class="fas fa-user-plus me-1"></i> Nuevo Usuario</h6>
+                                    <p class="text-muted small mb-3">Registrar un nuevo usuario en el sistema</p>
+                                    <a href="{% url 'crear_usuario' %}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar Usuario
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-7 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-chart-bar me-2"></i> Usuarios por Rol (Año)
+                </div>
+                <div class="card-body">
+                    <canvas id="usuariosRolesBarChart" height="320" style="min-height:320px;max-height:480px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-purple text-white" style="background-color: #6f42c1 !important;">
+                    <i class="fas fa-chart-pie me-2"></i> Modificaciones y Nuevos por Rol (Mes)
+                </div>
+                <div class="card-body">
+                    <canvas id="modificacionesPieChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/roles/api/estadisticas_admin/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('usuarios-totales').textContent = data.total_usuarios;
+            document.getElementById('usuarios-bloqueados').textContent = data.usuarios_bloqueados;
+            document.getElementById('usuarios-nuevos').textContent = data.usuarios_nuevos;
+            document.getElementById('usuarios-modificados').textContent = data.usuarios_modificados;
+            // No mostrar superadmin
+            document.getElementById('usuarios-admin').textContent = data.usuarios_admin;
+            document.getElementById('usuarios-some').textContent = data.usuarios_some;
+            document.getElementById('usuarios-matrona').textContent = data.usuarios_matrona;
+            document.getElementById('usuarios-supervisor').textContent = data.usuarios_supervisor;
+            document.getElementById('usuarios-auditoria').textContent = data.usuarios_auditoria;
+
+            // Chart.js: Usuarios por Rol (Año)
+            if (data.usuarios_roles_anio) {
+                const ctxBar = document.getElementById('usuariosRolesBarChart').getContext('2d');
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: data.usuarios_roles_anio.labels,
+                        datasets: [{
+                            label: 'Usuarios',
+                            data: data.usuarios_roles_anio.data,
+                            backgroundColor: [
+                                '#0d6efd', // Total Usuarios (azul)
+                                '#ff8800', // Admin (naranja custom)
+                                '#0d6efd', // Some
+                                '#198754', // Matrona
+                                '#001f3f', // Supervisor
+                                '#6f42c1', // Auditoría
+                                '#dc3545'  // Usuarios Bloqueados (rojo)
+                            ],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false }
+                        },
+                        layout: {
+                            padding: 20
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    font: { size: 16 }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad de Usuarios',
+                                    font: { size: 16 }
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: { size: 15 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart.js: Modificaciones y Nuevos por Rol (Mes)
+            if (data.modificaciones_roles_mes) {
+                const ctxPie = document.getElementById('modificacionesPieChart').getContext('2d');
+                new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.modificaciones_roles_mes.labels,
+                        datasets: [{
+                            label: 'Modificaciones/Nuevos',
+                            data: data.modificaciones_roles_mes.data,
+                            backgroundColor: [
+                                '#212529', // Admin
+                                '#0d6efd', // Some
+                                '#198754', // Matrona
+                                '#001f3f', // Supervisor
+                                '#6f42c1'  // Auditoría
+                            ],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            title: { display: false }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            document.getElementById('usuarios-totales').textContent = 'Error';
+            document.getElementById('usuarios-bloqueados').textContent = 'Error';
+            document.getElementById('usuarios-nuevos').textContent = 'Error';
+            document.getElementById('usuarios-modificados').textContent = 'Error';
+            document.getElementById('usuarios-superadmin').textContent = 'Error';
+            document.getElementById('usuarios-admin').textContent = 'Error';
+            document.getElementById('usuarios-some').textContent = 'Error';
+            document.getElementById('usuarios-matrona').textContent = 'Error';
+            document.getElementById('usuarios-supervisor').textContent = 'Error';
+            document.getElementById('usuarios-auditoria').textContent = 'Error';
+        });
+    });
+    </script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </div>
 {% endblock %}

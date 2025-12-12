@@ -1,30 +1,155 @@
+
 {% extends 'base.html' %}
 
 {% block title %}Panel Matrona{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    
-    <h1 class="mb-4 text-success"><i class="fas fa-user-nurse me-2"></i> Panel Matrona</h1>
-    
-    <p class="lead mb-4">Bienvenido al panel de usuario MATRONA. Desde aquí puede gestionar el registro de partos y visualizar el historial clínico de las pacientes.</p>
-
-    <hr class="my-4">
-    
-    <div class="d-flex flex-wrap gap-3 mb-5">
-        
-        <a href="{% url 'lista_partos' %}" class="btn btn-success btn-lg">
-            <i class="fas fa-baby me-2"></i> Ver listado de Partos
-        </a>
-
-        <a href="{% url 'lista_rns' %}" class="btn btn-success btn-lg">
-            <i class="fas fa-baby me-2"></i> Ver Listado de Recien nacidos
-        </a>
-        
-        <a href="{% url 'crear_parto' %}" class="btn btn-outline-secondary btn-lg">
-            <i class="fas fa-list-alt me-2"></i> Registrar Nuevo Parto
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="mb-0 text-success"><i class="fas fa-user-nurse me-3"></i> Panel Matrona</h1>
+            <p class="lead text-muted mt-1">Gestión y monitoreo de partos y recién nacidos.</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-success text-white">MATRONA</span>
+            <br>
+            <small class="text-muted">Usuario: <strong>{{ user.username }}</strong></small>
+        </div>
     </div>
 
+    <div class="row mb-5 g-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Partos Activos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="partos-activos">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-baby fa-2x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Partos Hoy</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="partos-hoy">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Partos Mes</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="partos-mes">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-5 border-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Partos</div>
+                            <div class="h5 mb-0 font-weight-bold text-primary" id="total-partos">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-baby-carriage fa-2x text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs"></i> Funciones de Gestión
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-success">
+                                <div class="card-body">
+                                    <h6 class="text-success"><i class="fas fa-list-ul me-1"></i> Listado de Partos</h6>
+                                    <p class="text-muted small mb-3">Ver todos los partos registrados en el sistema</p>
+                                    <a href="{% url 'lista_partos' %}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-search"></i> Ver Partos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-info">
+                                <div class="card-body">
+                                    <h6 class="text-info"><i class="fas fa-baby me-1"></i> Listado de RN</h6>
+                                    <p class="text-muted small mb-3">Ver todos los recién nacidos registrados</p>
+                                    <a href="{% url 'lista_rns' %}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-search"></i> Ver RN
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-primary">
+                                <div class="card-body">
+                                    <h6 class="text-primary"><i class="fas fa-plus-circle me-1"></i> Nuevo Parto</h6>
+                                    <p class="text-muted small mb-3">Registrar un nuevo parto en el sistema</p>
+                                    <a href="{% url 'crear_parto' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar Parto
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/roles/api/estadisticas_matrona/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-partos').textContent = data.total_partos;
+            document.getElementById('partos-hoy').textContent = data.partos_hoy;
+            document.getElementById('partos-mes').textContent = data.partos_mes;
+            document.getElementById('partos-activos').textContent = data.partos_activos;
+        })
+        .catch(error => {
+            document.getElementById('total-partos').textContent = 'Error';
+            document.getElementById('partos-hoy').textContent = 'Error';
+            document.getElementById('partos-mes').textContent = 'Error';
+            document.getElementById('partos-activos').textContent = 'Error';
+        });
+    });
+    </script>
+</div>
 {% endblock %}

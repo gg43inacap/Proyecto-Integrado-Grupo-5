@@ -7,4 +7,6 @@ urlpatterns = [
     path('usuarios/crear/', views.crear_usuario, name='crear_usuario'),  # Ruta para crear usuario
     path('usuarios/<int:pk>/editar/', views.editar_usuario, name='editar_usuario'),  # Ruta para editar usuario
     path('usuarios/<int:pk>/bloquear/', views.bloquear_usuario, name='bloquear_usuario'),  # Ruta para bloquear usuario
+    path('api/estadisticas_admin/', views.api_estadisticas_admin, name='api_estadisticas_admin'),  # API estadísticas admin
+    path('api/estadisticas_matrona/', views.api_estadisticas_matrona, name='api_estadisticas_matrona'),  # API estadísticas matrona
 ]

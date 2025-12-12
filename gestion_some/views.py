@@ -1,7 +1,41 @@
+# Vista para verificar RUT antes de crear/editar madre
+def verificar_rut(request):
+    return render(request, 'gestion_some/verificar_rut.html')
+from django.views.decorators.http import require_GET
+# API para autocompletar datos de madre por RUT
+@require_GET
+def api_madre_por_rut(request):
+    rut = request.GET.get('rut', '').strip()
+    if not rut:
+        return JsonResponse({'found': False, 'error': 'RUT no proporcionado'}, status=400)
+    try:
+        madre = Madre.objects.get(rut=rut)
+        data = {
+            'found': True,
+            'nombre': madre.nombre,
+            'fecha_nacimiento': madre.fecha_nacimiento,
+            'fecha_ingreso': madre.fecha_ingreso,
+            'hora_ingreso': madre.hora_ingreso,
+            'comuna': madre.comuna,
+            'cesfam': madre.cesfam,
+            'prevision': madre.prevision,
+            'direccion': madre.direccion,
+            'telefono': madre.telefono,
+            'antecedentes_obstetricos': madre.antecedentes_obstetricos,
+            'migrante': madre.migrante,
+            'pueblo_originario': madre.pueblo_originario,
+            'alergias': madre.alergias,
+            'alergias_si': madre.alergias_si,
+        }
+        return JsonResponse(data)
+    except Madre.DoesNotExist:
+        return JsonResponse({'found': False})
 from django.shortcuts import get_object_or_404, render, redirect # Funciones para buscar objetos, mostrar páginas y redirigir
 # Importa el modelo Madre
 from .models import Madre
 from auditoria.models import registrar_evento_auditoria
+from django.http import JsonResponse
+from django.utils import timezone
 # pylint: disable=no-member
 # pyright: reportGeneralTypeIssues=false
 
@@ -16,18 +50,22 @@ def detalle_madre(request, madre_id): # Muestra los detalles de una madre
 def editar_madre(request, madre_id): # Edita los datos de una madre
     madre = get_object_or_404(Madre, id=madre_id) # Obtiene la madre o devuelve 404
     if request.method == 'POST': # Si el formulario ha sido enviado
-        madre.nombre = request.POST.get('nombre') # Actualiza el nombre
-        madre.rut = request.POST.get('rut') # Actualiza el RUT
-        madre.fecha_nacimiento = request.POST.get('fecha_nacimiento') # Actualiza la fecha de nacimiento
-        madre.comuna = request.POST.get('comuna') # Actualiza la comuna
-        madre.cesfam = request.POST.get('cesfam') # Actualiza el CESFAM
-        madre.prevision = request.POST.get('prevision') # Actualiza la previsión
-        madre.direccion = request.POST.get('direccion') # Actualiza la dirección
-        madre.telefono = request.POST.get('telefono') # Actualiza el teléfono
-        madre.antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos') # Actualiza los antecedentes obstétricos
-        madre.atenciones_clinicas = request.POST.get('atenciones_clinicas') # Actualiza las atenciones clínicas
-        madre.acompanante = request.POST.get('acompanante') # Actualiza el acompañante
-        madre.save() # Guarda los cambios en la base de datos
+        madre.nombre = request.POST.get('nombre')
+        madre.rut = request.POST.get('rut')
+        madre.fecha_nacimiento = request.POST.get('fecha_nacimiento')
+        madre.comuna = request.POST.get('comuna')
+        madre.cesfam = request.POST.get('cesfam')
+        madre.prevision = request.POST.get('prevision')
+        madre.direccion = request.POST.get('direccion')
+        madre.telefono = request.POST.get('telefono')
+        madre.antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos')
+        madre.fecha_ingreso = request.POST.get('fecha_ingreso')
+        madre.hora_ingreso = request.POST.get('hora_ingreso')
+        madre.migrante = request.POST.get('migrante') == 'True'
+        madre.pueblo_originario = request.POST.get('pueblo_originario') == 'True'
+        madre.alergias = request.POST.get('alergias') == 'True'
+        madre.alergias_si = request.POST.get('alergias_si')
+        madre.save()
         registrar_evento_auditoria(
             usuario=request.user,
             accion_realizada='UPDATE',
@@ -42,48 +80,28 @@ def editar_madre(request, madre_id): # Edita los datos de una madre
 # Vista para eliminar una madre
 
 def eliminar_madre(request, madre_id): # Elimina una madre
-    madre = get_object_or_404(Madre, id=madre_id) # Obtiene la madre o devuelve 404
-    if request.method == 'POST': # Si se confirma la eliminación
-        nombre = madre.nombre
-        rut = madre.rut
-        id_madre = madre.id
-        madre.delete() # Elimina la madre de la base de datos
-        registrar_evento_auditoria(
-            usuario=request.user,
-            accion_realizada='DELETE',
-            modelo_afectado='Madre',
-            registro_id=id_madre,
-            detalles_cambio=f"Madre eliminada: {nombre} (RUT: {rut})",
-            ip_address=request.META.get('REMOTE_ADDR')
-        )
-        return redirect('lista_madres') # Redirige a la lista de madres después de eliminar
-    return render(request, 'gestion_some/eliminar_madre.html', {'madre': madre}) # Muestra la página de confirmación de eliminación
+    # Eliminación física deshabilitada. Si se requiere lógica, implementar aquí (por ahora solo redirige)
+    return redirect('lista_madres')
 
 # Vista para crear una nueva madre
 
 def crear_madre(request): # Crea una nueva madre
     if request.method == 'POST': #  Si el formulario ha sido enviado
-        nombre = request.POST.get('nombre') #   Obtiene el nombre del formulario
-        rut = request.POST.get('rut') # Obtiene el RUT del formulario
-        fecha_nacimiento = request.POST.get('fecha_nacimiento') # Obtiene la fecha de nacimiento del formulario
-        comuna = request.POST.get('comuna') # Obtiene la comuna del formulario
-        cesfam = request.POST.get('cesfam') # Obtiene el CESFAM del formulario
-        direccion = request.POST.get('direccion') # Obtiene la dirección del formulario
-        telefono = request.POST.get('telefono') # Obtiene el teléfono del formulario
-        antecedentes_obstetricos = request.POST.get('antecedentes_obstetricos') # Obtiene los antecedentes obstétricos del formulario
-        atenciones_clinicas = request.POST.get('atenciones_clinicas') # Obtiene las atenciones clínicas del formulario
-        acompanante = request.POST.get('acompanante') # Obtiene el acompañante del formulario
         madre = Madre.objects.create(
-            nombre=nombre,
-            rut=rut,
-            fecha_nacimiento=fecha_nacimiento,
-            comuna=comuna,
-            cesfam=cesfam,
-            direccion=direccion,
-            telefono=telefono,
-            antecedentes_obstetricos=antecedentes_obstetricos,
-            atenciones_clinicas=atenciones_clinicas,
-            acompanante=acompanante
+            nombre=request.POST.get('nombre'),
+            rut=request.POST.get('rut'),
+            fecha_nacimiento=request.POST.get('fecha_nacimiento'),
+            comuna=request.POST.get('comuna'),
+            cesfam=request.POST.get('cesfam'),
+            direccion=request.POST.get('direccion'),
+            telefono=request.POST.get('telefono'),
+            antecedentes_obstetricos=request.POST.get('antecedentes_obstetricos'),
+            fecha_ingreso=request.POST.get('fecha_ingreso'),
+            hora_ingreso=request.POST.get('hora_ingreso'),
+            migrante=request.POST.get('migrante') == 'True',
+            pueblo_originario=request.POST.get('pueblo_originario') == 'True',
+            alergias=request.POST.get('alergias') == 'True',
+            alergias_si=request.POST.get('alergias_si'),
         )
         registrar_evento_auditoria(
             usuario=request.user,
@@ -99,3 +117,19 @@ def crear_madre(request): # Crea una nueva madre
 def lista_madres(request): # Lista todas las madres
     madres = Madre.objects.all()
     return render(request, 'gestion_some/lista_madres.html', {'madres': madres}) # Muestra la página con la lista de madres
+
+def api_estadisticas_madres(request):
+    hoy = timezone.now().date()
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+
+    total_madres = Madre.objects.count()
+    madres_hoy = Madre.objects.filter(fecha_ingreso=hoy).count()
+    madres_mes = Madre.objects.filter(fecha_ingreso__year=anio_actual, fecha_ingreso__month=mes_actual).count()
+
+    return JsonResponse({
+        "total_madres": total_madres,
+        "madres_hoy": madres_hoy,
+        "madres_mes": madres_mes,
+        "madres_activas": madres_activas
+    })
