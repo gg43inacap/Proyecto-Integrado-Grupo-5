@@ -2,6 +2,13 @@
 {% block title %}Verificar RUT de Madre{% endblock %}
 {% block content %}
 <div class="container mt-5">
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'dashboard' %}?rol=SOME" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Volver al Panel SOME
+            </a>
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-lg border-0">
