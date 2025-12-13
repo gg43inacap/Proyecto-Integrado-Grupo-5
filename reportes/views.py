@@ -88,10 +88,20 @@ def exportar_rem_a24_excel(request):
 
     # Título principal
     titulo_mes = nombre_mes(mes)
-    ws["A1"] = f"REM A24 — Atención del Recién Nacido ({titulo_mes} {anio})"
-    ws["A2"] = f"Periodo: {titulo_mes} {anio}"
-    ws["A1"].font = Font(bold=True, size=14)
-    ws["A2"].font = Font(bold=True)
+
+
+# Título principal con fondo suave
+    ws.merge_cells("A1:E1")
+    ws["A1"] = "REM A24 — Atención del Recién Nacido"
+    ws["A1"].font = Font(bold=True, size=16)
+    ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
+    ws["A1"].fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+
+    ws.merge_cells("A2:E2")
+    ws["A2"] = f"Reporte mensual — {titulo_mes} {anio}"
+    ws["A2"].font = Font(bold=True, size=12, italic=True, color="404040")
+    ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
+    ws["A2"].fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
 
     row = 4
 
@@ -147,7 +157,7 @@ def exportar_rem_a24_excel(request):
         row += 1
 
     # Nota de lactancia
-    ws.cell(row=row, column=1, value="Lactancia materna en los primeros 60 minutos de vida (RN ≥ 2500 grs)")
+    #ws.cell(row=row, column=1, value="Lactancia materna en los primeros 60 minutos de vida (RN ≥ 2500 grs)")
     ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=2)
     ws.cell(row=row, column=1).font = Font(italic=True, size=10)
     ws.cell(row=row, column=1).alignment = Alignment(wrap_text=True)
