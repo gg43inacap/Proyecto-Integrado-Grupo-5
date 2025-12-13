@@ -36,7 +36,7 @@
                                     <td>{{ rn.madre }}</td>
                                     <td>
                                         <span class="badge bg-info">Parto {{ rn.parto_asociado.id }}</span>
-                                        <small class="d-block text-muted">{{ rn.parto_asociado.fecha_hora|date:"d/m/Y H:i" }}</small>
+                                        <small class="d-block text-muted">{{ rn.parto_asociado.fecha_ingreso|date:"d/m/Y" }}</small>
                                     </td>
                                     <td>{{ rn.fecha_nacimiento|date:"d/m/Y" }}</td>
                                     <td>
@@ -62,9 +62,6 @@
                                             </a>
                                             <a href="{% url 'editar_rn' rn.id %}" class="btn btn-sm btn-warning" title="Editar">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{% url 'eliminar_rn' rn.id %}" class="btn btn-sm btn-danger" title="Eliminar">
-                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
                                     </td>

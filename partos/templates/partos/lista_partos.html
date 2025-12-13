@@ -28,7 +28,8 @@
                                 <tr class="{% if parto.estado == 'completado' %}table-secondary{% endif %}">
                                     <td>{{ parto.id }}</td>
                                     <td>{{ parto.madre }}</td>
-                                    <td>{{ parto.fecha_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>{{parto.fecha_ingreso|date:"d/m/Y"}}</td>
+                                    <td>{{ parto.hora_ingreso }}</td>
                                     <td>{{ parto.get_tipo_parto_display }}</td>
                                     <td>
                                         {% if parto.estado == 'activo' %}
@@ -55,9 +56,6 @@
                                             {% else %}
                                                 <span class="text-muted small">Parto finalizado</span>
                                             {% endif %}
-                                            <a href="{% url 'eliminar_parto' parto.id %}" class="btn btn-sm btn-danger" title="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
                                         </div>
                                     </td>
                                 </tr>

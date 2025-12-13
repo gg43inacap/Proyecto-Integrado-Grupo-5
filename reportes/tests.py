@@ -22,7 +22,8 @@ class ReportesTest(TestCase):
         
         self.parto = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-01T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             estado='completado'
         )

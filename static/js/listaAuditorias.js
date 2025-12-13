@@ -4,7 +4,7 @@ function limpiarFiltros() {
     document.getElementById('modelo').value = '';
     document.getElementById('usuario').value = '';
     document.getElementById('fecha_desde').value = '';
-    document.getElementById('orden').value = '-fecha_hora';
+    document.getElementById('orden').value = 'fecha_ingreso','hora_ingreso';
     document.getElementById('filtrosForm').submit();
 }
 

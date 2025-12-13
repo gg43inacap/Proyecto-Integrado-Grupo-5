@@ -17,7 +17,7 @@ class Parto(models.Model): # Modelo que representa un parto
         ('completado', 'Completado'),
     ]
     madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='partos') # Relación con la madre
-    fecha_hora = models.DateTimeField() # Fecha y hora del parto
+    #fecha_hora = models.DateTimeField() # Fecha y hora del parto
     fecha_ingreso = models.DateField(help_text="Fecha de ingreso de la madre al evento", null=True, blank=True)
     hora_ingreso = models.TimeField(help_text="Hora de ingreso de la madre al evento", null=True, blank=True)
     tipo_parto = models.CharField(max_length=20, choices=TIPO_PARTO_CHOICES) # Tipo de parto

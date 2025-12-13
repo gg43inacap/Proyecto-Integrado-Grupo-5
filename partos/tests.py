@@ -20,7 +20,8 @@ class PartoModelTest(TestCase):
     def test_create_parto(self):
         parto = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-01T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             confirmado=True
         )
@@ -31,7 +32,8 @@ class PartoModelTest(TestCase):
     def test_completar_parto(self):
         parto = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-01T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             estado='activo'
         )
@@ -49,7 +51,8 @@ class RNModelTest(TestCase):
         )
         self.parto = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-01T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             confirmado=True,
             estado='activo'
@@ -83,14 +86,16 @@ class PartoAjaxTest(TestCase):
         
         self.parto_activo = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-01T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             estado='activo'
         )
         
         self.parto_completado = Parto.objects.create(
             madre=self.madre,
-            fecha_hora='2025-12-02T10:00:00Z',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='cesarea',
             estado='completado'
         )

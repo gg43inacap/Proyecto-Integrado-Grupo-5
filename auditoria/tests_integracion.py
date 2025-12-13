@@ -43,7 +43,8 @@ class AuditoriaIntegracionTest(TestCase):
         )
         response = self.client.post(reverse('crear_parto'), {
             'madre': madre.id,
-            'fecha_hora': '2023-01-01T10:00',
+            'fecha_ingreso': '2023-01-01',
+            'hora_ingreso': '10:00',
             'tipo_parto': 'vaginal',
             'tipo_parto_clasificado': '',
             'complicaciones': '',
@@ -72,7 +73,8 @@ class AuditoriaIntegracionTest(TestCase):
         )
         parto = Parto.objects.create(
             madre=madre,
-            fecha_hora='2023-01-01T10:00',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             tipo_parto_clasificado='',
             complicaciones='',
@@ -126,7 +128,8 @@ class AuditoriaIntegracionTest(TestCase):
         )
         parto = Parto.objects.create(
             madre=madre,
-            fecha_hora='2023-01-01T10:00',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             estado='activo'
         )
@@ -190,7 +193,8 @@ class AuditoriaIntegracionTest(TestCase):
         )
         parto = Parto.objects.create(
             madre=madre,
-            fecha_hora='2023-01-01T10:00',
+            fecha_ingreso= '2023-01-01',
+            hora_ingreso= '10:00',
             tipo_parto='vaginal',
             estado='activo'
         )

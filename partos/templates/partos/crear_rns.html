@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'css/apps/crear_rns.css' %}">
 {% endblock %}
 
-{% block title %}RegistrarRecién Nacidos - Sistema Neonatal{% endblock %}
+{% block title %}Registrar Recién Nacidos - Sistema Neonatal{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -76,8 +76,10 @@
 
 {% block scripts %}
 <script>
-    const MAX_FORMS = 10;
-    let formIndex = {{ formset.total_form_count|default:2 }};
+    // Límite máximo de formularios (puedes ajustarlo)
+    const maxForms = 10;
+    // Forzar inicio con un solo ribbon; JS actualizará TOTAL_FORMS cuando se añadan/quiten
+    let formIndex = 1;
 </script>
 <script src="{% static 'js/crear_rns.js' %}"></script>
 {% endblock %}

@@ -7,14 +7,12 @@ urlpatterns = [
     path('partos/crear/', views.crear_parto, name='crear_parto'), # Ruta para crear parto
     path('partos/<int:parto_id>/', views.detalle_parto, name='detalle_parto'), # Ruta para ver detalles de parto
     path('partos/<int:parto_id>/editar/', views.editar_parto, name='editar_parto'), # Ruta para editar parto
-    path('partos/<int:parto_id>/eliminar/', views.eliminar_parto, name='eliminar_parto'), # Ruta para eliminar parto
     # CRUD RN
     path('rns/', views.lista_rns, name='lista_rns'), # Ruta para listar recién nacidos
     path('rns/crear/', views.crear_rn, name='crear_rn'), # Ruta para crear recién nacido
     path('rns/crear-multiples/', views.crear_rns, name='crear_rns'), # Ruta para crear múltiples recién nacidos
     path('rns/<int:rn_id>/', views.detalle_rn, name='detalle_rn'), # Ruta para ver detalles de recién nacido
     path('rns/<int:rn_id>/editar/', views.editar_rn, name='editar_rn'), # Ruta para editar recién nacido
-    path('rns/<int:rn_id>/eliminar/', views.eliminar_rn, name='eliminar_rn'), # Ruta para eliminar recién nacido
     # Nuevas funcionalidades
     path('ajax/filtrar-partos/', views.filtrar_partos_por_madre, name='filtrar_partos_por_madre'), # Ruta AJAX para filtrar partos
     path('partos/<int:parto_id>/completar/', views.completar_parto, name='completar_parto'), # Ruta para completar parto
