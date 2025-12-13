@@ -47,7 +47,7 @@ from auditoria.models import registrar_evento_auditoria
 @login_required
 def lista_partos(request):
     # Mostrar todos los partos, pero destacar los activos
-    partos = Parto.objects.select_related('madre').all().order_by('-fecha_hora')
+    partos = Parto.objects.select_related('madre').all().order_by('fecha_ingreso','hora_ingreso')
     return render(request, 'partos/lista_partos.html', {'partos': partos})
 # Vista para crear un nuevo parto
 @login_required
