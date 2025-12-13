@@ -9,9 +9,6 @@ from xhtml2pdf import pisa
 from django.shortcuts import render
 from datetime import datetime, date
 
-
-
-
 # --- Nombres de meses en español ---
 MESES_NOMBRES = {
     1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
@@ -62,13 +59,13 @@ def write_horizontal_section(ws, start_row, titulo, rows):
 # --- Exportar Excel ---
 def exportar_rem_a24_excel(request):
     # --- Capturar filtros desde GET ---
-    mes = request.GET.get("mes")
-    anio = request.GET.get("anio")
+    mes_str = request.GET.get("mes")
+    anio_str = request.GET.get("anio")
     inicio = request.GET.get("inicio")
     fin = request.GET.get("fin")
 
-    mes = int(mes) if mes else None
-    anio = int(anio) if anio else None
+    mes = int(mes_str) if mes_str and mes_str.isdigit() else datetime.now().month
+    anio = int(anio_str) if anio_str and anio_str.isdigit() else datetime.now().year
     inicio = date.fromisoformat(inicio) if inicio else None
     fin = date.fromisoformat(fin) if fin else None
 
@@ -90,12 +87,9 @@ def exportar_rem_a24_excel(request):
     ws.column_dimensions["B"].width = 18
 
     # Título principal
-    titulo_mes = nombre_mes(mes) if mes else "Mes no especificado"
-
-    ws["A1"] = f"REM A24 — Atención del Recién Nacido ({titulo_mes} {anio or ''})"
-    ws["A2"] = f"Periodo: {titulo_mes} {anio or ''}"
-
-
+    titulo_mes = nombre_mes(mes)
+    ws["A1"] = f"REM A24 — Atención del Recién Nacido ({titulo_mes} {anio})"
+    ws["A2"] = f"Periodo: {titulo_mes} {anio}"
     ws["A1"].font = Font(bold=True, size=14)
     ws["A2"].font = Font(bold=True)
 
@@ -145,7 +139,6 @@ def exportar_rem_a24_excel(request):
     for indicador, valor in data["seccion_d3"]["rows"]:
         cell_indicador = ws.cell(row=row, column=1, value=indicador)
         cell_valor = ws.cell(row=row, column=2, value=valor)
-
         cell_indicador.border = borde_fino
         cell_valor.border = borde_fino
         cell_valor.fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
@@ -214,21 +207,14 @@ def exportar_rem_a24_pdf(request):
     return response
 
 def rem_24(request):
-    mes = request.GET.get("mes")
-    anio = request.GET.get("anio")
+    mes_str = request.GET.get("mes")
+    anio_str = request.GET.get("anio")
 
     now = datetime.now()
-    mes = int(mes) if mes else now.month
-    anio = int(anio) if anio else now.year
+    mes = int(mes_str) if mes_str and mes_str.isdigit() else now.month
+    anio = int(anio_str) if anio_str and anio_str.isdigit() else now.year
 
-    # Diccionario de meses en español
-    meses_nombres = {
-        1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
-        5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
-        9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
-    }
-
-    periodo_legible = f"{meses_nombres[mes]} {anio}"
+    periodo_legible = f"{nombre_mes(mes)} {anio}"
 
     data = get_reporte_rem24_completo(mes=mes, anio=anio)
 
@@ -236,7 +222,7 @@ def rem_24(request):
 
     return render(request, "reportes/rem_24.html", {
         "titulo": data["titulo"],
-        "periodo": periodo_legible,  # usamos el texto legible
+        "periodo": periodo_legible,
         "seccion_d1": data["seccion_d1"],
         "seccion_d2": data["seccion_d2"],
         "seccion_d3": data["seccion_d3"],
