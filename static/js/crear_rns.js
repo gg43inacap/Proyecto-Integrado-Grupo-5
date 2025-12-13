@@ -134,14 +134,12 @@ function addForm() {
             newMadreSelect.addEventListener('change', filtrarPartos);
         }
         
-        // Incrementar contador
-        formIndex++;
+    // Incrementar contador
+    formIndex++;
         
         // Actualizar el campo TOTAL_FORMS
         const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
-        if (totalFormsInput) {
-            totalFormsInput.value = formIndex;
-        }
+    if (totalFormsInput) totalFormsInput.value = formIndex;
         
         // Scroll al nuevo formulario
         newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -242,16 +240,27 @@ document.addEventListener('DOMContentLoaded', function() {
         addButton.addEventListener('click', addForm);
     }
     
-    // Configurar eventos de filtrado para formularios existentes
-    const madreSelects = document.querySelectorAll('[id*="id_"][id*="-madre"]');
-    madreSelects.forEach(madreSelect => {
-        madreSelect.addEventListener('change', filtrarPartos);
-        
-        // Ejecutar filtrado inicial si hay una madre preseleccionada
-        if (madreSelect.value) {
-            filtrarPartos();
+    // Mostrar solo el primer ribbon si la plantilla renderizó varios
+    const container = document.getElementById('formset-container');
+    if (container) {
+        const forms = Array.from(container.querySelectorAll('.ribbon-tab'));
+
+        // If the template rendered multiple, keep only the first visible and remove others from DOM
+        if (forms.length > 1) {
+            // Remove all except the first
+            forms.slice(1).forEach(f => f.remove());
         }
-    });
+
+        // Ensure formIndex and TOTAL_FORMS reflect current visible forms (start at 1)
+        formIndex = container.querySelectorAll('.ribbon-tab').length || 1;
+        const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+        if (totalFormsInput) totalFormsInput.value = formIndex;
+
+        // Attach filtrarPartos to the madre selects present
+        const madreSelects = container.querySelectorAll('[id*="id_"][id*="-madre"]');
+        madreSelects.forEach(ms => ms.addEventListener('change', filtrarPartos));
+        if (madreSelects.length && madreSelects[0].value) filtrarPartos();
+    }
     
     console.log('Formset dinámico inicializado. Listo para partos múltiples! 👶👶👶');
 });
