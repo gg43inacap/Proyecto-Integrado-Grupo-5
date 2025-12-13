@@ -1,11 +1,14 @@
 from django.db import models # Sistema de modelos de Django
 from gestion_some.models import Madre # Importa el modelo Madre
+from django.utils import timezone
+
 
 class Parto(models.Model): # Modelo que representa un parto
     TIPO_PARTO_CHOICES = [
         ('vaginal', 'Vaginal'),
-        ('cesarea', 'Cesárea'),
+        ('cesarea_electiva', 'Cesárea Electiva'),
         ('instrumental', 'Instrumental'),
+        ('cesarea_urgencia', 'Cesárea de Urgencia'),
         ('extrahospitalario', 'Extrahospitalario'),
     ]
     
@@ -29,6 +32,21 @@ class Parto(models.Model): # Modelo que representa un parto
 
     def __str__(self):
         return f"Parto {self.pk} - {self.madre.nombre if hasattr(self.madre, 'nombre') else self.madre}"
+
+# En Parto
+def es_cesarea_electiva(self):
+    return self.tipo_parto == 'cesarea_electiva'
+
+def es_cesarea_urgencia(self):
+    return self.tipo_parto == 'cesarea_urgencia'
+
+# En RN
+def apgar_bajo_minuto(self):
+    return self.apgar_1 is not None and self.apgar_1 <= 3
+
+def apgar_bajo_5min(self):
+    return self.apgar_5 is not None and self.apgar_5 <= 6
+
 
 class RN(models.Model): # Modelo que representa un recién nacido
     SEXO_CHOICES = [
