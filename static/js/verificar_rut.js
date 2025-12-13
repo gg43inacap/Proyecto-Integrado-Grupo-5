@@ -1,6 +1,6 @@
 // --- Funciones de formateo y validación de RUT (adaptadas de login.js) ---
 function formatearRut(valor) {
-    let rutLimpio = valor.replace(/[^0-9kK]/g, '').toLowerCase();
+    let rutLimpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
     if (rutLimpio.length < 2) return rutLimpio;
     const dv = rutLimpio.slice(-1);
     const cuerpo = rutLimpio.slice(0, -1);
@@ -16,19 +16,32 @@ function formatearRut(valor) {
 }
 
 function validarRut(valor) {
-    if (!valor || valor.trim().length < 3) return false;
-    if (!/^[0-9]{1,3}(\.[0-9]{3})*-?[0-9kK]$/.test(valor)) return false;
-    // Validación de dígito verificador (algoritmo oficial)
-    let rut = valor.replace(/\./g, '').replace(/-/g, '').toLowerCase();
-    let cuerpo = rut.slice(0, -1);
-    let dv = rut.slice(-1);
-    let suma = 0, factor = 2;
+    // Aceptar tanto RUT formateado (12.345.678-5) como sin formato (12345678-5 o 123456785)
+    if (!valor || valor.trim().length < 2) return false;
+
+    // Limpiar y normalizar: eliminar puntos y guión, y poner en mayúsculas
+    const rut = valor.replace(/\./g, '').replace(/-/g, '').toUpperCase();
+
+    // Debe quedar: cuerpo (1..8 dígitos) + DV (1 caracter: 0-9 o K)
+    if (!/^\d{1,8}[0-9K]$/.test(rut)) return false;
+
+    const cuerpo = rut.slice(0, -1);
+    const dv = rut.slice(-1);
+
+    // Cálculo del dígito verificador (algoritmo modulo 11)
+    let suma = 0;
+    let factor = 2;
     for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * factor;
+        suma += parseInt(cuerpo.charAt(i), 10) * factor;
         factor = factor === 7 ? 2 : factor + 1;
     }
-    let dvEsperado = 11 - (suma % 11);
-    dvEsperado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'k' : dvEsperado.toString();
+
+    let resultado = 11 - (suma % 11);
+    let dvEsperado;
+    if (resultado === 11) dvEsperado = '0';
+    else if (resultado === 10) dvEsperado = 'K';
+    else dvEsperado = String(resultado);
+
     return dv === dvEsperado;
 }
 // JS para verificar RUT de madre y redirigir según resultado
