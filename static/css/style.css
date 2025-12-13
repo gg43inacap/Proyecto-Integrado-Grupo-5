@@ -290,7 +290,11 @@ body {
 .demo-info-box ul li {
     margin-bottom: 5px;
 }
-/* Contenedor principal */
+
+/* ========================================================= */
+/* ESTILOS DE REPORTES (REM_24.html)                   */
+/* ========================================================= */
+
 .rem24-container {
     max-width: 1000px;
     margin: 0 auto;
