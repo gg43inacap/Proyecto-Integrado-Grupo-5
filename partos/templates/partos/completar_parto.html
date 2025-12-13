@@ -27,7 +27,8 @@
                             <ul class="list-unstyled">
                                 <li><strong>ID:</strong> {{ parto.id }}</li>
                                 <li><strong>Madre:</strong> {{ parto.madre }}</li>
-                                <li><strong>Fecha:</strong> {{ parto.fecha_hora|date:"d/m/Y H:i" }}</li>
+                                <li><strong>Fecha:</strong> {{ parto.fecha_ingreso|date:"d/m/Y" }}</li>
+                                <li><strong>Hora:</strong> {{ parto.hora_ingreso }}</li>                                
                                 <li><strong>Tipo:</strong> {{ parto.get_tipo_parto_display }}</li>
                                 <li><strong>Estado actual:</strong> <span class="badge bg-success">{{ parto.get_estado_display }}</span></li>
                             </ul>

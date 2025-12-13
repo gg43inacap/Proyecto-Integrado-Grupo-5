@@ -105,8 +105,8 @@ def api_estadisticas_matrona(request):
     total_partos = Parto.objects.count()
     partos_activos = Parto.objects.filter(estado='activo').count()
     hoy = timezone.now().date()
-    partos_hoy = Parto.objects.filter(fecha_hora__date=hoy).count()
-    partos_mes = Parto.objects.filter(fecha_hora__year=hoy.year, fecha_hora__month=hoy.month).count()
+    partos_hoy = Parto.objects.filter(fecha_ingreso__date=hoy).count()
+    partos_mes = Parto.objects.filter(fecha_ingreso__year=hoy.year, fecha_ingreso__month=hoy.month).count()
     return JsonResponse({
         'total_partos': total_partos,
         'partos_activos': partos_activos,

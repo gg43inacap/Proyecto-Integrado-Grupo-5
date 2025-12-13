@@ -91,23 +91,7 @@ def editar_parto(request, parto_id):
         form = PartoForm(instance=parto)
     return render(request, 'partos/editar_parto.html', {'form': form, 'parto': parto})
 
-@login_required
-def eliminar_parto(request, parto_id):
-    parto = get_object_or_404(Parto, id=parto_id)
-    if request.method == 'POST':
-        madre_id = parto.madre.id if parto.madre else ''
-        id_parto = parto.id
-        parto.delete()
-        registrar_evento_auditoria(
-            usuario=request.user,
-            accion_realizada='DELETE',
-            modelo_afectado='Parto',
-            registro_id=id_parto,
-            detalles_cambio=f"Parto eliminado para madre ID: {madre_id}",
-            ip_address=request.META.get('REMOTE_ADDR')
-        )
-        return redirect('lista_partos')
-    return render(request, 'partos/eliminar_parto.html', {'parto': parto})
+
 
 @login_required
 def detalle_parto(request, parto_id):
@@ -162,7 +146,7 @@ def filtrar_partos_por_madre(request):
             for parto in partos:
                 partos_list.append({
                     'id': parto.id,
-                    'text': f"Parto {parto.id} - {parto.fecha_hora.strftime('%d/%m/%Y %H:%M')} - {parto.get_tipo_parto_display()}"
+                    'text': f"Parto {parto.id} - {parto.fecha_ingreso.strftime('%d/%m/%Y ')} - {parto.hora_ingreso.strftime('%H:%M')} - {parto.get_tipo_parto_display()}"
                 })
         else:
             partos_list = []
@@ -193,23 +177,7 @@ def editar_rn(request, rn_id):
         form = RNForm(instance=rn)
     return render(request, 'partos/editar_rn.html', {'form': form, 'rn': rn})
 
-@login_required
-def eliminar_rn(request, rn_id):
-    rn = get_object_or_404(RN, id=rn_id)
-    if request.method == 'POST':
-        madre_id = rn.madre.id if rn.madre else ''
-        id_rn = rn.id
-        rn.delete()
-        registrar_evento_auditoria(
-            usuario=request.user,
-            accion_realizada='DELETE',
-            modelo_afectado='RN',
-            registro_id=id_rn,
-            detalles_cambio=f"RN eliminado para madre ID: {madre_id}",
-            ip_address=request.META.get('REMOTE_ADDR')
-        )
-        return redirect('lista_rns')
-    return render(request, 'partos/eliminar_rn.html', {'rn': rn})
+
 
 @login_required
 def completar_parto(request, parto_id):
