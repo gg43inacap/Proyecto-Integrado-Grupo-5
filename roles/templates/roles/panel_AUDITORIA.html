@@ -176,7 +176,150 @@
     </div>
     
     </div>
+</div>
 
-<script src="{% static 'js/panel_auditoria.js' %}"></script>
+<!-- JavaScript para cargar estadísticas -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    cargarEstadisticas();
+    cargarUltimosEventos();
+});
 
+function cargarEstadisticas() {
+    // Mostrar estado de carga
+    document.getElementById('total-eventos').textContent = 'Cargando...';
+    document.getElementById('eventos-hoy').textContent = 'Cargando...';
+    document.getElementById('eventos-semana').textContent = 'Cargando...';
+    
+    // Obtener estadísticas reales del servidor
+    fetch('/auditoria/api/estadisticas/')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar estadísticas');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Actualizar contadores con datos reales
+        document.getElementById('total-eventos').textContent = data.total_eventos || 0;
+        document.getElementById('eventos-hoy').textContent = data.eventos_hoy || 0;
+        document.getElementById('eventos-semana').textContent = data.eventos_semana || 0;
+        
+        console.log('Estadísticas cargadas:', data);
+    })
+    .catch(error => {
+        console.error('Error cargando estadísticas:', error);
+        document.getElementById('total-eventos').textContent = 'Error';
+        document.getElementById('eventos-hoy').textContent = 'Error';
+        document.getElementById('eventos-semana').textContent = 'Error';
+    });
+}
+
+function cargarUltimosEventos() {
+    // Cargar los últimos eventos reales del servidor
+    fetch('/auditoria/api/estadisticas/')
+    .then(response => response.json())
+    .then(data => {
+        const eventosContainer = document.getElementById('ultimos-eventos');
+        
+        if (data.ultimos_eventos && data.ultimos_eventos.length > 0) {
+            let eventosHtml = '<div class="table-responsive"><table class="table table-sm"><tbody>';
+            
+            data.ultimos_eventos.forEach(evento => {
+                let badgeClass = 'secondary';
+                let accionTraducida = evento.accion;
+                
+                // Traducir acciones al español y asignar colores
+                if (evento.accion === 'CREATE') {
+                    badgeClass = 'success';
+                    accionTraducida = '📝 Creación';
+                } else if (evento.accion === 'UPDATE') {
+                    badgeClass = 'warning';
+                    accionTraducida = '✏️ Modificación';
+                } else if (evento.accion === 'DELETE') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🗑️ Eliminación';
+                } else if (evento.accion === 'VIEW') {
+                    badgeClass = 'info';
+                    accionTraducida = '👁️ Visualización';
+                } else if (evento.accion === 'LOGIN_SUCCESS') {
+                    badgeClass = 'success';
+                    accionTraducida = '✅ Login Exitoso';
+                } else if (evento.accion === 'LOGIN_FAILED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '❌ Login Fallido';
+                } else if (evento.accion === 'LOGOUT') {
+                    badgeClass = 'secondary';
+                    accionTraducida = '🚪 Cierre Sesión';
+                } else if (evento.accion === 'USER_BLOCKED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🚫 Usuario Bloqueado';
+                } else if (evento.accion === 'ACCESS_DENIED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '⛔ Acceso Denegado';
+                }
+                
+                eventosHtml += `
+                    <tr>
+                        <td><span class="badge bg-${badgeClass}">${accionTraducida}</span></td>
+                        <td>${evento.modelo}</td>
+                        <td><small>${evento.usuario}</small></td>
+                        <td><small class="text-muted">${evento.fecha}</small></td>
+                    </tr>
+                `;
+            });
+            
+            eventosHtml += '</tbody></table></div>';
+            eventosHtml += `
+                <div class="text-center mt-3">
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-list"></i> Ver Lista Completa
+                    </a>
+                    <small class="text-muted d-block mt-2">Actualizado: ${data.fecha_consulta}</small>
+                </div>
+            `;
+            
+            eventosContainer.innerHTML = eventosHtml;
+        } else {
+            eventosContainer.innerHTML = `
+                <div class="text-center">
+                    <p class="text-muted">No hay eventos registrados</p>
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Ver Lista Completa de Eventos
+                    </a>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error cargando eventos:', error);
+        document.getElementById('ultimos-eventos').innerHTML = `
+            <div class="text-center text-danger">
+                <p>Error al cargar eventos</p>
+                <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> Ver Lista Completa
+                </a>
+            </div>
+        `;
+    });
+}
+</script>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.border-left-secondary {
+    border-left: 0.25rem solid #858796 !important;
+}
+</style>
 {% endblock %}

@@ -68,13 +68,8 @@
                                             <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-outline-primary" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            
                                             {% if user.is_active and not user.is_superuser %}
-                                                <a href="{% url 'bloquear_usuario' user.pk %}" 
-                                                   class="btn btn-outline-danger" 
-                                                   title="Bloquear"
-                                                   onclick="return confirm('¿Está seguro de que desea bloquear a {{ user.username }}?')"
-                                                >
+                                                <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-outline-danger" title="Bloquear">
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             {% endif %}

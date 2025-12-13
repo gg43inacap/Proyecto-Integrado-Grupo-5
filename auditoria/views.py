@@ -1,7 +1,7 @@
 
 # pylint: disable=no-member
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.utils import timezone
@@ -46,6 +46,10 @@ def lista_auditorias(request):
     
     # Aplicar filtros
     logs = Auditoria.objects.all()
+    
+    # OCULTAR actividad del SUPERADMIN - debe ser invisible para todos los demás usuarios
+    if not request.user.is_superuser:
+        logs = logs.exclude(usuario__is_superuser=True)
     
     if accion_filtro:
         logs = logs.filter(accion_realizada=accion_filtro)
@@ -110,6 +114,70 @@ def detalle_auditoria(request, auditoria_id):
         return HttpResponse('Registro de auditoría no encontrado.', status=404)
     return render(request, 'auditoria/detalle_auditoria.html', {'log': log})
 
+@login_required
+def estadisticas_auditoria_api(request):
+    """
+    API para obtener estadísticas reales de auditoría
+    Devuelve datos en formato JSON para el dashboard
+    """
+    if not tiene_acceso_auditoria(request.user):
+        return JsonResponse({'error': 'Acceso denegado'}, status=403)
+    
+    # Fecha de hoy
+    hoy = timezone.now().date()
+    inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de esta semana
+    
+    # Obtener queryset base (ocultar SUPERADMIN si no eres superuser)
+    if request.user.is_superuser:
+        base_queryset = Auditoria.objects.all()
+    else:
+        base_queryset = Auditoria.objects.exclude(usuario__is_superuser=True)
+    
+    # Calcular estadísticas reales
+    total_eventos = base_queryset.count()
+    eventos_hoy = base_queryset.filter(fecha_hora__date=hoy).count()
+    eventos_semana = base_queryset.filter(fecha_hora__date__gte=inicio_semana).count()
+    
+    # Estadísticas adicionales
+    eventos_por_accion = list(
+        base_queryset.values('accion_realizada')
+        .annotate(cantidad=Count('id'))
+        .order_by('-cantidad')[:5]
+    )
+    
+    # Actividad de los últimos 7 días
+    actividad_semanal = []
+    for i in range(7):
+        fecha = hoy - timedelta(days=i)
+        eventos_dia = base_queryset.filter(fecha_hora__date=fecha).count()
+        actividad_semanal.append({
+            'fecha': fecha.strftime('%Y-%m-%d'),
+            'eventos': eventos_dia
+        })
+    
+    # Últimos 5 eventos (excluyendo SUPERADMIN si no eres superuser)
+    ultimos_eventos = []
+    for evento in base_queryset.select_related('usuario').order_by('-fecha_hora')[:5]:
+        ultimos_eventos.append({
+            'id': evento.id,
+            'usuario': evento.usuario.username if evento.usuario else 'Sistema',
+            'accion': evento.accion_realizada,
+            'modelo': evento.modelo_afectado,
+            'fecha': evento.fecha_hora.strftime('%d/%m/%Y %H:%M'),
+        })
+    
+    data = {
+        'total_eventos': total_eventos,
+        'eventos_hoy': eventos_hoy,
+        'eventos_semana': eventos_semana,
+        'eventos_por_accion': eventos_por_accion,
+        'actividad_semanal': actividad_semanal,
+        'ultimos_eventos': ultimos_eventos,
+        'fecha_consulta': timezone.now().strftime('%d/%m/%Y %H:%M:%S')
+    }
+    
+    return JsonResponse(data)
+
 # Nota: No existen vistas para crear, editar ni eliminar logs de auditoría.
 # El registro es automático y la auditoría es solo de consulta.
 
@@ -128,62 +196,3 @@ def detalle_auditoria(request, auditoria_id):
 # python manage.py shell
 # >>> from auditoria.models import registrar_evento_auditoria
 # >>> registrar_evento_auditoria(...)
-
-@login_required
-def api_estadisticas_auditoria(request):
-    """
-    API REST que retorna estadísticas reales de auditoría en JSON.
-    Acceso para usuarios AUDITORIA, ADMIN y superusers.
-    """
-    from django.http import JsonResponse
-    
-    if not tiene_acceso_auditoria(request.user):
-        return JsonResponse({'error': 'Acceso denegado'}, status=403)
-    
-    try:
-        hoy = timezone.now().date()
-        hace_una_semana = hoy - timedelta(days=7)
-        
-        # Conteos totales
-        total_eventos = Auditoria.objects.count()
-        eventos_hoy = Auditoria.objects.filter(fecha_hora__date=hoy).count()
-        eventos_semana = Auditoria.objects.filter(
-            fecha_hora__date__gte=hace_una_semana,
-            fecha_hora__date__lte=hoy
-        ).count()
-        
-        # Conteo por acción
-        acciones = Auditoria.objects.values('accion_realizada').annotate(
-            count=Count('id')
-        ).order_by('-count')
-        
-        # Conteo por rol de usuario
-        roles_usuarios = Auditoria.objects.values(
-            'usuario__role'
-        ).annotate(
-            count=Count('id')
-        ).order_by('-count')
-        
-        # Conteo por modelo afectado
-        modelos = Auditoria.objects.values('modelo_afectado').annotate(
-            count=Count('id')
-        ).order_by('-count')
-        
-        # Últimos 10 eventos
-        ultimos_eventos = Auditoria.objects.all().order_by('-fecha_hora')[:10].values(
-            'id', 'accion_realizada', 'modelo_afectado', 'usuario__username',
-            'fecha_hora', 'ip_address'
-        )
-        
-        return JsonResponse({
-            'total_eventos': total_eventos,
-            'eventos_hoy': eventos_hoy,
-            'eventos_semana': eventos_semana,
-            'acciones': list(acciones),
-            'roles_usuarios': list(roles_usuarios),
-            'modelos': list(modelos),
-            'ultimos_eventos': list(ultimos_eventos),
-            'timestamp': timezone.now().isoformat()
-        })
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)

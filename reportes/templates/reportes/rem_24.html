@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reporte REM A24{% endblock %}
+
+{% block content %}
+<div class="rem24-container">
+    <!-- Encabezado -->
+    <h2 class="rem24-titulo">{{ titulo }}</h2>
+    <p class="rem24-periodo">Periodo: {{ periodo }}</p>
+
+    <!-- Formulario de filtros -->
+    <form method="get" class="rem24-form">
+        <label for="mes">Mes:</label>
+        <select id="mes" name="mes">
+            <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
+            <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
+            <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
+            <option value="4" {% if mes_seleccionado == 4 %}selected{% endif %}>Abril</option>
+            <option value="5" {% if mes_seleccionado == 5 %}selected{% endif %}>Mayo</option>
+            <option value="6" {% if mes_seleccionado == 6 %}selected{% endif %}>Junio</option>
+            <option value="7" {% if mes_seleccionado == 7 %}selected{% endif %}>Julio</option>
+            <option value="8" {% if mes_seleccionado == 8 %}selected{% endif %}>Agosto</option>
+            <option value="9" {% if mes_seleccionado == 9 %}selected{% endif %}>Septiembre</option>
+            <option value="10" {% if mes_seleccionado == 10 %}selected{% endif %}>Octubre</option>
+            <option value="11" {% if mes_seleccionado == 11 %}selected{% endif %}>Noviembre</option>
+            <option value="12" {% if mes_seleccionado == 12 %}selected{% endif %}>Diciembre</option>
+        </select>
+
+        <label for="anio">Año:</label>
+        <select id="anio" name="anio">
+            {% for year in lista_anios %}
+                <option value="{{ year }}" {% if anio_seleccionado == year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filtrar</button>
+    </form>
+    <!-- Sección D1 -->
+    <div class="rem24-card">
+        <h3 class="rem24-subtitulo">{{ seccion_d1.titulo }}</h3>
+        <canvas id="graficoD1" class="rem24-canvas"></canvas>
+        <table class="rem24-table">
+            <thead>
+                <tr>
+                    <th>Indicador</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in seccion_d1.rows %}
+                <tr>
+                    <td>{{ row.0 }}</td>
+                    <td>{{ row.1 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sección D2 -->
+    <div class="rem24-card">
+        <h3 class="rem24-subtitulo">{{ seccion_d2.titulo }}</h3>
+        <canvas id="graficoD2" class="rem24-canvas"></canvas>
+        <table class="rem24-table">
+            <thead>
+                <tr>
+                    <th>Indicador</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in seccion_d2.rows %}
+                <tr>
+                    <td>{{ row.0 }}</td>
+                    <td>{{ row.1 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sección D3 -->
+    <div class="rem24-card">
+        <h3 class="rem24-subtitulo">{{ seccion_d3.titulo }}</h3>
+        <canvas id="graficoD3" class="rem24-canvas"></canvas>
+        <table class="rem24-table">
+            <thead>
+                <tr>
+                    <th>Indicador</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in seccion_d3.rows %}
+                <tr>
+                    <td>{{ row.0 }}</td>
+                    <td>{{ row.1 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botones de exportación -->
+    <div class="rem24-export">
+        <a href="{% url 'reportes:exportar_rem_a24_excel' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}"
+            class="btn btn-success">
+            📊 Exportar a Excel
+        </a>
+        <a href="{% url 'reportes:exportar_rem_a24_pdf' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}"
+            class="btn btn-danger">
+            📄 Exportar a PDF
+        </a>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gráfico D1 - Barras
+    new Chart(document.getElementById('graficoD1'), {
+        type: 'bar',
+        data: {
+            labels: [{% for row in seccion_d1.rows %}"{{ row.0 }}",{% endfor %}],
+        datasets: [{
+            label: '{{ seccion_d1.titulo }}',
+            data: [{% for row in seccion_d1.rows %}{{ row.1 }}, {% endfor %}],
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+            }]
+        },
+        options: {
+        scales: {
+            y: {
+                ticks: {
+                    precision: 0,   // fuerza enteros
+                    callback: function (value) {
+                        return Number.isInteger(value) ? value : null;
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return context.dataset.label + ': ' + Math.round(context.raw);
+                    }
+                }
+            }
+        }
+    }
+    });
+    // Gráfico D2 - Pie
+    new Chart(document.getElementById('graficoD2'), {
+        type: 'pie',
+        data: {
+            labels: [{% for row in seccion_d2.rows %}"{{ row.0 }}",{% endfor %}],
+        datasets: [{
+            label: '{{ seccion_d2.titulo }}',
+            data: [{% for row in seccion_d2.rows %}{{ row.1 }}, {% endfor %}],
+        backgroundColor: [
+        'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+        'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+        'rgba(199, 199, 199, 0.7)', 'rgba(255, 0, 255, 0.7)', 'rgba(0, 128, 0, 0.7)',
+        'rgba(0, 0, 128, 0.7)', 'rgba(128, 0, 0, 0.7)', 'rgba(0, 128, 128, 0.7)',
+        'rgba(128, 128, 0, 0.7)', 'rgba(255, 215, 0, 0.7)', 'rgba(255, 105, 180, 0.7)',
+        'rgba(0, 191, 255, 0.7)'
+    ]
+            }]
+        },
+        options: {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return context.label + ': ' + Math.round(context.raw);
+                    }
+                }
+            }
+        }
+    }
+    });
+
+    // Gráfico D3 - Líneas
+    new Chart(document.getElementById('graficoD3'), {
+        type: 'line',
+        data: {
+            labels: [{% for row in seccion_d3.rows %}"{{ row.0 }}",{% endfor %}],
+        datasets: [{
+            label: '{{ seccion_d3.titulo }}',
+            data: [{% for row in seccion_d3.rows %}{{ row.1 }}, {% endfor %}],
+        borderColor: 'rgba(255, 159, 64, 1)',
+        tension: 0.1,
+        fill: false
+            }]
+        },
+        options: {
+        scales: {
+            y: {
+                ticks: {
+                    precision: 0,
+                    callback: function (value) {
+                        return Number.isInteger(value) ? value : null;
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return context.dataset.label + ': ' + Math.round(context.raw);
+                    }
+                }
+            }
+        }
+    }
+    });
+</script>
+{% endblock %}
