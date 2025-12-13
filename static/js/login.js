@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatearRut(valor) {
         // Limpiar el valor de entrada (solo números y K)
-        let rutLimpio = valor.replace(/[^0-9kK]/g, '').toLowerCase();
+        let rutLimpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
         
         // Limitar a máximo 9 caracteres
         if (rutLimpio.length > 9) {
