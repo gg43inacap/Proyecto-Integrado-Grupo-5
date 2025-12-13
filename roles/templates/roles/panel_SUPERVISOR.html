@@ -1,16 +1,263 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+ 
+{% block title %}Panel Supervisor{% endblock %}
+ 
 {% block content %}
-<h2>Panel Supervisor</h2>
-<p>Bienvenido al panel de usuario SUPERVISOR.</p>
-<div style="margin-top:2rem;">
-	<a href="{% url 'reportes_dashboard' %}" class="btn btn-primary">Ver Reportes</a>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-0"><i class="fas fa-chart-bar text-success"></i> Panel de Reportes</h1>
+                    <p class="text-muted mt-2">Acceso a reportes predefinidos y gestor de reportes personalizados</p>
+                </div>
+                <div class="text-right">
+                    <span class="badge bg-success text-white" style="font-size: 0.9em;">
+                        <i class="fas fa-check-circle"></i> Supervisor Activo
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Estadísticas rápidas de reportes -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-primary font-weight-bold text-uppercase mb-1">Total de Reportes Generados</div>
+                    <div class="h3 mb-0" id="total-reportes">Cargando...</div>
+                </div>
+            </div>
+        </div>
+ 
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-success font-weight-bold text-uppercase mb-1">Reportes Este Mes</div>
+                    <div class="h3 mb-0" id="reportes-mes">Cargando...</div>
+                </div>
+            </div>
+        </div>
+ 
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-info font-weight-bold text-uppercase mb-1">Reportes Hoy</div>
+                    <div class="h3 mb-0" id="reportes-hoy">Cargando...</div>
+                </div>
+            </div>
+        </div>
+ 
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-warning font-weight-bold text-uppercase mb-1">Tipos de Reportes</div>
+                    <div class="h3 mb-0" id="tipos-reportes">Cargando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Panel de Gráficos Estadísticos -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex align-items-center">
+                    <h5 class="mb-0 me-2"><i class="fas fa-chart-bar"></i> Estadísticas Visuales</h5>
+                    <span class="badge bg-light text-success ms-2">Interactivo</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <canvas id="graficoBarrasReportes" style="max-height:350px;"></canvas>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <canvas id="graficoTortaReportes" style="max-height:350px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Gestor de filtros y búsqueda de reportes -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Gestor de Reportes</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Busca y filtra reportes generados o personaliza nuevos reportes según tus necesidades.</p>
+                    <div class="d-flex gap-2">
+                       
+                        <a href="{% url 'reportes:rem_24' %}" class="btn btn-outline-info">
+                            <i class="fas fa-cog"></i> Personalizar Reportes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Información importante -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Información del Sistema de Reportes</h5>
+                <ul class="mb-0">
+                    <li><strong>Reportes Predefinidos:</strong> Accede rápidamente a los reportes REM más utilizados</li>
+                    <li><strong>Filtros Avanzados:</strong> Busca reportes por fecha y ordena según tus preferencias</li>
+                    <li><strong>Exportación:</strong> Todos los reportes pueden exportarse en PDF o Excel</li>
+                    <li><strong>Actualización Automática:</strong> Los reportes se generan con datos actualizados en tiempo real</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Navegación -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="mt-4">
-	<a href="/" class="btn btn-outline-secondary">
-		<i class="fas fa-home"></i> Volver al inicio
-	</a>
-	<a href="{% url 'logout' %}" class="btn btn-outline-danger ms-2" onclick="return confirm('¿Está seguro que desea cerrar la sesión?')">
-		<i class="fas fa-sign-out-alt"></i> Cerrar sesión
-	</a>
-</div>
+ 
+<!-- JavaScript para cargar estadísticas y mostrar gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    cargarEstadisticasReportes();
+});
+
+function cargarEstadisticasReportes() {
+    // Mostrar estado de carga
+    document.getElementById('total-reportes').textContent = 'Cargando...';
+    document.getElementById('reportes-mes').textContent = 'Cargando...';
+    document.getElementById('reportes-hoy').textContent = 'Cargando...';
+    document.getElementById('tipos-reportes').textContent = 'Cargando...';
+
+    fetch('/reportes/api/estadisticas/')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar estadísticas');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Actualizar contadores con datos reales
+        document.getElementById('total-reportes').textContent = data.total_reportes || 0;
+        document.getElementById('reportes-mes').textContent = data.reportes_mes || 0;
+        document.getElementById('reportes-hoy').textContent = data.reportes_hoy || 0;
+        document.getElementById('tipos-reportes').textContent = data.tipos_reportes || 0;
+
+        // Gráfico de Barras
+        const ctxBarras = document.getElementById('graficoBarrasReportes').getContext('2d');
+        new Chart(ctxBarras, {
+            type: 'bar',
+            data: {
+                labels: ['Total', 'Este Mes', 'Hoy', 'Tipos'],
+                datasets: [{
+                    label: 'Cantidad',
+                    data: [
+                        data.total_reportes || 0,
+                        data.reportes_mes || 0,
+                        data.reportes_hoy || 0,
+                        data.tipos_reportes || 0
+                    ],
+                    backgroundColor: [
+                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Resumen de Reportes' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Gráfico de Torta
+        const ctxTorta = document.getElementById('graficoTortaReportes').getContext('2d');
+        new Chart(ctxTorta, {
+            type: 'pie',
+            data: {
+                labels: ['Total', 'Este Mes', 'Hoy', 'Tipos'],
+                datasets: [{
+                    data: [
+                        data.total_reportes || 0,
+                        data.reportes_mes || 0,
+                        data.reportes_hoy || 0,
+                        data.tipos_reportes || 0
+                    ],
+                    backgroundColor: [
+                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Distribución de Reportes' }
+                }
+            }
+        });
+
+        console.log('Estadísticas de reportes cargadas:', data);
+    })
+    .catch(error => {
+        console.error('Error cargando estadísticas:', error);
+        document.getElementById('total-reportes').textContent = 'Error';
+        document.getElementById('reportes-mes').textContent = 'Error';
+        document.getElementById('reportes-hoy').textContent = 'Error';
+        document.getElementById('tipos-reportes').textContent = 'Error';
+    });
+}
+</script>
+ 
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.btn-block {
+    display: block !important;
+    width: 100% !important;
+    border-radius: 0.35rem;
+    transition: all 0.2s ease;
+}
+.btn-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+.text-right {
+    text-align: right;
+}
+.gap-2 {
+    gap: 0.5rem;
+}
+</style>
 {% endblock %}
