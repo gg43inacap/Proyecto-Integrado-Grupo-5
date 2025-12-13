@@ -290,3 +290,127 @@ body {
 .demo-info-box ul li {
     margin-bottom: 5px;
 }
+/* Contenedor principal */
+.rem24-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Encabezado */
+.rem24-titulo {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.rem24-periodo {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Formulario de filtros */
+.rem24-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.rem24-form label {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.rem24-form input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80px;
+}
+
+.rem24-form button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.rem24-form button:hover {
+    background-color: #2980b9;
+}
+
+/* Tarjetas de cada sección */
+.rem24-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.rem24-subtitulo {
+    text-align: center;
+    font-size: 20px;
+    color: #34495e;
+    margin-bottom: 15px;
+}
+
+/* Gráficos */
+.rem24-canvas {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+}
+
+/* Tablas */
+.rem24-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rem24-table th {
+    background-color: #3498db;
+    color: white;
+    padding: 8px;
+    text-align: center;
+}
+
+.rem24-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.rem24-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Exportación */
+.rem24-export {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.rem24-export .btn {
+    margin: 0 10px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+}
