@@ -15,5 +15,6 @@ urlpatterns = [
     path('rns/<int:rn_id>/editar/', views.editar_rn, name='editar_rn'), # Ruta para editar recién nacido
     # Nuevas funcionalidades
     path('ajax/filtrar-partos/', views.filtrar_partos_por_madre, name='filtrar_partos_por_madre'), # Ruta AJAX para filtrar partos
+    path('api/estadisticas_matrona/', views.api_estadisticas_matrona, name='partos_api_estadisticas_matrona'),
     path('partos/<int:parto_id>/completar/', views.completar_parto, name='completar_parto'), # Ruta para completar parto
 ]

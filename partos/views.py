@@ -39,10 +39,48 @@ def crear_rns(request):
     return render(request, 'partos/crear_rns.html', {'formset': formset, 'parto': parto})
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.utils import timezone
 from .models import Parto, RN
 from .forms import PartoForm, RNForm
 from django.contrib.auth.decorators import login_required
 from auditoria.models import registrar_evento_auditoria
+
+
+@login_required
+def api_estadisticas_matrona(request):
+    """API REST que devuelve estadísticas relacionadas con partos y recién nacidos para el panel de Matrona."""
+    try:
+        hoy = timezone.now().date()
+        
+        # Estadísticas de partos
+        total_partos = Parto.objects.count()
+        partos_activos = Parto.objects.filter(estado='activo').count()
+        # Filtrar por fecha_ingreso (puede ser null)
+        partos_hoy = Parto.objects.filter(fecha_ingreso=hoy).count()
+        partos_mes = Parto.objects.filter(
+            fecha_ingreso__year=hoy.year, 
+            fecha_ingreso__month=hoy.month
+        ).count()
+        
+        # Estadísticas de recién nacidos
+        total_rns = RN.objects.count()
+        rns_hoy = RN.objects.filter(fecha_nacimiento=hoy).count()
+        rns_mes = RN.objects.filter(
+            fecha_nacimiento__year=hoy.year,
+            fecha_nacimiento__month=hoy.month
+        ).count()
+
+        return JsonResponse({
+            'total_partos': total_partos,
+            'partos_activos': partos_activos,
+            'partos_hoy': partos_hoy,
+            'partos_mes': partos_mes,
+            'total_rns': total_rns,
+            'rns_hoy': rns_hoy,
+            'rns_mes': rns_mes,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @login_required
 def lista_partos(request):

@@ -5,12 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="fas fa-baby"></i> Lista de Recién Nacidos</h4>
-                    <div>
-                        <a href="{% url 'crear_rns' %}" class="btn btn-light">
-                            <i class="fas fa-plus-circle"></i> Registrar Recién Nacidos
-                        </a>
-                    </div>
+                    <h4 class="mb-0"><i class="fas fa-baby"></i> Lista de Recién Nacidos</h4>                   
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -73,9 +68,15 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        <div class="card-footer">
+                    <a href="{% url 'dashboard' %}?rol=MATRONA" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver al panel
+                    </a>
+                </div>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
