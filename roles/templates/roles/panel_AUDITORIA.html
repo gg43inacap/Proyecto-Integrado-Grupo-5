@@ -192,7 +192,7 @@ function cargarEstadisticas() {
     document.getElementById('eventos-semana').textContent = 'Cargando...';
     
     // Obtener estadísticas reales del servidor
-    fetch('/auditoria/api/estadisticas/')
+    fetch('/roles/api/estadisticas_auditoria/')
     .then(response => {
         if (!response.ok) {
             throw new Error('Error al cargar estadísticas');
@@ -217,7 +217,7 @@ function cargarEstadisticas() {
 
 function cargarUltimosEventos() {
     // Cargar los últimos eventos reales del servidor
-    fetch('/auditoria/api/estadisticas/')
+    fetch('/roles/api/estadisticas_auditoria/')
     .then(response => response.json())
     .then(data => {
         const eventosContainer = document.getElementById('ultimos-eventos');

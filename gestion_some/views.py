@@ -1,7 +1,21 @@
+# Imports
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import JsonResponse
+from django.utils import timezone
+from django.views.decorators.http import require_GET
+
+from auditoria.models import registrar_evento_auditoria
+from .models import Madre
+
+# pylint: disable=no-member
+# pyright: reportGeneralTypeIssues=false
+
+
 # Vista para verificar RUT antes de crear/editar madre
 def verificar_rut(request):
     return render(request, 'gestion_some/verificar_rut.html')
-from django.views.decorators.http import require_GET
+
+
 # API para autocompletar datos de madre por RUT
 @require_GET
 def api_madre_por_rut(request):
@@ -29,17 +43,9 @@ def api_madre_por_rut(request):
         return JsonResponse(data)
     except Madre.DoesNotExist:
         return JsonResponse({'found': False})
-from django.shortcuts import get_object_or_404, render, redirect # Funciones para buscar objetos, mostrar páginas y redirigir
-# Importa el modelo Madre
-from .models import Madre
-from auditoria.models import registrar_evento_auditoria
-from django.http import JsonResponse
-from django.utils import timezone
-# pylint: disable=no-member
-# pyright: reportGeneralTypeIssues=false
+
 
 # Vista para mostrar los detalles de una madre
-
 def detalle_madre(request, madre_id): # Muestra los detalles de una madre
     madre = get_object_or_404(Madre, id=madre_id) # Obtiene la madre o devuelve 404
     return render(request, 'gestion_some/detalle_madre.html', {'madre': madre}) # Muestra la página de detalles de la madre
@@ -112,13 +118,3 @@ def crear_madre(request): # Crea una nueva madre
 def lista_madres(request): # Lista todas las madres
     madres = Madre.objects.all()
     return render(request, 'gestion_some/lista_madres.html', {'madres': madres}) # Muestra la página con la lista de madres
-
-def api_estadisticas_madres(request):
-    hoy = timezone.now().date()
-    mes_actual = hoy.month
-    anio_actual = hoy.year
-
-    total_madres = Madre.objects.count()
-    return JsonResponse({
-        "total_madres": total_madres
-    })

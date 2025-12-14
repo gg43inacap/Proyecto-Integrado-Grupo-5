@@ -145,7 +145,7 @@ function cargarEstadisticasReportes() {
     document.getElementById('reportes-hoy').textContent = 'Cargando...';
     document.getElementById('tipos-reportes').textContent = 'Cargando...';
 
-    fetch('/reportes/api/estadisticas/')
+    fetch('/roles/api/estadisticas_supervisor/')
     .then(response => {
         if (!response.ok) {
             throw new Error('Error al cargar estadísticas');
@@ -154,27 +154,26 @@ function cargarEstadisticasReportes() {
     })
     .then(data => {
         // Actualizar contadores con datos reales
-        document.getElementById('total-reportes').textContent = data.total_reportes || 0;
-        document.getElementById('reportes-mes').textContent = data.reportes_mes || 0;
-        document.getElementById('reportes-hoy').textContent = data.reportes_hoy || 0;
-        document.getElementById('tipos-reportes').textContent = data.tipos_reportes || 0;
+        document.getElementById('total-reportes').textContent = data.total_usuarios || 0;
+        document.getElementById('reportes-mes').textContent = data.eventos_hoy || 0;
+        document.getElementById('reportes-hoy').textContent = data.usuarios_activos || 0;
+        document.getElementById('tipos-reportes').textContent = data.eventos_hoy || 0;
 
         // Gráfico de Barras
         const ctxBarras = document.getElementById('graficoBarrasReportes').getContext('2d');
         new Chart(ctxBarras, {
             type: 'bar',
             data: {
-                labels: ['Total', 'Este Mes', 'Hoy', 'Tipos'],
+                labels: ['Total Usuarios', 'Usuarios Activos', 'Eventos Hoy'],
                 datasets: [{
                     label: 'Cantidad',
                     data: [
-                        data.total_reportes || 0,
-                        data.reportes_mes || 0,
-                        data.reportes_hoy || 0,
-                        data.tipos_reportes || 0
+                        data.total_usuarios || 0,
+                        data.usuarios_activos || 0,
+                        data.eventos_hoy || 0
                     ],
                     backgroundColor: [
-                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'
+                        '#4e73df', '#1cc88a', '#36b9cc'
                     ],
                     borderWidth: 1
                 }]
@@ -196,13 +195,12 @@ function cargarEstadisticasReportes() {
         new Chart(ctxTorta, {
             type: 'pie',
             data: {
-                labels: ['Total', 'Este Mes', 'Hoy', 'Tipos'],
+                labels: ['Total Usuarios', 'Usuarios Activos', 'Eventos Hoy'],
                 datasets: [{
                     data: [
-                        data.total_reportes || 0,
-                        data.reportes_mes || 0,
-                        data.reportes_hoy || 0,
-                        data.tipos_reportes || 0
+                        data.total_usuarios || 0,
+                        data.usuarios_activos || 0,
+                        data.eventos_hoy || 0
                     ],
                     backgroundColor: [
                         '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'
