@@ -3,12 +3,25 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_GET
+from datetime import datetime
 
 from auditoria.models import registrar_evento_auditoria
 from .models import Madre
 
 # pylint: disable=no-member
 # pyright: reportGeneralTypeIssues=false
+
+
+# Función auxiliar para convertir fecha de DD/MM/YYYY a YYYY-MM-DD
+def convertir_fecha_ddmmyyyy_a_yyyymmdd(fecha_str):
+    """Convierte fecha de formato DD/MM/YYYY a YYYY-MM-DD"""
+    try:
+        # Intentar parsear DD/MM/YYYY
+        fecha_obj = datetime.strptime(fecha_str, '%d/%m/%Y')
+        return fecha_obj.strftime('%Y-%m-%d')
+    except (ValueError, AttributeError):
+        # Si falla, intentar retornar como está (puede que ya esté en formato correcto)
+        return fecha_str
 
 
 # Vista para verificar RUT antes de crear/editar madre
@@ -55,9 +68,13 @@ def detalle_madre(request, madre_id): # Muestra los detalles de una madre
 def editar_madre(request, madre_id): # Edita los datos de una madre
     madre = get_object_or_404(Madre, id=madre_id) # Obtiene la madre o devuelve 404
     if request.method == 'POST': # Si el formulario ha sido enviado
+        # Convertir fecha de DD/MM/YYYY a YYYY-MM-DD
+        fecha_nacimiento_input = request.POST.get('fecha_nacimiento')
+        fecha_convertida = convertir_fecha_ddmmyyyy_a_yyyymmdd(fecha_nacimiento_input)
+        
         madre.nombre = request.POST.get('nombre')
         madre.rut = request.POST.get('rut')
-        madre.fecha_nacimiento = request.POST.get('fecha_nacimiento')
+        madre.fecha_nacimiento = fecha_convertida
         madre.comuna = request.POST.get('comuna')
         madre.cesfam = request.POST.get('cesfam')
         madre.prevision = request.POST.get('prevision')
@@ -90,10 +107,14 @@ def eliminar_madre(request, madre_id): # Elimina una madre
 
 def crear_madre(request): # Crea una nueva madre
     if request.method == 'POST': #  Si el formulario ha sido enviado
+        # Convertir fecha de DD/MM/YYYY a YYYY-MM-DD
+        fecha_nacimiento_input = request.POST.get('fecha_nacimiento')
+        fecha_convertida = convertir_fecha_ddmmyyyy_a_yyyymmdd(fecha_nacimiento_input)
+        
         madre = Madre.objects.create(
             nombre=request.POST.get('nombre'),
             rut=request.POST.get('rut'),
-            fecha_nacimiento=request.POST.get('fecha_nacimiento'),
+            fecha_nacimiento=fecha_convertida,
             comuna=request.POST.get('comuna'),
             cesfam=request.POST.get('cesfam'),
             direccion=request.POST.get('direccion'),

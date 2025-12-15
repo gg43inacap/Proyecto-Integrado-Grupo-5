@@ -161,6 +161,13 @@ p {
     gap: var(--spacing-xs);
 }
 
+.card-header.text-white h1,
+.card-header.text-white h5,
+.card-header.text-white h6,
+.card-header.text-white p {
+    color: white !important;
+}
+
 .card-body {
     padding: var(--spacing-lg);
 }

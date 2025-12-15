@@ -62,16 +62,6 @@
                             <strong><i class="fas fa-people-carry me-2"></i> Pueblo Originario:</strong>
                             <span>{% if madre.pueblo_originario %}Sí{% else %}No{% endif %}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong><i class="fas fa-allergies me-2"></i> ¿Alergias?:</strong>
-                            <span>{% if madre.alergias %}Sí{% else %}No{% endif %}</span>
-                        </li>
-                        {% if madre.alergias and madre.alergias_si %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong><i class="fas fa-exclamation-triangle me-2"></i> Detalle Alergias:</strong>
-                            <span>{{ madre.alergias_si }}</span>
-                        </li>
-                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -95,10 +85,14 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 border-danger">
                         <div class="card-header bg-danger text-white fw-bold">
-                            <i class="fas fa-file-medical me-2"></i> Atenciones Clínicas
+                            <i class="fas fa-allergies me-2"></i> Alergias
                         </div>
                         <div class="card-body">
-                            <p class="card-text text-muted pre-wrap">{{ madre.atenciones_clinicas|default:"No se han registrado atenciones clínicas o diagnósticos actuales." }}</p>
+                            {% if madre.alergias and madre.alergias_si %}
+                                <p class="card-text text-muted pre-wrap">{{ madre.alergias_si }}</p>
+                            {% else %}
+                                <p class="card-text text-muted">No se han registrado alergias.</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
