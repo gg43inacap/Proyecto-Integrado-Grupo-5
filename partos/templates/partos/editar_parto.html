@@ -3,24 +3,193 @@
 
 {% block head_extra %}
 <link rel="stylesheet" href="{% static 'css/apps/editar_parto.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/calendario-amigable.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/horario-amigable.css' %}">
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .section-title {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-left: 4px solid #ffc107;
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Editar Parto</h2>
-    
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        
-        <p>
-            <button type="submit" class="btn-save">
-                <i class="fas fa-save"></i> Guardar cambios
-            </button>
-            <a href="{% url 'lista_partos' %}" class="btn-cancel">
-                <i class="fas fa-times"></i> Cancelar
-            </a>
-        </p>
-    </form>
+<div class="container mt-4 mb-5">
+    <div class="form-container">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-warning text-dark p-4">
+                <h1 class="mb-0"><i class="fas fa-edit me-2"></i>Editar Parto</h1>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Sección: Datos de la Madre -->
+                    <div class="section-title">
+                        <i class="fas fa-user me-2"></i>Datos de la Madre
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.madre.label }}</label>
+                        {{ form.madre }}
+                        {% if form.madre.errors %}
+                            <div class="text-danger mt-1">{{ form.madre.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Sección: Fecha y Hora de Ingreso -->
+                    <div class="section-title">
+                        <i class="fas fa-clock me-2"></i>Fecha y Hora de Ingreso
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.fecha_ingreso.label }}</label>
+                            {% if form.fecha_ingreso.value %}
+                                <input type="text" class="form-control calendario-amigable" name="fecha_ingreso" value="{{ form.fecha_ingreso.value|date:'d/m/Y' }}" placeholder="DD/MM/AAAA" readonly>
+                            {% else %}
+                                {{ form.fecha_ingreso }}
+                            {% endif %}
+                            {% if form.fecha_ingreso.errors %}
+                                <div class="text-danger mt-1">{{ form.fecha_ingreso.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{{ form.hora_ingreso.label }}</label>
+                            {% if form.hora_ingreso.value %}
+                                <input type="text" class="form-control horario-amigable" name="hora_ingreso" value="{{ form.hora_ingreso.value|time:'H:i' }}" placeholder="HH:MM" readonly>
+                            {% else %}
+                                {{ form.hora_ingreso }}
+                            {% endif %}
+                            {% if form.hora_ingreso.errors %}
+                                <div class="text-danger mt-1">{{ form.hora_ingreso.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Sección: Información del Parto -->
+                    <div class="section-title">
+                        <i class="fas fa-heartbeat me-2"></i>Información del Parto
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ form.tipo_parto.label }}</label>
+                        {{ form.tipo_parto }}
+                        {% if form.tipo_parto.errors %}
+                            <div class="text-danger mt-1">{{ form.tipo_parto.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.complicaciones.label }}</label>
+                        {{ form.complicaciones }}
+                        {% if form.complicaciones.errors %}
+                            <div class="text-danger mt-1">{{ form.complicaciones.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Características del Parto -->
+                    <div class="p-3 mb-4 bg-light rounded border">
+                        <h6 class="mb-3 text-secondary"><i class="fas fa-check-square me-2"></i>Características del Parto</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check">
+                                    {{ form.parto_distocico }}
+                                    <label class="form-check-label" for="{{ form.parto_distocico.id_for_label }}">
+                                        Parto distócico
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check">
+                                    {{ form.parto_vacuum }}
+                                    <label class="form-check-label" for="{{ form.parto_vacuum.id_for_label }}">
+                                        Parto vacuum
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Acompañante -->
+                    <div class="section-title">
+                        <i class="fas fa-user-friends me-2"></i>Acompañante
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.tiene_acompanante }}
+                            <label class="form-check-label fw-bold" for="{{ form.tiene_acompanante.id_for_label }}">
+                                {{ form.tiene_acompanante.label }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" id="nombre-acompanante-container">
+                        <label class="form-label fw-bold">{{ form.nombre_acompanante.label }}</label>
+                        {{ form.nombre_acompanante }}
+                        {% if form.nombre_acompanante.errors %}
+                            <div class="text-danger mt-1">{{ form.nombre_acompanante.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Sección: Estado del Parto -->
+                    <div class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>Estado del Parto
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.estado.label }}</label>
+                        {{ form.estado }}
+                        {% if form.estado.errors %}
+                            <div class="text-danger mt-1">{{ form.estado.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Cambia a "Completado" cuando el parto haya finalizado.
+                        </small>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a href="{% url 'lista_partos' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver al Listado
+                        </a>
+                        <button type="submit" class="btn btn-warning text-dark btn-lg">
+                            <i class="fas fa-save me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="{% static 'js/calendario-amigable.js' %}"></script>
+<script src="{% static 'js/horario-amigable.js' %}"></script>
+<script>
+    // Controlar visibilidad del campo nombre_acompanante
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxAcompanante = document.getElementById('id_tiene_acompanante');
+        const nombreAcompananteContainer = document.getElementById('nombre-acompanante-container');
+        
+        if (checkboxAcompanante && nombreAcompananteContainer) {
+            function toggleNombreAcompanante() {
+                if (checkboxAcompanante.checked) {
+                    nombreAcompananteContainer.style.display = 'block';
+                } else {
+                    nombreAcompananteContainer.style.display = 'none';
+                }
+            }
+            
+            // Estado inicial
+            toggleNombreAcompanante();
+            
+            // Escuchar cambios
+            checkboxAcompanante.addEventListener('change', toggleNombreAcompanante);
+        }
+    });
+</script>
 {% endblock %}

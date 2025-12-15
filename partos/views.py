@@ -2,8 +2,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Parto, RN
-from .forms import PartoForm, RNForm, RNFormSet
+from .forms import PartoForm, PartoCreateForm, RNForm, RNFormSet
 from auditoria.models import registrar_evento_auditoria
+from datetime import datetime
 # Vista para crear múltiples RN en una sola pantalla
 # pylint: disable=no-member
 @login_required
@@ -84,15 +85,27 @@ def api_estadisticas_matrona(request):
 
 @login_required
 def lista_partos(request):
-    # Mostrar todos los partos, pero destacar los activos
-    partos = Parto.objects.select_related('madre').all().order_by('fecha_ingreso','hora_ingreso')
+    # Mostrar todos los partos, ordenados por ID descendente (más recientes primero)
+    partos = Parto.objects.select_related('madre').all().order_by('-id')
     return render(request, 'partos/lista_partos.html', {'partos': partos})
 # Vista para crear un nuevo parto
 @login_required
 def crear_parto(request):
     parto_guardado = None
     if request.method == 'POST':
-        form = PartoForm(request.POST)
+        # Hacer una copia mutable del POST data
+        post_data = request.POST.copy()
+        
+        # Convertir fecha_ingreso de DD/MM/AAAA a YYYY-MM-DD si existe
+        fecha_ingreso_input = post_data.get('fecha_ingreso')
+        if fecha_ingreso_input:
+            try:
+                fecha_obj = datetime.strptime(fecha_ingreso_input, '%d/%m/%Y')
+                post_data['fecha_ingreso'] = fecha_obj.strftime('%Y-%m-%d')
+            except (ValueError, AttributeError):
+                pass  # Si ya está en formato correcto o vacío, dejarlo como está
+        
+        form = PartoCreateForm(post_data)
         if form.is_valid():
             parto = form.save()
             registrar_evento_auditoria(
@@ -104,16 +117,28 @@ def crear_parto(request):
                 ip_address=request.META.get('REMOTE_ADDR')
             )
             parto_guardado = parto
-            form = PartoForm()  # Limpiar el formulario tras guardar
+            form = PartoCreateForm()  # Limpiar el formulario tras guardar
     else:
-        form = PartoForm()
+        form = PartoCreateForm()
     return render(request, 'partos/crear_parto.html', {'form': form, 'parto_guardado': parto_guardado})
 # Vista para editar un parto existente
 @login_required
 def editar_parto(request, parto_id):
     parto = get_object_or_404(Parto, id=parto_id)
     if request.method == 'POST':
-        form = PartoForm(request.POST, instance=parto)
+        # Hacer una copia mutable del POST data
+        post_data = request.POST.copy()
+        
+        # Convertir fecha_ingreso de DD/MM/AAAA a YYYY-MM-DD si existe
+        fecha_ingreso_input = post_data.get('fecha_ingreso')
+        if fecha_ingreso_input:
+            try:
+                fecha_obj = datetime.strptime(fecha_ingreso_input, '%d/%m/%Y')
+                post_data['fecha_ingreso'] = fecha_obj.strftime('%Y-%m-%d')
+            except (ValueError, AttributeError):
+                pass  # Si ya está en formato correcto o vacío, dejarlo como está
+        
+        form = PartoForm(post_data, instance=parto)
         if form.is_valid():
             parto_edit = form.save()
             registrar_evento_auditoria(

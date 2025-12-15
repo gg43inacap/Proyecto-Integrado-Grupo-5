@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{% static 'css/apps/calendario-amigable.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/horario-amigable.css' %}">
+{% endblock %}
+
 {% block title %}Editar Recién Nacido - Sistema Neonatal{% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid px-3 px-md-4 mt-4" style="max-width: 1000px;">
+    <a href="{% url 'lista_rns' %}" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver a Lista RN
+    </a>
+    
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header bg-warning text-dark">
                     <h4 class="mb-0"><i class="fas fa-edit"></i> Editar Recién Nacido</h4>
@@ -36,8 +47,10 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
+<script src="{% static 'js/calendario-amigable.js' %}"></script>
+<script src="{% static 'js/horario-amigable.js' %}"></script>
 <script src="{% static 'js/editar_rn.js' %}"></script>
+{% endblock %}
 {% endblock %}
