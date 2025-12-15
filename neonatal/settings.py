@@ -118,6 +118,23 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+# Configuración UTF-8
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
+
+# Configuración adicional para manejo de caracteres UTF-8
+import locale
+try:
+    locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
+except:
+    try:
+        locale.setlocale(locale.LC_ALL, 'Spanish_Spain.1252')
+    except:
+        pass  # Si no se puede configurar locale, continuar
+
+# Asegurar que las respuestas HTTP usen UTF-8
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 USE_TZ = True
 
 
