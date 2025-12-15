@@ -8,6 +8,8 @@ import io
 # from xhtml2pdf import pisa  # Comentado temporalmente
 from django.shortcuts import render
 from datetime import datetime, date
+from xhtml2pdf import pisa
+
 
 # --- Nombres de meses en español ---
 MESES_NOMBRES = {
