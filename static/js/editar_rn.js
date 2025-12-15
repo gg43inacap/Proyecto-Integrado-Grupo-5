@@ -67,20 +67,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const madreSelect = document.getElementById('id_madre');
     if (madreSelect) {
         madreSelect.addEventListener('change', filtrarPartos);
-        
+
         // Ejecutar filtrado inicial si hay una madre preseleccionada
         if (madreSelect.value) {
             filtrarPartos();
         }
     }
-    
+
     // Configurar control de anomalía congénita
     const checkboxAnomalia = document.getElementById('id_anomalia_congenita');
     const inputDescripcion = document.getElementById('id_descripcion_anomalia');
-    
+
     if (checkboxAnomalia && inputDescripcion) {
         const containerDescripcion = inputDescripcion.closest('.mb-3');
-        
+
         function toggleDescripcionAnomalia() {
             if (checkboxAnomalia.checked) {
                 if (containerDescripcion) containerDescripcion.style.display = 'block';
@@ -91,11 +91,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputDescripcion.value = '';
             }
         }
-        
+
         // Establecer estado inicial
         toggleDescripcionAnomalia();
-        
+
         // Agregar evento change
         checkboxAnomalia.addEventListener('change', toggleDescripcionAnomalia);
+    }
+
+    // Aplicar formato automático a fecha y hora del formulario de edición
+    const fechaInput = document.querySelector('input[name="fecha_nacimiento"]');
+    if (fechaInput) {
+        fechaInput.classList.add('calendario-amigable');
+        if (!fechaInput.dataset.calendarioIniciado) {
+            new CalendarioAmigable(fechaInput);
+            fechaInput.dataset.calendarioIniciado = 'true';
+        }
+        fechaInput.addEventListener('input', function() { formatoFecha(this); });
+        fechaInput.setAttribute('maxlength', '10');
+    }
+
+    const horaInput = document.querySelector('input[name="hora_nacimiento"]');
+    if (horaInput) {
+        horaInput.classList.add('horario-amigable');
+        if (!horaInput.dataset.horarioIniciado) {
+            new HorarioAmigable(horaInput);
+            horaInput.dataset.horarioIniciado = 'true';
+        }
+        horaInput.addEventListener('input', function() { formatoHora(this); });
+        horaInput.setAttribute('maxlength', '5');
     }
 });
