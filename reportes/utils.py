@@ -51,9 +51,9 @@ def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
             ["Parto extrahospitalario", rn_vivos.filter(parto_asociado__tipo_parto="extrahospitalario").count()],
             ["Apgar ≤ 3 al minuto", rn_vivos.filter(apgar_1__lte=3).count()],
             ["Apgar ≤ 6 a los 5 minutos", rn_vivos.filter(apgar_5__lte=6).count()],
-            ["Reanimación Básica", rn_vivos.filter(reanimacion_basica=True).count()],
-            ["Reanimación Avanzada", rn_vivos.filter(reanimacion_avanzada=True).count()],
-            ["EHI Grado II y III", rn_vivos.filter(ehi_grado_ii_iii=True).count()],
+            ["Reanimación Básica", rn_vivos.filter(reanimacion=1).count()],
+            ["Reanimación Avanzada", rn_vivos.filter(reanimacion=2).count()],
+            ["EHI Grado II y III", rn_vivos.filter(ehi_grado__in=[2, 3]).count()],
             ["Distócico", rn_vivos.filter(parto_asociado__parto_distocico=True).count()],
             ["Vacuum", rn_vivos.filter(parto_asociado__parto_vacuum=True).count()],
             ["Cesárea Urgencia", rn_vivos.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()],
@@ -61,7 +61,6 @@ def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
             ["Total Partos", rn_vivos.count()],
         ]
     }
-
 
     # --- Sección D.3: Lactancia precoz ---
     rn_lactancia = rn_vivos.filter(peso__gte=2500, lactancia_antes_60=True)
