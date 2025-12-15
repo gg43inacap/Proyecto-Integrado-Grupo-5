@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load widget_tweaks %}  {% block title %}
-    {% if user %}Editar usuario{% else %}Crear nuevo usuario{% endif %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar usuario{% else %}Crear nuevo usuario{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +15,7 @@
                 <div class="card-header">
                     <h3 class="mb-0 text-hospital">
                         <i class="fas fa-user-plus me-2"></i> 
-                        {% if user %}Gestione los datos del Usuario{% else %}Crear nuevo usuario{% endif %}
+                        {% if form.instance.pk %}Gestione los datos del Usuario{% else %}Crear nuevo usuario{% endif %}
                     </h3>
                 </div>
                 
@@ -72,12 +74,12 @@
                         <div class="mb-3">
                             <label for="id_password" class="form-label"><i class="fas fa-lock me-1"></i> Contraseña:</label>
                             {{ form.password|add_class:"form-control" }}
-                            {% if user %}
+                            {% if form.instance.pk %}
                             <div class="form-text">Deje este campo vacío si no desea cambiar la contraseña actual.</div>
                             {% endif %}
                         </div>
                         
-                        {% if user %}
+                        
                         <div class="mb-3">
                             <div class="form-check"> 
                                 {{ form.is_active|add_class:"form-check-input" }}
@@ -86,7 +88,7 @@
                                 </label>
                             </div>
                         </div>
-                        {% endif %}
+                        
                         
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 border-top mt-4">
                             
@@ -96,7 +98,7 @@
                             
                             <button type="submit" class="btn btn-success transition-all">
                                 <i class="fas fa-save"></i> 
-                                {% if user %}Actualizar usuario{% else %}Crear usuario{% endif %}
+                                {% if form.instance.pk %}Actualizar usuario{% else %}Crear usuario{% endif %}
                             </button>
                         </div>
                     </form>

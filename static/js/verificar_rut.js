@@ -15,7 +15,7 @@ function formatearRut(valor) {
     return cuerpoFormateado + '-' + dv;
 }
 
-function validarRut(valor) {
+function validarRut(valor) {    
     // Aceptar tanto RUT formateado (12.345.678-5) como sin formato (12345678-5 o 123456785)
     if (!valor || valor.trim().length < 2) return false;
 

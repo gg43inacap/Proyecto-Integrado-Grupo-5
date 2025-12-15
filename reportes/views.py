@@ -5,7 +5,7 @@ from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from .utils import get_reporte_rem24_completo
 from django.template.loader import render_to_string
 import io
-from xhtml2pdf import pisa
+# from xhtml2pdf import pisa  # Comentado temporalmente
 from django.shortcuts import render
 from datetime import datetime, date
 

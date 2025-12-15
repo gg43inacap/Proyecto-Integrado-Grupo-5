@@ -240,17 +240,20 @@ def crear_usuario(request):
             return redirect('lista_usuarios')
     else:
         form = CustomUserForm()
+    # 👇 ya no necesitas pasar 'user', solo el form
     return render(request, 'roles/form_usuarios.html', {'form': form})
 
-# Vista para editar los datos de un usuario existente
+
 @login_required
 def editar_usuario(request, pk):
     User = get_user_model()
     user = get_object_or_404(User, pk=pk)
+
     # ADMIN no puede editar SUPERADMIN ni superuser
     if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
         messages.error(request, 'No tienes permisos para modificar este usuario.')
         return redirect('lista_usuarios')
+
     if request.method == 'POST':
         form = CustomUserForm(request.POST, instance=user)
         if form.is_valid():
@@ -267,6 +270,8 @@ def editar_usuario(request, pk):
             return redirect('lista_usuarios')
     else:
         form = CustomUserForm(instance=user)
+
+    # 👇 igual que arriba, solo pasamos el form
     return render(request, 'roles/form_usuarios.html', {'form': form})
 
 # Vista para bloquear (desactivar) un usuario

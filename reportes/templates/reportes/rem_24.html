@@ -1,227 +1,1023 @@
 {% extends "base.html" %}
 {% load static %}
 
-
-{% block title %}Reporte REM A24{% endblock %}
+{% block title %}Reporte REM A24 - Dashboard Enterprise{% endblock %}
 
 {% block content %}
+<!-- Librerías CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.2.1/dist/gridstack.min.css">
+
+<style>
+    :root {
+        --theme-primary: #2563eb;
+        --theme-secondary: #1e40af;
+        --theme-accent: #7c3aed;
+        --theme-success: #10b981;
+        --theme-warning: #f59e0b;
+        --theme-danger: #ef4444;
+        --theme-light: #f9fafb;
+        --theme-dark: #111827;
+        --transition-smooth: all 0.35s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    /* Toggle tema oscuro/claro */
+    body.dark-theme {
+        background-color: var(--theme-dark);
+        color: #f3f4f6;
+    }
+
+    body.dark-theme .dashboard-container {
+        background-color: #1f2937;
+    }
+
+    body.dark-theme .card-enterprise {
+        background-color: #374151;
+        border-color: #4b5563;
+    }
+
+    body.dark-theme .card-enterprise h3 {
+        color: #f3f4f6;
+    }
+
+    /* Contenedor dashboard */
+    .dashboard-container {
+        padding: var(--spacing-xl);
+        background: var(--theme-light);
+        border-radius: var(--border-radius-lg);
+        transition: var(--transition-smooth);
+    }
+
+    /* Encabezado enterprise */
+    .header-enterprise {
+        background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
+        padding: var(--spacing-xl) var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: 0 10px 40px rgba(37, 99, 235, 0.2);
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-enterprise::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-left h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .header-left p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.95;
+        font-weight: 500;
+    }
+
+    .header-controls {
+        display: flex;
+        gap: var(--spacing-md);
+        align-items: center;
+    }
+
+    .btn-theme-toggle {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        font-size: 1.2rem;
+    }
+
+    .btn-theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.1) rotate(20deg);
+    }
+
+    /* Filtros y Comparativas */
+    .filters-enterprise {
+        background: white;
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid #e5e7eb;
+        margin-bottom: var(--spacing-xl);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-toolbar {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .filter-group-enterprise {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .filter-group-enterprise label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--theme-dark);
+    }
+
+    .filter-select-enterprise {
+        padding: 0.625rem 0.875rem;
+        border: 2px solid #e5e7eb;
+        border-radius: var(--border-radius-md);
+        font-size: 0.95rem;
+        background: white;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        min-width: 150px;
+    }
+
+    .filter-select-enterprise:focus {
+        outline: none;
+        border-color: var(--theme-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Comparativa */
+    .comparison-section {
+        background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--spacing-xl);
+        border: 1px solid #e0e7ff;
+    }
+
+    .comparison-title {
+        font-weight: 700;
+        color: var(--theme-dark);
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .comparison-title i {
+        color: var(--theme-primary);
+        font-size: 1.3rem;
+    }
+
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-md);
+    }
+
+    .comparison-card {
+        background: white;
+        padding: var(--spacing-md);
+        border-radius: var(--border-radius-md);
+        border-left: 4px solid var(--theme-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comparison-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .comparison-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--theme-primary);
+    }
+
+    .comparison-change {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+    }
+
+    .comparison-change.up {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .comparison-change.down {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Widget Grid */
+    .widgets-section {
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .widgets-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .widgets-info {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .widgets-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+    }
+
+    .btn-widget-action {
+        background: white;
+        border: 2px solid #e5e7eb;
+        color: var(--theme-dark);
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-md);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition-smooth);
+    }
+
+    .btn-widget-action:hover {
+        border-color: var(--theme-primary);
+        color: var(--theme-primary);
+        background: #f0f9ff;
+    }
+
+    /* Cards Enterprise */
+    .card-enterprise {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: var(--transition-smooth);
+        cursor: grab;
+        position: relative;
+    }
+
+    .card-enterprise:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-enterprise.dragging {
+        cursor: grabbing;
+        opacity: 0.8;
+    }
+
+    .card-header-enterprise {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: var(--spacing-md);
+        border-bottom: 2px solid #f3f4f6;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .card-title-enterprise {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--theme-dark);
+    }
+
+    .card-title-enterprise i {
+        font-size: 1.3rem;
+        color: var(--theme-primary);
+    }
+
+    .card-actions-enterprise {
+        display: flex;
+        gap: var(--spacing-xs);
+    }
+
+    .card-action-btn {
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.4rem;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-smooth);
+        font-size: 1rem;
+    }
+
+    .card-action-btn:hover {
+        background: #f3f4f6;
+        color: var(--theme-primary);
+    }
+
+    /* Drill-down */
+    .drilldown-container {
+        margin-top: var(--spacing-md);
+    }
+
+    .drilldown-breadcrumb {
+        display: flex;
+        gap: var(--spacing-xs);
+        align-items: center;
+        font-size: 0.9rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .breadcrumb-item {
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.4rem 0.8rem;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-smooth);
+    }
+
+    .breadcrumb-item:hover,
+    .breadcrumb-item.active {
+        background: #f0f9ff;
+        color: var(--theme-primary);
+        font-weight: 600;
+    }
+
+    /* Estadísticas resumen */
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .stat-card-enterprise {
+        background: white;
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid #e5e7eb;
+        text-align: center;
+    }
+
+    .stat-icon-enterprise {
+        font-size: 2rem;
+        margin-bottom: var(--spacing-sm);
+        color: var(--theme-primary);
+    }
+
+    .stat-value-enterprise {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--theme-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label-enterprise {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Exportación avanzada */
+    .export-advanced {
+        background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+        padding: var(--spacing-xl);
+        border-radius: var(--border-radius-lg);
+        border: 2px solid #e0e7ff;
+        margin-top: var(--spacing-xl);
+    }
+
+    .export-header-advanced h3 {
+        margin: 0;
+        color: var(--theme-dark);
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .export-header-advanced i {
+        color: var(--theme-primary);
+        font-size: 1.4rem;
+    }
+
+    .export-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+
+    .export-card {
+        background: white;
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-md);
+        border: 2px solid #e5e7eb;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .export-card:hover {
+        border-color: var(--theme-primary);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        transform: translateY(-6px);
+        background: #f9fafb;
+    }
+
+    .export-icon-advanced {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-md);
+        color: var(--theme-primary);
+    }
+
+    .export-title {
+        font-weight: 700;
+        color: var(--theme-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+    }
+
+    .export-desc {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    /* Ocultar controles de DataTables */
+    .dataTables_info,
+    .dataTables_filter,
+    .dataTables_paginate,
+    .dataTables_length {
+        display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-top {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+
+        .header-controls {
+            width: 100%;
+        }
+
+        .filter-toolbar {
+            flex-direction: column;
+        }
+
+        .filter-select-enterprise {
+            width: 100%;
+        }
+
+        .comparison-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .export-options {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 <div class="rem24-container">
-    <!-- Encabezado -->
-    <h2 class="rem24-titulo">{{ titulo }}</h2>
-    <p class="rem24-periodo">Periodo: {{ periodo }}</p>
-
-    
-
-  
-    <!-- Formulario de filtros -->
-    <form method="get" class="rem24-form">
-        <label for="mes">Mes:</label>
-        <select id="mes" name="mes">
-            <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
-            <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
-            <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
-            <option value="4" {% if mes_seleccionado == 4 %}selected{% endif %}>Abril</option>
-            <option value="5" {% if mes_seleccionado == 5 %}selected{% endif %}>Mayo</option>
-            <option value="6" {% if mes_seleccionado == 6 %}selected{% endif %}>Junio</option>
-            <option value="7" {% if mes_seleccionado == 7 %}selected{% endif %}>Julio</option>
-            <option value="8" {% if mes_seleccionado == 8 %}selected{% endif %}>Agosto</option>
-            <option value="9" {% if mes_seleccionado == 9 %}selected{% endif %}>Septiembre</option>
-            <option value="10" {% if mes_seleccionado == 10 %}selected{% endif %}>Octubre</option>
-            <option value="11" {% if mes_seleccionado == 11 %}selected{% endif %}>Noviembre</option>
-            <option value="12" {% if mes_seleccionado == 12 %}selected{% endif %}>Diciembre</option>
-        </select>
-
-        <label for="anio">Año:</label>
-        <select id="anio" name="anio">
-            {% for year in lista_anios %}
-                <option value="{{ year }}" {% if anio_seleccionado == year %}selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Filtrar</button>
-    </form>
-    <!-- Sección D1 -->
-    <div class="rem24-card">
-        <h3 class="rem24-subtitulo">{{ seccion_d1.titulo }}</h3>
-        <canvas id="graficoD1" class="rem24-canvas"></canvas>
-        <table class="rem24-table">
-            <thead>
-                <tr>
-                    <th>Indicador</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in seccion_d1.rows %}
-                <tr>
-                    <td>{{ row.0 }}</td>
-                    <td>{{ row.1 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Encabezado Enterprise -->
+    <div class="header-enterprise animate__animated animate__fadeInDown">
+        <div class="header-top">
+            <div class="header-left">
+                <h1>{{ titulo }}</h1>
+                <p id="periodoDisplay">Periodo: {{ periodo }}</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn-theme-toggle" onclick="toggleTheme()" title="Alternar tema oscuro/claro">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Sección D2 -->
-    <div class="rem24-card">
-        <h3 class="rem24-subtitulo">{{ seccion_d2.titulo }}</h3>
-        <canvas id="graficoD2" class="rem24-canvas"></canvas>
-        <table class="rem24-table">
-            <thead>
-                <tr>
-                    <th>Indicador</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in seccion_d2.rows %}
-                <tr>
-                    <td>{{ row.0 }}</td>
-                    <td>{{ row.1 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Filtros y Comparativas -->
+    <div class="filters-enterprise animate__animated animate__fadeInUp">
+        <div class="filter-toolbar">
+            <div class="filter-group-enterprise">
+                <label for="mes">Mes</label>
+                <select id="mes" name="mes" class="filter-select-enterprise" onchange="updateComparison()">
+                    <option value="">Todos</option>
+                    <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
+                    <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
+                    <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
+                    <option value="4" {% if mes_seleccionado == 4 %}selected{% endif %}>Abril</option>
+                    <option value="5" {% if mes_seleccionado == 5 %}selected{% endif %}>Mayo</option>
+                    <option value="6" {% if mes_seleccionado == 6 %}selected{% endif %}>Junio</option>
+                    <option value="7" {% if mes_seleccionado == 7 %}selected{% endif %}>Julio</option>
+                    <option value="8" {% if mes_seleccionado == 8 %}selected{% endif %}>Agosto</option>
+                    <option value="9" {% if mes_seleccionado == 9 %}selected{% endif %}>Septiembre</option>
+                    <option value="10" {% if mes_seleccionado == 10 %}selected{% endif %}>Octubre</option>
+                    <option value="11" {% if mes_seleccionado == 11 %}selected{% endif %}>Noviembre</option>
+                    <option value="12" {% if mes_seleccionado == 12 %}selected{% endif %}>Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group-enterprise">
+                <label for="anio">Año</label>
+                <select id="anio" name="anio" class="filter-select-enterprise" onchange="updateComparison()">
+                    <option value="">Todos</option>
+                    {% for year in lista_anios %}
+                        <option value="{{ year }}" {% if anio_seleccionado == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn-widget-action" onclick="applyFilters()" style="margin-top: 1.5rem;">
+                <i class="fa-solid fa-filter"></i> Filtrar
+            </button>
+            <a href="{% url 'reportes:rem_24' %}" class="btn-widget-action" style="margin-top: 1.5rem; text-decoration: none;">
+                <i class="fa-solid fa-rotate-right"></i> Limpiar
+            </a>
+        </div>
+
+        <!-- Comparativa Período -->
+        <div class="comparison-section" style="margin-top: var(--spacing-lg);">
+            <div class="comparison-title">
+                <i class="fa-solid fa-chart-line"></i>
+                Comparativa y Resumen
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div>
+                        <div class="comparison-label">Total Sección 1</div>
+                        <div class="comparison-value" id="compD1">0</div>
+                    </div>
+                    <div class="comparison-change up" id="compD1Change">+0%</div>
+                </div>
+                <div class="comparison-card">
+                    <div>
+                        <div class="comparison-label">Total Sección 2</div>
+                        <div class="comparison-value" id="compD2">0</div>
+                    </div>
+                    <div class="comparison-change up" id="compD2Change">+0%</div>
+                </div>
+                <div class="comparison-card">
+                    <div>
+                        <div class="comparison-label">Total Sección 3</div>
+                        <div class="comparison-value" id="compD3">0</div>
+                    </div>
+                    <div class="comparison-change up" id="compD3Change">+0%</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Sección D3 -->
-    <div class="rem24-card">
-        <h3 class="rem24-subtitulo">{{ seccion_d3.titulo }}</h3>
-        <canvas id="graficoD3" class="rem24-canvas"></canvas>
-        <table class="rem24-table">
-            <thead>
-                <tr>
-                    <th>Indicador</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in seccion_d3.rows %}
-                <tr>
-                    <td>{{ row.0 }}</td>
-                    <td>{{ row.1 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Estadísticas Resumen -->
+    <div class="summary-stats">
+        <div class="stat-card-enterprise">
+            <div class="stat-icon-enterprise">
+                <i class="fa-solid fa-database"></i>
+            </div>
+            <div class="stat-value-enterprise" id="totalRecords">0</div>
+            <div class="stat-label-enterprise">Registros Totales</div>
+        </div>
+        <div class="stat-card-enterprise">
+            <div class="stat-icon-enterprise">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+            </div>
+            <div class="stat-value-enterprise" id="avgValue">0</div>
+            <div class="stat-label-enterprise">Promedio General</div>
+        </div>
+        <div class="stat-card-enterprise">
+            <div class="stat-icon-enterprise">
+                <i class="fa-solid fa-percent"></i>
+            </div>
+            <div class="stat-value-enterprise" id="percentValue">100%</div>
+            <div class="stat-label-enterprise">Cobertura</div>
+        </div>
+        <div class="stat-card-enterprise">
+            <div class="stat-icon-enterprise">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="stat-value-enterprise" id="lastUpdate">Hoy</div>
+            <div class="stat-label-enterprise">Última Actualización</div>
+        </div>
     </div>
 
-    <!-- Botones de exportación -->
-    <div class="rem24-export">
-        <a href="{% url 'reportes:exportar_rem_a24_excel' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}"
-            class="btn btn-success">
-            📊 Exportar a Excel
-        </a>
-        <a href="{% url 'reportes:exportar_rem_a24_pdf' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}"
-            class="btn btn-danger">
-            📄 Exportar a PDF
-        </a>
+    <!-- Gráficos y Tablas Drill-down -->
+    <div class="widgets-section">
+        <div class="widgets-controls">
+            <div class="widgets-info">
+                <i class="fa-solid fa-info-circle"></i>
+                Haz clic en los gráficos para explorar datos en detalle
+            </div>
+            <div class="widgets-actions">
+                <button class="btn-widget-action" onclick="resetDrilldown()">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Resetear Vista
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid de widgets -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: var(--spacing-lg);">
+            <!-- Widget 1 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-bar"></i>
+                        {{ seccion_d1.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart1" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table1">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in seccion_d1.rows %}
+                            <tr onclick="drilldown('d1', '{{ row.0 }}')" style="cursor: pointer;">
+                                <td>{{ row.0 }}</td>
+                                <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                                <td class="text-right"><span style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent)); color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">{% widthratio row.1 seccion_d1.rows|length 100 %}%</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Widget 2 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="150">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        {{ seccion_d2.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart2" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table2">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in seccion_d2.rows %}
+                            <tr onclick="drilldown('d2', '{{ row.0 }}')" style="cursor: pointer;">
+                                <td>{{ row.0 }}</td>
+                                <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                                <td class="text-right"><span style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent)); color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">{% widthratio row.1 seccion_d2.rows|length 100 %}%</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Widget 3 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-line"></i>
+                        {{ seccion_d3.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart3" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table3">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in seccion_d3.rows %}
+                            <tr onclick="drilldown('d3', '{{ row.0 }}')" style="cursor: pointer;">
+                                <td>{{ row.0 }}</td>
+                                <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                                <td class="text-right"><span style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent)); color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">{% widthratio row.1 seccion_d3.rows|length 100 %}%</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exportación Avanzada -->
+    <div class="export-advanced" data-aos="fade-up" data-aos-delay="300">
+        <div class="export-header-advanced">
+            <h3>
+                <i class="fa-solid fa-file-export"></i>
+                Opciones de Exportación Avanzada
+            </h3>
+        </div>
+        <div class="export-options">
+            <div class="export-card" onclick="window.location.href='{% url 'reportes:exportar_rem_a24_excel' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}'">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div class="export-title">Microsoft Excel</div>
+                <div class="export-desc">Formato .xlsx compatible</div>
+            </div>
+            <div class="export-card" onclick="window.location.href='{% url 'reportes:exportar_rem_a24_pdf' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}'">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="export-title">PDF Report</div>
+                <div class="export-desc">Documento formateado</div>
+            </div>
+            <div class="export-card" onclick="window.print()">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-print"></i>
+                </div>
+                <div class="export-title">Imprimir</div>
+                <div class="export-desc">Versión para impresora</div>
+            </div>
+            <div class="export-card" onclick="exportJSON()">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="export-title">JSON</div>
+                <div class="export-desc">Formato de datos estructurados</div>
+            </div>
+            <div class="export-card" onclick="exportPowerBI()">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <div class="export-title">Power BI</div>
+                <div class="export-desc">Conexión a Power BI Desktop</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Librerías JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.0/dist/apexcharts.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
 <script>
-    // Gráfico D1 - Barras
-    new Chart(document.getElementById('graficoD1'), {
-        type: 'bar',
-        data: {
-            labels: [{% for row in seccion_d1.rows %}"{{ row.0 }}",{% endfor %}],
-        datasets: [{
-            label: '{{ seccion_d1.titulo }}',
-            data: [{% for row in seccion_d1.rows %}{{ row.1 }}, {% endfor %}],
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-            }]
-        },
-        options: {
-        scales: {
-            y: {
-                ticks: {
-                    precision: 0,   // fuerza enteros
-                    callback: function (value) {
-                        return Number.isInteger(value) ? value : null;
-                    }
-                }
-            }
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        return context.dataset.label + ': ' + Math.round(context.raw);
-                    }
-                }
-            }
-        }
-    }
-    });
-    // Gráfico D2 - Pie
-    new Chart(document.getElementById('graficoD2'), {
-        type: 'pie',
-        data: {
-            labels: [{% for row in seccion_d2.rows %}"{{ row.0 }}",{% endfor %}],
-        datasets: [{
-            label: '{{ seccion_d2.titulo }}',
-            data: [{% for row in seccion_d2.rows %}{{ row.1 }}, {% endfor %}],
-        backgroundColor: [
-        'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
-        'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
-        'rgba(199, 199, 199, 0.7)', 'rgba(255, 0, 255, 0.7)', 'rgba(0, 128, 0, 0.7)',
-        'rgba(0, 0, 128, 0.7)', 'rgba(128, 0, 0, 0.7)', 'rgba(0, 128, 128, 0.7)',
-        'rgba(128, 128, 0, 0.7)', 'rgba(255, 215, 0, 0.7)', 'rgba(255, 105, 180, 0.7)',
-        'rgba(0, 191, 255, 0.7)'
-    ]
-            }]
-        },
-        options: {
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        return context.label + ': ' + Math.round(context.raw);
-                    }
-                }
-            }
-        }
-    }
+    // Inicializar AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out-cubic',
+        once: false,
+        mirror: true
     });
 
-    // Gráfico D3 - Líneas
-    new Chart(document.getElementById('graficoD3'), {
-        type: 'line',
-        data: {
-            labels: [{% for row in seccion_d3.rows %}"{{ row.0 }}",{% endfor %}],
-        datasets: [{
-            label: '{{ seccion_d3.titulo }}',
-            data: [{% for row in seccion_d3.rows %}{{ row.1 }}, {% endfor %}],
-        borderColor: 'rgba(255, 159, 64, 1)',
-        tension: 0.1,
-        fill: false
-            }]
-        },
-        options: {
-        scales: {
-            y: {
-                ticks: {
-                    precision: 0,
-                    callback: function (value) {
-                        return Number.isInteger(value) ? value : null;
-                    }
-                }
-            }
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        return context.dataset.label + ': ' + Math.round(context.raw);
-                    }
-                }
-            }
-        }
-    }
+    // Datos
+    const dataD1 = {
+        labels: [{% for row in seccion_d1.rows %}"{{ row.0 }}",{% endfor %}],
+        values: [{% for row in seccion_d1.rows %}{{ row.1 }},{% endfor %}]
+    };
+
+    const dataD2 = {
+        labels: [{% for row in seccion_d2.rows %}"{{ row.0 }}",{% endfor %}],
+        values: [{% for row in seccion_d2.rows %}{{ row.1 }},{% endfor %}]
+    };
+
+    const dataD3 = {
+        labels: [{% for row in seccion_d3.rows %}"{{ row.0 }}",{% endfor %}],
+        values: [{% for row in seccion_d3.rows %}{{ row.1 }},{% endfor %}]
+    };
+
+    const colors = {
+        primary: '#2563eb',
+        secondary: '#1e40af',
+        accent: '#7c3aed',
+        success: '#10b981',
+        warning: '#f59e0b',
+        danger: '#ef4444'
+    };
+
+    // Gráfico 1
+    const chart1 = new ApexCharts(document.querySelector('#chart1'), {
+        series: [{ name: '{{ seccion_d1.titulo }}', data: dataD1.values }],
+        chart: { type: 'bar', height: 300, toolbar: { show: true } },
+        colors: [colors.primary],
+        xaxis: { categories: dataD1.labels }
     });
+    chart1.render();
+
+    // Gráfico 2
+    const chart2 = new ApexCharts(document.querySelector('#chart2'), {
+        series: dataD2.values,
+        chart: { type: 'donut', height: 300, toolbar: { show: false } },
+        labels: dataD2.labels,
+        colors: [colors.primary, colors.success, colors.warning, colors.accent, colors.secondary]
+    });
+    chart2.render();
+
+    // Gráfico 3
+    const chart3 = new ApexCharts(document.querySelector('#chart3'), {
+        series: [{ name: '{{ seccion_d3.titulo }}', data: dataD3.values }],
+        chart: { type: 'line', height: 300, toolbar: { show: true } },
+        stroke: { curve: 'smooth', width: 2 },
+        colors: [colors.warning]
+    });
+    chart3.render();
+
+    // DataTables
+    $(document).ready(function () {
+        $('#table1, #table2, #table3').DataTable({
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+            pageLength: 100,
+            dom: '<"top">rt<"bottom">',
+            searching: false,
+            paging: false,
+            info: false
+        });
+    });
+
+    // Toggle Tema
+    function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+    }
+
+    // Cargar tema guardado
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+
+    // Actualizar comparativa
+    function updateComparison() {
+        const totalD1 = dataD1.values.reduce((a, b) => a + b, 0);
+        const totalD2 = dataD2.values.reduce((a, b) => a + b, 0);
+        const totalD3 = dataD3.values.reduce((a, b) => a + b, 0);
+
+        document.getElementById('compD1').textContent = totalD1;
+        document.getElementById('compD2').textContent = totalD2;
+        document.getElementById('compD3').textContent = totalD3;
+
+        document.getElementById('totalRecords').textContent = (totalD1 + totalD2 + totalD3).toLocaleString();
+        document.getElementById('avgValue').textContent = Math.round((totalD1 + totalD2 + totalD3) / (dataD1.labels.length + dataD2.labels.length + dataD3.labels.length));
+    }
+
+    // Drill-down
+    function drilldown(section, item) {
+        alert(`Drill-down: ${section} - ${item}`);
+    }
+
+    // Resetear drill-down
+    function resetDrilldown() {
+        location.reload();
+    }
+
+    // Descargar datos
+    function downloadData(tableId) {
+        alert(`Descargando datos de ${tableId}`);
+    }
+
+    // Exportar JSON
+    function exportJSON() {
+        const data = {
+            titulo: '{{ titulo }}',
+            periodo: '{{ periodo }}',
+            seccion_d1: dataD1,
+            seccion_d2: dataD2,
+            seccion_d3: dataD3
+        };
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'reporte_rem_a24.json';
+        a.click();
+    }
+
+    // Exportar a Power BI
+    function exportPowerBI() {
+        const data = {
+            titulo: '{{ titulo }}',
+            periodo: '{{ periodo }}',
+            timestamp: new Date().toISOString(),
+            secciones: [
+                {
+                    nombre: 'Sección D1',
+                    datos: dataD1.labels.map((label, idx) => ({
+                        indicador: label,
+                        cantidad: dataD1.values[idx]
+                    }))
+                },
+                {
+                    nombre: 'Sección D2',
+                    datos: dataD2.labels.map((label, idx) => ({
+                        indicador: label,
+                        cantidad: dataD2.values[idx]
+                    }))
+                },
+                {
+                    nombre: 'Sección D3',
+                    datos: dataD3.labels.map((label, idx) => ({
+                        indicador: label,
+                        cantidad: dataD3.values[idx]
+                    }))
+                }
+            ]
+        };
+
+        // Crear CSV formateado para Power BI
+        let csv = 'Sección,Indicador,Cantidad,Período\n';
+        
+        data.secciones.forEach(seccion => {
+            seccion.datos.forEach(item => {
+                csv += `"${seccion.nombre}","${item.indicador}",${item.cantidad},"${data.periodo}"\n`;
+            });
+        });
+
+        // Descargar CSV
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reporte_rem_a24_powerbi_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+
+        // Mostrar instrucciones
+        alert(`Archivo descargado: reporte_rem_a24_powerbi_${new Date().toISOString().split('T')[0]}.csv\n\n` +
+            'Para importar a Power BI:\n' +
+            '1. Abre Power BI Desktop\n' +
+            '2. Haz clic en "Obtener datos" > "Texto/CSV"\n' +
+            '3. Selecciona el archivo descargado\n' +
+            '4. Haz clic en "Cargar" o "Transformar datos"\n' +
+            '5. Ya puedes crear visualizaciones con los datos');
+    }
+
+    // Pantalla completa
+    function fullscreen(btn) {
+        const card = btn.closest('.card-enterprise');
+        card.requestFullscreen?.();
+    }
+
+    // Aplicar filtros
+    function applyFilters() {
+        const mes = document.getElementById('mes').value;
+        const anio = document.getElementById('anio').value;
+        window.location.href = `?mes=${mes}&anio=${anio}`;
+    }
+
+    // Inicializar
+    window.addEventListener('load', updateComparison);
 </script>
 {% endblock %}
