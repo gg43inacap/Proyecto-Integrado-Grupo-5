@@ -1,15 +1,24 @@
 {% extends 'base.html' %}
-{% load static %} 
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/lista_usuarios.css' %}">
+{% endblock %}
 
 {% block title %}Gestión de Usuarios - Listado{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid mt-4" style="background-color: #e9ecef; min-height: 100vh; padding: 20px;">
+    
+    <a href="{% url 'dashboard' %}?rol=ADMIN" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel ADMIN
+    </a>
+    
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card shadow-lg" style="border: 1px solid #6c757d; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
                 
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f1f3f4; border-bottom: 2px solid #6c757d; border-top-left-radius: 12px; border-top-right-radius: 12px;">
                     <h1 class="mb-0 text-hospital">
                         <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                     </h1>
@@ -18,7 +27,7 @@
                     </a>
                 </div>
                 
-                <div class="card-body">
+                <div class="card-body" style="background-color: #fafbfc; padding: 25px;">
                     
                     {% if messages %}
                         {% for message in messages %}
@@ -30,16 +39,16 @@
                     {% endif %}
                     
                     {% if users %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle">
+                    <div class="table-responsive" style="border: 1px solid #495057; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <table class="table table-hover align-middle mb-0 custom-table" style="border-collapse: separate; border-spacing: 0;">
                             <thead class="table-dark">
                                 <tr>
-                                    <th><i class="fas fa-user"></i> Usuario</th>
-                                    <th><i class="fas fa-id-card"></i> RUT</th>
-                                    <th><i class="fas fa-envelope"></i> Email</th>
-                                    <th><i class="fas fa-user-tag"></i> Rol</th>
-                                    <th><i class="fas fa-toggle-on"></i> Estado</th>
-                                    <th><i class="fas fa-cogs"></i> Acciones</th>
+                                    <th style="min-width: 150px;"><i class="fas fa-user"></i> Usuario</th>
+                                    <th style="min-width: 120px;"><i class="fas fa-id-card"></i> RUT</th>
+                                    <th style="min-width: 200px;"><i class="fas fa-envelope"></i> Email</th>
+                                    <th style="min-width: 100px;"><i class="fas fa-user-tag"></i> Rol</th>
+                                    <th style="min-width: 100px;"><i class="fas fa-toggle-on"></i> Estado</th>
+                                    <th style="min-width: 140px;"><i class="fas fa-cogs"></i> Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,13 +73,13 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-outline-primary" title="Editar">
-                                                <i class="fas fa-edit"></i>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-sm btn-outline-primary" title="Editar" style="border-width: 2px !important; border-color: #0d6efd !important;">
+                                                <i class="fas fa-edit"></i> Editar
                                             </a>
-                                            {% if user.is_active and not user.is_superuser %}
-                                                <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-outline-danger" title="Bloquear">
-                                                    <i class="fas fa-ban"></i>
+                                            {% if user.is_active %}
+                                                <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-sm btn-outline-danger" title="Bloquear" style="border-width: 2px !important; border-color: #dc3545 !important;">
+                                                    <i class="fas fa-ban"></i> Bloquear
                                                 </a>
                                             {% endif %}
                                         </div>
@@ -81,7 +90,7 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="text-center py-5 border rounded bg-light">
+                    <div class="text-center py-5 border-2 rounded" style="background-color: #f1f3f4; border-color: #6c757d !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
                         <i class="fas fa-users-slash fa-4x text-muted mb-3"></i>
                         <h4 class="text-muted">No hay usuarios registrados que mostrar.</h4>
                         <p class="text-muted">Comience creando su primer usuario.</p>
@@ -91,14 +100,15 @@
                     </div>
                     {% endif %}
                 </div>
-                
-                <div class="card-footer">
-                    <a href="{% url 'dashboard' %}?rol=ADMIN" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver al panel
-                    </a>
-                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Botón Back to Top -->
+<button id="backToTopBtn" title="Volver arriba">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script src="{% static 'js/lista_usuarios.js' %}"></script>
 {% endblock %}

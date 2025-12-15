@@ -15,11 +15,9 @@ from .forms import CustomUserForm
 @login_required
 def listar_usuario(request):
     User = get_user_model()
-    # ADMIN no puede ver ni editar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN':
-        users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
-    else:
-        users = User.objects.all()
+    # Superusuarios son invisibles desde la interfaz web para TODOS los usuarios
+    # Solo se pueden gestionar mediante terminal/shell de Django
+    users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
     return render(request, 'roles/lista_usuarios.html', {'users': users})
 
 
@@ -98,38 +96,68 @@ def api_estadisticas_admin(request):
     
     # Datos para gráfico de barras (usuarios por rol en el año)
     usuarios_roles_anio = {
-        'labels': ['Admin', 'SOME', 'Matrona', 'Supervisor', 'Auditoría', 'Bloqueados'],
-        'data': [usuarios_admin, usuarios_some, usuarios_matrona, usuarios_supervisor, usuarios_auditoria, usuarios_bloqueados]
+        'labels': ['Total Usuarios', 'Admin', 'SOME', 'Matrona', 'Supervisor', 'Auditoría', 'Bloqueados'],
+        'data': [total_usuarios, usuarios_admin, usuarios_some, usuarios_matrona, usuarios_supervisor, usuarios_auditoria, usuarios_bloqueados]
     }
     
     # Datos para gráfico de torta (modificaciones por rol en el mes)
     hoy = timezone.now().date()
     hace_un_mes = hoy - timezone.timedelta(days=30)
     
-    admin_cambios = Auditoria.objects.filter(
+    # Contar usuarios únicos creados o modificados en el mes (no acciones)
+    usuarios_admin_mes = User.objects.filter(
+        role='ADMIN', 
+        date_joined__date__gte=hace_un_mes
+    ).count() + Auditoria.objects.filter(
+        modelo_afectado='Usuario',
+        accion_realizada='UPDATE',
         usuario__role='ADMIN',
         fecha_hora__date__gte=hace_un_mes
-    ).count()
-    some_cambios = Auditoria.objects.filter(
+    ).values('registro_id').distinct().count()
+    
+    usuarios_some_mes = User.objects.filter(
+        role='SOME', 
+        date_joined__date__gte=hace_un_mes
+    ).count() + Auditoria.objects.filter(
+        modelo_afectado='Usuario',
+        accion_realizada='UPDATE',
         usuario__role='SOME',
         fecha_hora__date__gte=hace_un_mes
-    ).count()
-    matrona_cambios = Auditoria.objects.filter(
+    ).values('registro_id').distinct().count()
+    
+    usuarios_matrona_mes = User.objects.filter(
+        role='MATRONA', 
+        date_joined__date__gte=hace_un_mes
+    ).count() + Auditoria.objects.filter(
+        modelo_afectado='Usuario',
+        accion_realizada='UPDATE',
         usuario__role='MATRONA',
         fecha_hora__date__gte=hace_un_mes
-    ).count()
-    supervisor_cambios = Auditoria.objects.filter(
+    ).values('registro_id').distinct().count()
+    
+    usuarios_supervisor_mes = User.objects.filter(
+        role='SUPERVISOR', 
+        date_joined__date__gte=hace_un_mes
+    ).count() + Auditoria.objects.filter(
+        modelo_afectado='Usuario',
+        accion_realizada='UPDATE',
         usuario__role='SUPERVISOR',
         fecha_hora__date__gte=hace_un_mes
-    ).count()
-    auditoria_cambios = Auditoria.objects.filter(
+    ).values('registro_id').distinct().count()
+    
+    usuarios_auditoria_mes = User.objects.filter(
+        role='AUDITORIA', 
+        date_joined__date__gte=hace_un_mes
+    ).count() + Auditoria.objects.filter(
+        modelo_afectado='Usuario',
+        accion_realizada='UPDATE',
         usuario__role='AUDITORIA',
         fecha_hora__date__gte=hace_un_mes
-    ).count()
+    ).values('registro_id').distinct().count()
     
     modificaciones_roles_mes = {
         'labels': ['Admin', 'SOME', 'Matrona', 'Supervisor', 'Auditoría'],
-        'data': [admin_cambios, some_cambios, matrona_cambios, supervisor_cambios, auditoria_cambios]
+        'data': [usuarios_admin_mes, usuarios_some_mes, usuarios_matrona_mes, usuarios_supervisor_mes, usuarios_auditoria_mes]
     }
     
     return JsonResponse({
@@ -167,9 +195,21 @@ def api_estadisticas_matrona(request):
 # API: Estadísticas para panel SOME (solo datos, nunca renderiza paneles)
 @login_required
 def api_estadisticas_some(request):
+    from django.utils import timezone
+    
     total_madres = Madre.objects.count()
+    
+    # Por ahora, sin campos de fecha de creación, usamos valores simulados
+    # TODO: Agregar campo created_at al modelo Madre en próxima migración
+    hoy = timezone.now().date()
+    madres_hoy = 0  # Temporalmente 0 hasta agregar campo created_at
+    madres_mes = total_madres  # Temporalmente mostramos total como "mes"
+    
     return JsonResponse({
-        'total_madres': total_madres
+        'total_madres': total_madres,
+        'madres_hoy': madres_hoy,
+        'madres_mes': madres_mes,
+        'madres_activas': 0  # Eliminamos esta funcionalidad según instrucciones
     })
 
 

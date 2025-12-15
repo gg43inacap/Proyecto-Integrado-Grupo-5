@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/calendario-amigable.css' %}">
+{% endblock %}
 
 {% block title %} Registro de Madre {% endblock %}
 
@@ -25,7 +30,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="id_fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
-                        <input type="date" class="form-control" id="id_fecha_nacimiento" name="fecha_nacimiento" required>
+                        <input type="text" class="form-control calendario-amigable" id="id_fecha_nacimiento" name="fecha_nacimiento" required placeholder="DD/MM/AAAA" readonly>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -113,4 +118,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+    
+<script src="{% static 'js/calendario-amigable.js' %}"></script>
 {% endblock %}

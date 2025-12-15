@@ -1,41 +1,101 @@
 {% extends 'base.html' %}
-{% load static %}  <!-- Añadir esto -->
+{% load static %}
 
-{% block head_extra %}  <!-- Añadir este bloque -->
+{% block head_extra %}
 <link rel="stylesheet" href="{% static 'css/apps/crear_parto.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">  <!-- Añadir contenedor -->
+<div class="container mt-4">
     <h2>Registrar Parto</h2>
     
     <form method="post" novalidate>
         {% csrf_token %}
         
-        {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label">
-                    {{ field.label }}
-                    {% if field.field.required %} 
-                    <span class="text-danger">*</span>
-                    {% endif %}
-                </label>
-                
-                {{ field }}
-                
-                {% if field.help_text %}
-                <div class="form-text">{{ field.help_text }}</div>
-                {% endif %}
-                
-                {% for error in field.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-                {% endfor %}
+        <div class="mb-3">
+            <label class="form-label">{{ form.madre.label }} <span class="text-danger">*</span></label>
+            {{ form.madre }}
+            <div class="text-danger">{{ form.madre.errors }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.fecha_ingreso.label }}</label>
+                {{ form.fecha_ingreso }}
+                <div class="text-danger">{{ form.fecha_ingreso.errors }}</div>
             </div>
-        {% endfor %}
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.hora_ingreso.label }}</label>
+                {{ form.hora_ingreso }}
+                <div class="text-danger">{{ form.hora_ingreso.errors }}</div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.tipo_parto.label }} <span class="text-danger">*</span></label>
+            {{ form.tipo_parto }}
+            <div class="text-danger">{{ form.tipo_parto.errors }}</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.complicaciones.label }}</label>
+            {{ form.complicaciones }}
+            <div class="text-danger">{{ form.complicaciones.errors }}</div>
+        </div>
+
+        <div class="p-3 mb-3 bg-light rounded border">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.parto_distocico }}
+                        <label class="form-check-label" for="{{ form.parto_distocico.id_for_label }}">
+                            Parto distócico
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.parto_vacuum }}
+                        <label class="form-check-label" for="{{ form.parto_vacuum.id_for_label }}">
+                            Parto vacuum
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.confirmado }}
+                        <label class="form-check-label" for="{{ form.confirmado.id_for_label }}">
+                            Confirmado
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="form-check">
+                {{ form.tiene_acompanante }}
+                <label class="form-check-label" for="{{ form.tiene_acompanante.id_for_label }}">
+                    {{ form.tiene_acompanante.label }}
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.nombre_acompanante.label }}</label>
+            {{ form.nombre_acompanante }}
+            <div class="text-danger">{{ form.nombre_acompanante.errors }}</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.estado.label }} <span class="text-danger">*</span></label>
+            {{ form.estado }}
+            <div class="text-danger">{{ form.estado.errors }}</div>
+        </div>
         
-        <div class="mt-4">  <!-- Contenedor para botones -->
+        <div class="mt-4">
             <button type="submit" class="btn btn-primary">Guardar Parto</button>
-            <a href="{% url 'lista_partos' %}" class="btn btn-secondary ms-2">Cancelar</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Cancelar</a>
         </div>
     </form>
     
@@ -44,7 +104,7 @@
         Parto registrado correctamente.
     </div>
     
-    <div class="text-center mt-3">  <!-- Centrar el botón de RNs -->
+    <div class="text-center mt-3">
         <a href="{% url 'crear_rns' %}?parto_id={{ parto_guardado.id }}" class="btn btn-success">
             Registrar Recién Nacidos (múltiples)
         </a>
