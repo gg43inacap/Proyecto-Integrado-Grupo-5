@@ -121,6 +121,11 @@ h5 i {
     padding: 0.6rem 1rem !important;
 }
 
+/* Estilo para sexo femenino */
+[sexo="femenino"] {
+    color: #FFC0CB !important;
+}
+
 /* Footer de la card */
 .card-footer {
     background: #f8f9fa !important;

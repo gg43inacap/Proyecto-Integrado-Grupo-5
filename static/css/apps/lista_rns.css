@@ -89,13 +89,18 @@ body {
 
 /* Badges personalizados */
 .bg-pink {
-    background-color: #e91e63 !important;
+    background-color: #FFC0CB !important;
 }
 
 .badge {
     font-size: 0.85rem;
     padding: 0.35rem 0.6rem;
     font-weight: 500;
+}
+
+/* Estilo para sexo femenino */
+[sexo="femenino"] {
+    color: #FFC0CB !important;
 }
 
 /* Botones de acción */
@@ -191,7 +196,7 @@ body {
         font-size: 0.85rem !important;
     }
     
-    #btnBackToTop {
+    #backToTopBtn {
         width: 45px;
         height: 45px;
         font-size: 1rem;
