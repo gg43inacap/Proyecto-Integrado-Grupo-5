@@ -7,6 +7,22 @@
 {% endblock %}
 
 {% block content %}
+<style>
+.required-field::after {
+    content: ' *';
+    color: #dc3545;
+    font-weight: bold;
+}
+.form-label.required {
+    position: relative;
+}
+.form-label.required::after {
+    content: ' *';
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 3px;
+}
+</style>
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -51,31 +67,33 @@
                         {% csrf_token %}
                         
                         <div class="mb-3">
-                            <label for="id_rut" class="form-label"><i class="fas fa-id-card me-1"></i> RUT:</label>
+                            <label for="id_rut" class="form-label required"><i class="fas fa-id-card me-1"></i> RUT</label>
                             {{ form.rut|add_class:"form-control" }}
                             <div class="form-text">Ingrese el RUT con puntos y guión (Ej: 12.345.678-9)</div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="id_username" class="form-label"><i class="fas fa-user me-1"></i> Nombre de usuario:</label>
+                            <label for="id_username" class="form-label required"><i class="fas fa-user me-1"></i> Nombre de usuario</label>
                             {{ form.username|add_class:"form-control" }}
                         </div>
                         
                         <div class="mb-3">
-                            <label for="id_email" class="form-label"><i class="fas fa-envelope me-1"></i> Email:</label>
+                            <label for="id_email" class="form-label required"><i class="fas fa-envelope me-1"></i> Email</label>
                             {{ form.email|add_class:"form-control" }}
                         </div>
                         
                         <div class="mb-3">
-                            <label for="id_role" class="form-label"><i class="fas fa-user-tag me-1"></i> Rol:</label>
+                            <label for="id_role" class="form-label required"><i class="fas fa-user-tag me-1"></i> Rol</label>
                             {{ form.role|add_class:"form-select" }}
                         </div>
                         
                         <div class="mb-3">
-                            <label for="id_password" class="form-label"><i class="fas fa-lock me-1"></i> Contraseña:</label>
+                            <label for="id_password" class="form-label {% if not form.instance.pk %}required{% endif %}"><i class="fas fa-lock me-1"></i> Contraseña</label>
                             {{ form.password|add_class:"form-control" }}
                             {% if form.instance.pk %}
                             <div class="form-text">Deje este campo vacío si no desea cambiar la contraseña actual.</div>
+                            {% else %}
+                            <div class="form-text">Debe ingresar una contraseña segura para el nuevo usuario.</div>
                             {% endif %}
                         </div>
                         
@@ -104,7 +122,7 @@
                     </form>
                 </div>
                 
-                <div class="card-footer text-end text-muted">
+                <div class="card-footer text-end text-danger">
                     <small>Campos marcados con * son obligatorios.</small>
                 </div>
                 

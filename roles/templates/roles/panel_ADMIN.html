@@ -134,6 +134,34 @@
         </div>
     </div>
 
+    <!-- Gráficos de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-bar me-2"></i>Usuarios por Rol (Anual)
+                    </h6>
+                </div>
+                <div class="card-body" style="height: 400px;">
+                    <canvas id="usuariosRolesBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-pie me-2"></i>Modificaciones/Nuevos por Rol (Mes)
+                    </h6>
+                </div>
+                <div class="card-body" style="height: 400px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="modificacionesPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card shadow">
@@ -175,25 +203,23 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-    fetch('/roles/api/estadisticas_admin/')
-    .then(response => response.json())
-    .then(data => {
-        // Actualizar tarjetas
-        document.getElementById('usuarios-totales').textContent = data.total_usuarios;
-        document.getElementById('usuarios-bloqueados').textContent = data.usuarios_bloqueados;
-        document.getElementById('usuarios-nuevos').textContent = data.usuarios_nuevos;
-        document.getElementById('usuarios-modificados').textContent = data.usuarios_modificados;
-        document.getElementById('usuarios-admin').textContent = data.usuarios_admin;
-        document.getElementById('usuarios-some').textContent = data.usuarios_some;
-        document.getElementById('usuarios-matrona').textContent = data.usuarios_matrona;
-        document.getElementById('usuarios-supervisor').textContent = data.usuarios_supervisor;
-        document.getElementById('usuarios-auditoria').textContent = data.usuarios_auditoria;
+        fetch('/roles/api/estadisticas_admin/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('usuarios-totales').textContent = data.total_usuarios;
+            document.getElementById('usuarios-bloqueados').textContent = data.usuarios_bloqueados;
+            document.getElementById('usuarios-nuevos').textContent = data.usuarios_nuevos;
+            document.getElementById('usuarios-modificados').textContent = data.usuarios_modificados;
+            // No mostrar superadmin
+            document.getElementById('usuarios-admin').textContent = data.usuarios_admin;
+            document.getElementById('usuarios-some').textContent = data.usuarios_some;
+            document.getElementById('usuarios-matrona').textContent = data.usuarios_matrona;
+            document.getElementById('usuarios-supervisor').textContent = data.usuarios_supervisor;
+            document.getElementById('usuarios-auditoria').textContent = data.usuarios_auditoria;
 
-        // Chart.js: Usuarios por Rol (Año)
-        if (data.usuarios_roles_anio) {
-            const barCanvas = document.getElementById('usuariosRolesBarChart');
-            if (barCanvas) {
-                const ctxBar = barCanvas.getContext('2d');
+            // Chart.js: Usuarios por Rol (Año)
+            if (data.usuarios_roles_anio) {
+                const ctxBar = document.getElementById('usuariosRolesBarChart').getContext('2d');
                 new Chart(ctxBar, {
                     type: 'bar',
                     data: {
@@ -202,21 +228,77 @@
                             label: 'Usuarios',
                             data: data.usuarios_roles_anio.data,
                             backgroundColor: [
-                                '#0d6efd', '#ff8800', '#0d6efd',
-                                '#198754', '#001f3f', '#6f42c1', '#dc3545'
+                                '#0d6efd', // Total Usuarios (azul)
+                                '#ff8800', // Admin (naranja custom)
+                                '#0d6efd', // SOME (azul)
+                                '#198754', // Matrona (verde)
+                                '#001f3f', // Supervisor (azul oscuro)
+                                '#6f42c1', // Auditoría (morado)
+                                '#dc3545'  // Bloqueados (rojo)
                             ],
+                            borderColor: [
+                                '#0d6efd', // Total Usuarios
+                                '#ff8800', // Admin
+                                '#0d6efd', // SOME
+                                '#198754', // Matrona
+                                '#001f3f', // Supervisor
+                                '#6f42c1', // Auditoría
+                                '#dc3545'  // Bloqueados
+                            ]
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false }
+                        },
+                        layout: {
+                            padding: 20
+                        },
+                        elements: {
+                            bar: {
+                                borderWidth: 1,
+                                borderRadius: 0,
+                                borderSkipped: false,
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: Math.max(...data.usuarios_roles_anio.data) + 2,
+                                ticks: {
+                                    stepSize: 1,
+                                    font: { size: 16 }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad de Usuarios',
+                                    font: { size: 16 }
+                                },
+                                grid: {
+                                    color: '#e0e0e0'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: { size: 15 }
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                categoryPercentage: 0.8,
+                                barPercentage: 0.9
+                            }
+                        }
+                    }
                 });
             }
-        }
 
-        // Chart.js: Modificaciones y Nuevos por Rol (Mes)
-        if (data.modificaciones_roles_mes) {
-            const pieCanvas = document.getElementById('modificacionesPieChart');
-            if (pieCanvas) {
-                const ctxPie = pieCanvas.getContext('2d');
+            // Chart.js: Modificaciones y Nuevos por Rol (Mes)
+            if (data.modificaciones_roles_mes) {
+                const ctxPie = document.getElementById('modificacionesPieChart').getContext('2d');
                 new Chart(ctxPie, {
                     type: 'doughnut',
                     data: {
@@ -225,27 +307,37 @@
                             label: 'Modificaciones/Nuevos',
                             data: data.modificaciones_roles_mes.data,
                             backgroundColor: [
-                                '#212529', '#0d6efd', '#198754', '#001f3f', '#6f42c1'
+                                '#212529', // Admin
+                                '#0d6efd', // Some
+                                '#198754', // Matrona
+                                '#001f3f', // Supervisor
+                                '#6f42c1'  // Auditoría
                             ],
                         }]
                     },
-                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            title: { display: false }
+                        }
+                    }
                 });
             }
-        }
-    })
-    .catch(error => {
-        document.getElementById('usuarios-totales').textContent = 'Error';
-        document.getElementById('usuarios-bloqueados').textContent = 'Error';
-        document.getElementById('usuarios-nuevos').textContent = 'Error';
-        document.getElementById('usuarios-modificados').textContent = 'Error';
-        document.getElementById('usuarios-admin').textContent = 'Error';
-        document.getElementById('usuarios-some').textContent = 'Error';
-        document.getElementById('usuarios-matrona').textContent = 'Error';
-        document.getElementById('usuarios-supervisor').textContent = 'Error';
-        document.getElementById('usuarios-auditoria').textContent = 'Error';
+        })
+        .catch(error => {
+            console.error('Error al cargar estadísticas:', error);
+            document.getElementById('usuarios-totales').textContent = 'Error';
+            document.getElementById('usuarios-bloqueados').textContent = 'Error';
+            document.getElementById('usuarios-nuevos').textContent = 'Error';
+            document.getElementById('usuarios-modificados').textContent = 'Error';
+            document.getElementById('usuarios-admin').textContent = 'Error';
+            document.getElementById('usuarios-some').textContent = 'Error';
+            document.getElementById('usuarios-matrona').textContent = 'Error';
+            document.getElementById('usuarios-supervisor').textContent = 'Error';
+            document.getElementById('usuarios-auditoria').textContent = 'Error';
+        });
     });
-});
     </script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
