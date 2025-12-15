@@ -810,6 +810,12 @@ p {
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
+    color:white
+}
+.rem24-periodo {
+    color: white;           
+    font-size: 1rem;         
+    margin-top: 0.25rem;
 }
 
 .rem24-header::before {
@@ -822,6 +828,13 @@ p {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
 }
+
+.header-enterprise {
+    padding: 1rem 1.5rem;     
+    background-color: #1e40af; 
+    min-height: auto;         
+}
+
 
 .rem24-header::after {
     content: '';
