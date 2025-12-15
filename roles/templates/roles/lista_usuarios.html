@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
-{% load static %} 
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/lista_usuarios.css' %}">
+{% endblock %}
 
 {% block title %}Gestión de Usuarios - Listado{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4" style="background-color: #e9ecef; min-height: 100vh; padding: 20px;">
+    
+    <a href="{% url 'dashboard' %}?rol=ADMIN" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel ADMIN
+    </a>
+    
     <div class="row">
         <div class="col-12">
             <div class="card shadow-lg" style="border: 1px solid #6c757d; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
@@ -31,76 +40,6 @@
                     
                     {% if users %}
                     <div class="table-responsive" style="border: 1px solid #495057; border-radius: 10px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                        <style>
-                            .custom-table {
-                                border-radius: 10px !important;
-                                overflow: hidden !important;
-                            }
-                            .custom-table thead th:first-child {
-                                border-top-left-radius: 10px !important;
-                            }
-                            .custom-table thead th:last-child {
-                                border-top-right-radius: 10px !important;
-                            }
-                            .custom-table tbody tr:last-child td:first-child {
-                                border-bottom-left-radius: 10px !important;
-                            }
-                            .custom-table tbody tr:last-child td:last-child {
-                                border-bottom-right-radius: 10px !important;
-                            }
-                            .custom-table tbody tr:nth-child(odd) {
-                                background-color: #f8f9fa !important;
-                            }
-                            .custom-table tbody tr:nth-child(even) {
-                                background-color: #e9ecef !important;
-                            }
-                            .custom-table tbody tr:hover {
-                                background-color: #dee2e6 !important;
-                            }
-                            .custom-table tbody tr.table-danger:nth-child(odd) {
-                                background-color: #f8d7da !important;
-                            }
-                            .custom-table tbody tr.table-danger:nth-child(even) {
-                                background-color: #f1aeb5 !important;
-                            }
-                            .custom-table tbody td {
-                                color: #212529 !important;
-                                font-weight: 500 !important;
-                                border-bottom: 0.5px solid #adb5bd !important;
-                            }
-                            .custom-table tbody td strong {
-                                color: #000000 !important;
-                                font-weight: 700 !important;
-                            }
-                            /* Forzar bordes visibles en botones outline */
-                            .btn-outline-primary {
-                                border: 2px solid #0d6efd !important;
-                                background-color: transparent !important;
-                                color: #0d6efd !important;
-                            }
-                            .btn-outline-danger {
-                                border: 2px solid #dc3545 !important;
-                                background-color: transparent !important;
-                                color: #dc3545 !important;
-                            }
-                            .btn-outline-secondary {
-                                border: 2px solid #6c757d !important;
-                                background-color: transparent !important;
-                                color: #6c757d !important;
-                            }
-                            .btn-outline-primary:hover {
-                                background-color: #0d6efd !important;
-                                color: white !important;
-                            }
-                            .btn-outline-danger:hover {
-                                background-color: #dc3545 !important;
-                                color: white !important;
-                            }
-                            .btn-outline-secondary:hover {
-                                background-color: #6c757d !important;
-                                color: white !important;
-                            }
-                        </style>
                         <table class="table table-hover align-middle mb-0 custom-table" style="border-collapse: separate; border-spacing: 0;">
                             <thead class="table-dark">
                                 <tr>
@@ -161,14 +100,15 @@
                     </div>
                     {% endif %}
                 </div>
-                
-                <div class="card-footer" style="background-color: #e9ecef; border-top: 1px solid #6c757d; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                    <a href="{% url 'dashboard' %}?rol=ADMIN" class="btn btn-outline-secondary" style="border-width: 2px !important; border-color: #6c757d !important;">
-                        <i class="fas fa-arrow-left"></i> Volver al panel
-                    </a>
-                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Botón Back to Top -->
+<button id="backToTopBtn" title="Volver arriba">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script src="{% static 'js/lista_usuarios.js' %}"></script>
 {% endblock %}
