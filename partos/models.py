@@ -9,7 +9,6 @@ class Parto(models.Model): # Modelo que representa un parto
         ('cesarea_electiva', 'Cesárea Electiva'),
         ('instrumental', 'Instrumental'),
         ('cesarea_urgencia', 'Cesárea de Urgencia'),
-        ('extrahospitalario', 'Extrahospitalario'),
     ]
     
     ESTADO_CHOICES = [
