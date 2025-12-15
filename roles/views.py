@@ -15,11 +15,9 @@ from .forms import CustomUserForm
 @login_required
 def listar_usuario(request):
     User = get_user_model()
-    # ADMIN no puede ver ni editar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN':
-        users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
-    else:
-        users = User.objects.all()
+    # Superusuarios son invisibles desde la interfaz web para TODOS los usuarios
+    # Solo se pueden gestionar mediante terminal/shell de Django
+    users = User.objects.exclude(role='SUPERADMIN').exclude(is_superuser=True)
     return render(request, 'roles/lista_usuarios.html', {'users': users})
 
 
@@ -197,9 +195,21 @@ def api_estadisticas_matrona(request):
 # API: Estadísticas para panel SOME (solo datos, nunca renderiza paneles)
 @login_required
 def api_estadisticas_some(request):
+    from django.utils import timezone
+    
     total_madres = Madre.objects.count()
+    
+    # Por ahora, sin campos de fecha de creación, usamos valores simulados
+    # TODO: Agregar campo created_at al modelo Madre en próxima migración
+    hoy = timezone.now().date()
+    madres_hoy = 0  # Temporalmente 0 hasta agregar campo created_at
+    madres_mes = total_madres  # Temporalmente mostramos total como "mes"
+    
     return JsonResponse({
-        'total_madres': total_madres
+        'total_madres': total_madres,
+        'madres_hoy': madres_hoy,
+        'madres_mes': madres_mes,
+        'madres_activas': 0  # Eliminamos esta funcionalidad según instrucciones
     })
 
 

@@ -16,9 +16,9 @@ class MadreForm(forms.ModelForm):
                 'placeholder': 'Ej: 12.345.678-9'
             }),
             'fecha_nacimiento': forms.DateInput(attrs={
-                'type': 'date',
-                'class': 'form-control date-picker',
-                'placeholder': 'Selecciona una fecha'
+                'class': 'form-control calendario-amigable',
+                'placeholder': 'DD/MM/AAAA',
+                'autocomplete': 'off'
             }),
             'direccion': forms.TextInput(attrs={
                 'class': 'form-control',

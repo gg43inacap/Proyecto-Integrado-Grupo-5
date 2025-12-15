@@ -77,7 +77,7 @@
                                             <a href="{% url 'editar_usuario' user.pk %}" class="btn btn-sm btn-outline-primary" title="Editar" style="border-width: 2px !important; border-color: #0d6efd !important;">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
-                                            {% if user.is_active and not user.is_superuser %}
+                                            {% if user.is_active %}
                                                 <a href="{% url 'bloquear_usuario' user.pk %}" class="btn btn-sm btn-outline-danger" title="Bloquear" style="border-width: 2px !important; border-color: #dc3545 !important;">
                                                     <i class="fas fa-ban"></i> Bloquear
                                                 </a>
