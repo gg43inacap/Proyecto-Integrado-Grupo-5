@@ -810,6 +810,12 @@ p {
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
+    color:white
+}
+.rem24-periodo {
+    color: white;           
+    font-size: 1rem;         
+    margin-top: 0.25rem;
 }
 
 .rem24-header::before {
@@ -822,6 +828,13 @@ p {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
 }
+
+.header-enterprise {
+    padding: 1rem 1.5rem;     
+    background-color: #1e40af; 
+    min-height: auto;         
+}
+
 
 .rem24-header::after {
     content: '';
@@ -1001,6 +1014,30 @@ p {
     height: 300px !important;
     margin-bottom: var(--spacing-md);
     animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Contenedor del botón */
+.card-body.text-center {
+    text-align: center;
+}
+
+/* Botón principal */
+.btn-ver-reporte {
+    background-color: #58daee;   /* azul institucional */
+    color: #fff;                 /* letras blancas */
+    font-size: 1.1rem;           /* tamaño de texto cómodo */
+    font-weight: 600;            /* texto con presencia */
+    padding: 0.75rem 1.5rem;     /* espacio interno */
+    border-radius: 8px;          /* bordes redondeados */
+    text-transform: uppercase;   /* texto en mayúsculas */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover: efecto al pasar el mouse */
+.btn-ver-reporte:hover {
+    background-color: #0d98aa;   /* azul más oscuro */
+    transform: scale(1.05);      /* ligero zoom */
+    color: #fff;                 /* mantiene letras blancas */
 }
 
 @keyframes fadeIn {

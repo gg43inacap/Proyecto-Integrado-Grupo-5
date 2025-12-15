@@ -1,12 +1,25 @@
-from django.db import models # Sistema de modelos de Django
+from django.db import models
+from django.utils import timezone
 
-# Aquí puedes definir el modelo para los reportes
-# Ejemplo:
-# class Reporte(models.Model): # Modelo para un reporte
-#     campo1 = models.CharField(max_length=100) # Campo de texto
-#     campo2 = models.DateField() # Campo de fecha
-#     ...
-
+# Importas otros modelos si quieres relacionarlos
 from partos.models import Parto, RN
 from gestion_some.models import Madre
-# Create your models here.
+
+class Reporte(models.Model):
+    TIPOS_CHOICES = [
+        ('REM A24', 'REM A24'),
+        ('REM A02', 'REM A02'),
+        ('REM A10', 'REM A10'),
+    ]
+
+    tipo = models.CharField(max_length=50, choices=TIPOS_CHOICES)
+    fecha = models.DateTimeField(default=timezone.now)
+    descripcion = models.TextField(blank=True, null=True)
+
+    # Relación opcional con Madre, Parto o RN si quieres vincular el reporte
+    madre = models.ForeignKey(Madre, on_delete=models.SET_NULL, null=True, blank=True)
+    parto = models.ForeignKey(Parto, on_delete=models.SET_NULL, null=True, blank=True)
+    rn = models.ForeignKey(RN, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.tipo} - {self.fecha.date()}"
