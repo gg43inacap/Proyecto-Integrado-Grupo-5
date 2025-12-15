@@ -256,9 +256,16 @@ class CalendarioAmigable {
     }
 }
 
-// Inicializar todos los calendarios amigables cuando cargue la página
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.calendario-amigable').forEach(input => {
-        new CalendarioAmigable(input);
-    });
-});
+// Auto-inicializar al cargar la página (para formularios normales)
+if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.calendario-amigable').forEach(input => {
+                if (!input.dataset.calendarioIniciado) {
+                    new CalendarioAmigable(input);
+                    input.dataset.calendarioIniciado = 'true';
+                }
+            });
+        });
+    }
+}

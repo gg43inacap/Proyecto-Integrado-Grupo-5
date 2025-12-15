@@ -1,52 +1,165 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/detalle_rn.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid px-3 px-md-4 mt-4" style="max-width: 1000px;">
+    <a href="{% url 'lista_rns' %}" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver a Lista RN
+    </a>
+    
     <div class="card shadow-sm">
         <div class="card-header bg-info text-white">
             <h4 class="mb-0"><i class="fas fa-baby"></i> Detalle del Recién Nacido</h4>
+            <small class="mt-2 d-block">RN de {{ rn.madre.nombre }} {{ rn.madre.apellido_paterno }}</small>
         </div>
         <div class="card-body">
 
-            <!-- Sección Madre -->
-            <h5 class="text-primary">Datos de la Madre</h5>
-            <table class="table table-sm table-bordered mb-4 bg-light">
+            <!-- Sección Identificación -->
+            <h5 class="text-primary border-bottom pb-2"><i class="fas fa-id-card me-2"></i>Identificación del RN</h5>
+            <table class="table table-sm table-bordered mb-4">
                 <tbody>
-                    <tr><th>Nombre</th><td>{{ rn.madre.nombre }}</td></tr>
+                    <tr><th style="width: 30%;">Apellido Paterno</th><td>{{ rn.apellido_paterno_rn|default:"-" }}</td></tr>
+                    <tr><th>Sexo</th><td><span class="badge bg-{{ rn.sexo|yesno:'primary,danger' }}">{{ rn.get_sexo_display }}</span></td></tr>
+                    <tr><th>Fecha de Nacimiento</th><td>{{ rn.fecha_nacimiento|date:"d/m/Y" }}</td></tr>
+                    <tr><th>Hora de Nacimiento</th><td>{{ rn.hora_nacimiento|time:"H:i" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Madre -->
+            <h5 class="text-success border-bottom pb-2"><i class="fas fa-user me-2"></i>Datos de la Madre</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Nombre Completo</th><td>{{ rn.madre.nombre }} {{ rn.madre.apellido_paterno }} {{ rn.madre.apellido_materno }}</td></tr>
                     <tr><th>RUT</th><td>{{ rn.madre.rut }}</td></tr>
-                    <tr><th>Comuna</th><td>{{ rn.madre.comuna }}</td></tr>
-                    <tr><th>CESFAM</th><td>{{ rn.madre.cesfam }}</td></tr>
+                    <tr><th>Comuna</th><td>{{ rn.madre.comuna|default:"-" }}</td></tr>
+                    <tr><th>CESFAM</th><td>{{ rn.madre.cesfam|default:"-" }}</td></tr>
                 </tbody>
             </table>
 
             <!-- Sección Parto -->
-            <h5 class="text-success">Datos del Parto</h5>
-            <table class="table table-sm table-bordered mb-4 bg-light">
+            <h5 class="text-warning border-bottom pb-2"><i class="fas fa-heartbeat me-2"></i>Datos del Parto</h5>
+            <table class="table table-sm table-bordered mb-4">
                 <tbody>
-                    <tr><th>Parto asociado</th><td>{{ rn.parto_asociado }}</td></tr>
-                    <tr><th>Fecha</th><td>{{ rn.parto_asociado.fecha_hora|date:"d/m/Y H:i" }}</td></tr>
-                    <tr><th>Tipo</th><td>{{ rn.parto_asociado.get_tipo_parto_display }}</td></tr>
+                    <tr><th style="width: 30%;">Parto asociado</th><td>Parto #{{ rn.parto_asociado.id }}</td></tr>
+                    <tr><th>Fecha Ingreso</th><td>{{ rn.parto_asociado.fecha_ingreso|date:"d/m/Y" }}</td></tr>
+                    <tr><th>Hora Ingreso</th><td>{{ rn.parto_asociado.hora_ingreso|time:"H:i" }}</td></tr>
+                    <tr><th>Tipo</th><td><span class="badge bg-info">{{ rn.parto_asociado.get_tipo_parto_display }}</span></td></tr>
                     <tr><th>Complicaciones</th><td>{{ rn.parto_asociado.complicaciones|default:"Ninguna" }}</td></tr>
                 </tbody>
             </table>
 
-            <!-- Sección RN -->
-            <h5 class="text-warning">Datos del Recién Nacido</h5>
-            <table class="table table-sm table-bordered bg-light">
+            <!-- Sección Medidas Antropométricas -->
+            <h5 class="text-primary border-bottom pb-2"><i class="fas fa-ruler me-2"></i>Medidas Antropométricas</h5>
+            <table class="table table-sm table-bordered mb-4">
                 <tbody>
-                    <tr><th>Fecha de nacimiento</th><td>{{ rn.fecha_nacimiento }}</td></tr>
-                    <tr><th>Hora</th><td>{{ rn.hora_nacimiento }}</td></tr>
-                    <tr><th>Sexo</th><td>{{ rn.get_sexo_display }}</td></tr>
-                    <tr><th>Peso</th><td>{{ rn.peso }} gr</td></tr>
-                    <tr><th>Talla</th><td>{{ rn.talla }} cm</td></tr>
-                    <tr><th>Apgar 1 min</th><td>{{ rn.apgar_1 }}</td></tr>
-                    <tr><th>Apgar 5 min</th><td>{{ rn.apgar_5 }}</td></tr>
-                    <tr><th>Lactancia antes de 60 min</th><td>{{ rn.lactancia_antes_60|yesno:"Sí,No" }}</td></tr>
+                    <tr><th style="width: 30%;">Peso</th><td>{{ rn.peso|default:"-" }} gr</td></tr>
+                    <tr><th>Talla</th><td>{{ rn.talla|default:"-" }} cm</td></tr>
+                    <tr><th>Circunferencia Cefálica</th><td>{{ rn.cc|default:"-" }} cm</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Edad Gestacional -->
+            <h5 class="text-success border-bottom pb-2"><i class="fas fa-hourglass-half me-2"></i>Edad Gestacional</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Semanas</th><td>{{ rn.semanas_gestacion|default:"-" }}</td></tr>
+                    <tr><th>Días</th><td>{{ rn.dias_gestacion|default:"-" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Evaluación Apgar -->
+            <h5 class="text-danger border-bottom pb-2"><i class="fas fa-heartbeat me-2"></i>Evaluación Apgar</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Apgar 1 minuto</th><td>
+                        {% if rn.apgar_1 >= 7 %}
+                            <span class="badge bg-success fs-6">{{ rn.apgar_1 }}</span>
+                        {% elif rn.apgar_1 >= 4 %}
+                            <span class="badge bg-warning fs-6">{{ rn.apgar_1 }}</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">{{ rn.apgar_1|default:"-" }}</span>
+                        {% endif %}
+                    </td></tr>
+                    <tr><th>Apgar 5 minutos</th><td>
+                        {% if rn.apgar_5 >= 7 %}
+                            <span class="badge bg-success fs-6">{{ rn.apgar_5 }}</span>
+                        {% elif rn.apgar_5 >= 4 %}
+                            <span class="badge bg-warning fs-6">{{ rn.apgar_5 }}</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">{{ rn.apgar_5|default:"-" }}</span>
+                        {% endif %}
+                    </td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Cuidados Inmediatos -->
+            <h5 class="text-info border-bottom pb-2"><i class="fas fa-hand-holding-medical me-2"></i>Cuidados Inmediatos</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Apego precoz</th><td>{{ rn.apego|yesno:"✓ Sí,✗ No" }}</td></tr>
+                    <tr><th>Lactancia antes de 60 min</th><td>{{ rn.lactancia_antes_60|yesno:"✓ Sí,✗ No" }}</td></tr>
+                    <tr><th>Profilaxis ocular</th><td>{{ rn.profilaxis_ocular|yesno:"✓ Sí,✗ No" }}</td></tr>
+                    <tr><th>Vacuna BCG</th><td>{{ rn.vacuna_bcg|yesno:"✓ Sí,✗ No" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Vacunación -->
+            <h5 class="text-warning border-bottom pb-2"><i class="fas fa-syringe me-2"></i>Vacuna Hepatitis B</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Administrada</th><td>{{ rn.vacuna_hepatitis_b|yesno:"✓ Sí,✗ No" }}</td></tr>
+                    <tr><th>Profesional que administró</th><td>{{ rn.profesional_vhb|default:"-" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Sección Condiciones Especiales -->
+            <h5 class="text-danger border-bottom pb-2"><i class="fas fa-exclamation-triangle me-2"></i>Condiciones Especiales</h5>
+            <table class="table table-sm table-bordered mb-4">
+                <tbody>
+                    <tr><th style="width: 30%;">Nivel de Reanimación</th><td>
+                        {% if rn.reanimacion == 0 %}
+                            <span class="badge bg-success">Sin reanimación</span>
+                        {% elif rn.reanimacion == 1 %}
+                            <span class="badge bg-warning">Reanimación básica</span>
+                        {% elif rn.reanimacion == 2 %}
+                            <span class="badge bg-danger">Reanimación avanzada</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No especificado</span>
+                        {% endif %}
+                    </td></tr>
+                    <tr><th>Grado EHI</th><td>
+                        {% if rn.ehi_grado == 0 %}
+                            <span class="badge bg-success">Sin EHI</span>
+                        {% elif rn.ehi_grado == 1 %}
+                            <span class="badge bg-info">EHI Grado I (Leve)</span>
+                        {% elif rn.ehi_grado == 2 %}
+                            <span class="badge bg-warning">EHI Grado II (Moderado)</span>
+                        {% elif rn.ehi_grado == 3 %}
+                            <span class="badge bg-danger">EHI Grado III (Severo)</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No especificado</span>
+                        {% endif %}
+                    </td></tr>
+                    <tr><th>Anomalía congénita</th><td>
+                        {% if rn.anomalia_congenita %}
+                            <span class="badge bg-danger">Sí</span>
+                        {% else %}
+                            <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </td></tr>
+                    {% if rn.anomalia_congenita and rn.descripcion_anomalia %}
+                    <tr><th>Descripción de anomalía</th><td class="text-danger fw-bold">{{ rn.descripcion_anomalia }}</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
 
         <div class="card-footer d-flex justify-content-between">
-            <a href="{% url 'lista_rns' %}" class="btn btn-secondary">
+            <a href="{% url 'lista_rns' %}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver a la lista
             </a>
             <a href="{% url 'editar_rn' rn.id %}" class="btn btn-warning">
@@ -54,5 +167,14 @@
             </a>
         </div>
     </div>
+
+    <!-- Botón flotante back-to-top -->
+    <button id="btnBackToTop" class="btn btn-primary" title="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 </div>
+
+{% block extra_js %}
+<script src="{% static 'js/detalle_rn.js' %}"></script>
+{% endblock %}
 {% endblock %}

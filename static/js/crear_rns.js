@@ -114,6 +114,16 @@ function addForm() {
             }
         });
         
+        // Asegurar alineación correcta de los checkboxes/switches
+        const checkboxContainers = newForm.querySelectorAll('.form-check.form-switch');
+        checkboxContainers.forEach(container => {
+            const parentCol = container.closest('.col-md-6');
+            if (parentCol) {
+                parentCol.classList.add('d-flex', 'align-items-center');
+                parentCol.style.minHeight = '58px';
+            }
+        });
+        
         // Asegurar que tenga botón de quitar
         const removeBtn = newForm.querySelector('.remove-form-btn');
         if (!removeBtn) {
@@ -127,6 +137,19 @@ function addForm() {
         
         // Agregar al contenedor
         container.appendChild(newForm);
+        
+        // Aplicar formato automático a fecha y hora del nuevo formulario
+        const nuevoFechaInput = newForm.querySelector('input[name*="fecha_nacimiento"]');
+        if (nuevoFechaInput) {
+            nuevoFechaInput.addEventListener('input', function() { formatoFecha(this); });
+            nuevoFechaInput.setAttribute('maxlength', '10');
+        }
+        
+        const nuevoHoraInput = newForm.querySelector('input[name*="hora_nacimiento"]');
+        if (nuevoHoraInput) {
+            nuevoHoraInput.addEventListener('input', function() { formatoHora(this); });
+            nuevoHoraInput.setAttribute('maxlength', '5');
+        }
         
         // Configurar eventos para el nuevo formulario
         const newMadreSelect = newForm.querySelector('[id*="-madre"]');
@@ -250,6 +273,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Remove all except the first
             forms.slice(1).forEach(f => f.remove());
         }
+        
+        // Asegurar alineación correcta de los checkboxes/switches en el primer formulario
+        const checkboxContainers = container.querySelectorAll('.form-check.form-switch');
+        checkboxContainers.forEach(switchContainer => {
+            const parentCol = switchContainer.closest('.col-md-6');
+            if (parentCol) {
+                parentCol.classList.add('d-flex', 'align-items-center');
+                parentCol.style.minHeight = '58px';
+            }
+        });
 
         // Ensure formIndex and TOTAL_FORMS reflect current visible forms (start at 1)
         formIndex = container.querySelectorAll('.ribbon-tab').length || 1;

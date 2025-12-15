@@ -73,4 +73,29 @@ document.addEventListener('DOMContentLoaded', function() {
             filtrarPartos();
         }
     }
+    
+    // Configurar control de anomalía congénita
+    const checkboxAnomalia = document.getElementById('id_anomalia_congenita');
+    const inputDescripcion = document.getElementById('id_descripcion_anomalia');
+    
+    if (checkboxAnomalia && inputDescripcion) {
+        const containerDescripcion = inputDescripcion.closest('.mb-3');
+        
+        function toggleDescripcionAnomalia() {
+            if (checkboxAnomalia.checked) {
+                if (containerDescripcion) containerDescripcion.style.display = 'block';
+                inputDescripcion.required = true;
+            } else {
+                if (containerDescripcion) containerDescripcion.style.display = 'none';
+                inputDescripcion.required = false;
+                inputDescripcion.value = '';
+            }
+        }
+        
+        // Establecer estado inicial
+        toggleDescripcionAnomalia();
+        
+        // Agregar evento change
+        checkboxAnomalia.addEventListener('change', toggleDescripcionAnomalia);
+    }
 });

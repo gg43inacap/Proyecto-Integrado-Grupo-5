@@ -51,6 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const rutInput = document.getElementById('rut');
     const resultDiv = document.getElementById('rut-result');
 
+    // Solo ejecutar si los elementos existen (evitar errores en otras páginas)
+    if (!form || !rutInput || !resultDiv) {
+        console.log('Verificar RUT: elementos no encontrados en esta página, saltando inicialización');
+        return;
+    }
+
     // Formatear automáticamente el RUT mientras se escribe
     rutInput.addEventListener('input', function() {
         const valorAntes = rutInput.value;

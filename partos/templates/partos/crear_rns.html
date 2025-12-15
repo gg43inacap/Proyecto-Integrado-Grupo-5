@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="{% static 'css/apps/crear_rns.css' %}">
@@ -14,11 +15,15 @@
             <div class="card">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0"><i class="fas fa-baby"></i> Registrar Recién Nacidos</h4>
-                    {% if parto %}
-                        <small>Parto asociado: {{ parto }} (Madre: {{ parto.madre }})</small>
-                    {% endif %}
                 </div>
                 <div class="card-body">
+                    {% if parto %}
+                    <div class="alert alert-info mb-4">
+                        <h5 class="mb-2"><i class="fas fa-link"></i> Parto Asociado</h5>
+                        <p class="mb-0"><strong>Parto {{ parto.id }} - {{ parto.madre.nombre }} {{ parto.madre.apellido }} - RUT: {{ parto.madre.rut }}</strong></p>
+                        <small class="text-muted">Fecha: {{ parto.fecha_ingreso|date:"d/m/Y" }} - Hora: {{ parto.hora_ingreso|time:"H:i" }}</small>
+                    </div>
+                    {% endif %}
                     <form method="post" novalidate>
                         {% csrf_token %}
                         {{ formset.management_form }}
@@ -35,14 +40,46 @@
                                 </div>
                                 <div class="row">
                                     {% for field in form %}
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
-                                            {{ field }}
+                                        {% if not field.is_hidden and field.name != 'id' and field.name != 'madre' and field.name != 'parto_asociado' %}
+                                        <!-- Caso especial: descripcion_anomalia se muestra condicionalmente -->
+                                        {% if field.name == 'descripcion_anomalia' %}
+                                        <div class="col-md-12 mb-3 descripcion-anomalia-container" style="display: none;">
+                                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                                            {{ field|add_class:"form-control" }}
                                             {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
                                             {% for error in field.errors %}
                                                 <div class="invalid-feedback d-block">{{ error }}</div>
                                             {% endfor %}
                                         </div>
+                                        {% else %}
+                                        {% if field.name == 'apego' or field.name == 'lactancia_antes_60' or field.name == 'profilaxis_ocular' or field.name == 'vacuna_bcg' or field.name == 'vacuna_hepatitis_b' or field.name == 'anomalia_congenita' %}
+                                        <div class="col-md-6 mb-3 d-flex align-items-center" style="min-height: 58px;">
+                                            <div class="form-check form-switch">
+                                                {{ field|add_class:"form-check-input" }}
+                                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                                    {{ field.label }}
+                                                </label>
+                                            </div>
+                                            {% for error in field.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                                            {% if field.name == 'sexo' or field.name == 'reanimacion' or field.name == 'ehi_grado' %}
+                                                {{ field|add_class:"form-select" }}
+                                            {% else %}
+                                                {{ field|add_class:"form-control" }}
+                                            {% endif %}
+                                            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                                            {% for error in field.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
@@ -63,7 +100,7 @@
                                 <i class="fas fa-arrow-left"></i> Cancelar
                             </a>
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save"></i> Guardar Todos los RN
+                                <i class="fas fa-save"></i> Guardar Datos
                             </button>
                         </div>
                     </form>
@@ -80,6 +117,54 @@
     const maxForms = 10;
     // Forzar inicio con un solo ribbon; JS actualizará TOTAL_FORMS cuando se añadan/quiten
     let formIndex = 1;
+    
+    // Auto-formato para fecha DD/MM/YYYY
+    function formatoFecha(input) {
+        let valor = input.value.replace(/\D/g, ''); // Solo números
+        let resultado = '';
+        
+        if (valor.length > 0) {
+            resultado = valor.substring(0, 2);
+        }
+        if (valor.length > 2) {
+            resultado += '/' + valor.substring(2, 4);
+        }
+        if (valor.length > 4) {
+            resultado += '/' + valor.substring(4, 8);
+        }
+        
+        input.value = resultado;
+    }
+    
+    // Auto-formato para hora HH:MM
+    function formatoHora(input) {
+        let valor = input.value.replace(/\D/g, ''); // Solo números
+        let resultado = '';
+        
+        if (valor.length > 0) {
+            resultado = valor.substring(0, 2);
+        }
+        if (valor.length > 2) {
+            resultado += ':' + valor.substring(2, 4);
+        }
+        
+        input.value = resultado;
+    }
+    
+    // Inicializar eventos de formato al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aplicar a inputs de fecha existentes
+        document.querySelectorAll('input[name*="fecha_nacimiento"]').forEach(input => {
+            input.addEventListener('input', function() { formatoFecha(this); });
+            input.setAttribute('maxlength', '10');
+        });
+        
+        // Aplicar a inputs de hora existentes
+        document.querySelectorAll('input[name*="hora_nacimiento"]').forEach(input => {
+            input.addEventListener('input', function() { formatoHora(this); });
+            input.setAttribute('maxlength', '5');
+        });
+    });
 </script>
 <script src="{% static 'js/crear_rns.js' %}"></script>
 {% endblock %}

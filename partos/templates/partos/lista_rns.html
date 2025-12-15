@@ -1,89 +1,152 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/lista_rns.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="fas fa-baby"></i> Lista de Recién Nacidos</h4>                   
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Madre</th>
-                                    <th>Parto Asociado</th>
-                                    <th>Fecha de Nacimiento</th>
-                                    <th>Sexo</th>
-                                    <th>Peso (gr)</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for rn in rns %}
-                                <tr>
-                                    <td>{{ rn.id }}</td>
-                                    <td>{{ rn.madre }}</td>
-                                    <td>
-                                        <span class="badge bg-info">Parto {{ rn.parto_asociado.id }}</span>
-                                        <small class="d-block text-muted">{{ rn.parto_asociado.fecha_ingreso|date:"d/m/Y" }}</small>
-                                    </td>
-                                    <td>{{ rn.fecha_nacimiento|date:"d/m/Y" }}</td>
-                                    <td>
-                                        {% if rn.sexo == 'M' %}
-                                            <span class="badge bg-primary">{{ rn.get_sexo_display }}</span>
-                                        {% elif rn.sexo == 'F' %}
-                                            <span class="badge bg-pink">{{ rn.get_sexo_display }}</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">{{ rn.get_sexo_display }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if rn.peso %}
-                                            {{ rn.peso }} gr
-                                        {% else %}
-                                            <small class="text-muted">No registrado</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{% url 'detalle_rn' rn.id %}" class="btn btn-sm btn-info" title="Ver detalles">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{% url 'editar_rn' rn.id %}" class="btn btn-sm btn-warning" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
-                                        <i class="fas fa-baby fa-3x mb-3"></i>
-                                        <p>No hay recién nacidos registrados.</p>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <div class="card-footer">
-                    <a href="{% url 'dashboard' %}?rol=MATRONA" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver al panel
-                    </a>
-                </div>
-                    </div>
-                </div>
+<div class="container-fluid px-3 px-md-4 mt-4" style="max-width: 1400px;">
+    <a href="{% url 'dashboard' %}?rol=MATRONA" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel MATRONA
+    </a>
+    
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <h4 class="mb-0"><i class="fas fa-baby me-2"></i> Lista de Recién Nacidos</h4>
             </div>
-            
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="tablaRNs">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="sortable" data-column="id">
+                                ID <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th class="sortable" data-column="madre">
+                                Madre <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th class="sortable" data-column="parto">
+                                Parto <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th class="sortable" data-column="fecha">
+                                Fecha Nacimiento <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th>Sexo</th>
+                            <th class="sortable" data-column="peso">
+                                Peso <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th>Apgar</th>
+                            <th>Condiciones</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rn in rns %}
+                        <tr data-madre="{{ rn.madre.nombre }} {{ rn.madre.apellido_paterno }}" 
+                            data-parto="{{ rn.parto_asociado.id }}"
+                            data-fecha="{{ rn.fecha_nacimiento|date:'Y-m-d' }}"
+                            data-peso="{{ rn.peso|default:'0' }}">
+                            <td><strong>#{{ rn.id }}</strong></td>
+                            <td>
+                                <div>{{ rn.madre.nombre }} {{ rn.madre.apellido_paterno }}</div>
+                                <small class="text-muted">{{ rn.madre.rut }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">Parto #{{ rn.parto_asociado.id }}</span>
+                                <small class="d-block text-muted mt-1">{{ rn.parto_asociado.fecha_ingreso|date:"d/m/Y" }}</small>
+                            </td>
+                            <td>
+                                <div>{{ rn.fecha_nacimiento|date:"d/m/Y" }}</div>
+                                <small class="text-muted">{{ rn.hora_nacimiento|time:"H:i" }}</small>
+                            </td>
+                            <td>
+                                {% if rn.sexo == 'M' %}
+                                    <span class="badge bg-primary"><i class="fas fa-mars me-1"></i>{{ rn.get_sexo_display }}</span>
+                                {% elif rn.sexo == 'F' %}
+                                    <span class="badge bg-pink"><i class="fas fa-venus me-1"></i>{{ rn.get_sexo_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ rn.get_sexo_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if rn.peso %}
+                                    <strong>{{ rn.peso }}</strong> gr
+                                {% else %}
+                                    <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    {% if rn.apgar_1 %}
+                                        <span class="badge {% if rn.apgar_1 >= 7 %}bg-success{% elif rn.apgar_1 >= 4 %}bg-warning{% else %}bg-danger{% endif %}" title="Apgar 1'">
+                                            {{ rn.apgar_1 }}
+                                        </span>
+                                    {% endif %}
+                                    {% if rn.apgar_5 %}
+                                        <span class="badge {% if rn.apgar_5 >= 7 %}bg-success{% elif rn.apgar_5 >= 4 %}bg-warning{% else %}bg-danger{% endif %}" title="Apgar 5'">
+                                            {{ rn.apgar_5 }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    {% if rn.reanimacion > 0 %}
+                                        <span class="badge {% if rn.reanimacion == 1 %}bg-warning{% else %}bg-danger{% endif %}" title="Reanimación">
+                                            <i class="fas fa-heartbeat"></i> R{{ rn.reanimacion }}
+                                        </span>
+                                    {% endif %}
+                                    {% if rn.ehi_grado > 0 %}
+                                        <span class="badge {% if rn.ehi_grado == 1 %}bg-info{% elif rn.ehi_grado == 2 %}bg-warning{% else %}bg-danger{% endif %}" title="EHI">
+                                            <i class="fas fa-brain"></i> EHI-{{ rn.ehi_grado }}
+                                        </span>
+                                    {% endif %}
+                                    {% if rn.anomalia_congenita %}
+                                        <span class="badge bg-danger" title="Anomalía congénita">
+                                            <i class="fas fa-exclamation-triangle"></i> AC
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'detalle_rn' rn.id %}" class="btn btn-info btn-action-col" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'editar_rn' rn.id %}" class="btn btn-warning btn-action-col" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="fas fa-baby fa-4x mb-3 d-block"></i>
+                                <h5>No hay recién nacidos registrados</h5>
+                                <p>Comienza registrando un nuevo RN</p>
+                                <a href="{% url 'crear_rns' %}" class="btn btn-success mt-2">
+                                    <i class="fas fa-plus-circle me-1"></i> Registrar RN
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <!-- Botón flotante back-to-top -->
+    <button id="btnBackToTop" class="btn btn-primary" title="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 </div>
 
-<style>
-.bg-pink {
-    background-color: #e91e63 !important;
-}
-</style>
+{% block extra_js %}
+<script src="{% static 'js/lista_rns.js' %}"></script>
+{% endblock %}
 {% endblock %}

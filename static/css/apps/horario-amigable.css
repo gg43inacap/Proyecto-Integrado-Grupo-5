@@ -1,0 +1,182 @@
+/* Horario amigable con input normal y popup compacto */
+
+.horario-amigable {
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 35px !important;
+}
+
+/* Selector de hora popup */
+.mini-horario {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    font-size: 12px !important;
+    width: 220px !important;
+    max-width: 220px !important;
+}
+
+.mini-horario-header {
+    background: #f8f9fa;
+    padding: 8px 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+}
+
+.mini-horario-body {
+    padding: 10px;
+}
+
+.mini-horario-display {
+    background: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 26px;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.mini-horario-controles {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.mini-horario-grupo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.mini-horario-label {
+    font-size: 10px;
+    color: #666;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mini-horario-botones {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.mini-horario-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 35px;
+    transition: background 0.2s;
+}
+
+.mini-horario-btn:hover {
+    background: #0056b3;
+}
+
+.mini-horario-btn:active {
+    background: #004085;
+}
+
+.mini-horario-valor {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 30px;
+    text-align: center;
+    padding: 3px;
+}
+
+.mini-horario-footer {
+    padding: 0 10px 10px;
+    display: flex;
+    gap: 6px;
+}
+
+.mini-horario-btn-accion {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.mini-horario-btn-ahora {
+    background: #28a745;
+    color: white;
+}
+
+.mini-horario-btn-ahora:hover {
+    background: #218838;
+}
+
+.mini-horario-btn-limpiar {
+    background: #dc3545;
+    color: white;
+}
+
+.mini-horario-btn-limpiar:hover {
+    background: #c82333;
+}
+
+.mini-horario-btn-ok {
+    background: #007bff;
+    color: white;
+}
+
+.mini-horario-btn-ok:hover {
+    background: #0056b3;
+}
+
+/* Animación de aparición */
+@keyframes fadeInHorario {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mini-horario {
+    animation: fadeInHorario 0.2s ease-out;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .mini-horario {
+        width: 200px !important;
+    }
+    
+    .mini-horario-display {
+        font-size: 24px;
+        padding: 8px;
+    }
+    
+    .mini-horario-btn {
+        padding: 4px 8px;
+        font-size: 13px;
+    }
+}

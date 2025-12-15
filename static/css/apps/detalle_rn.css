@@ -1,0 +1,264 @@
+/* static/css/apps/detalle_rn.css */
+@import url('../base/variables.css');
+@import url('../base/base.css');
+
+/* ========================================================= */
+/* ESTILOS PARA DETALLE_RN.HTML - VISTA DETALLE RN          */
+/* ========================================================= */
+
+/* Fondo del sistema */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%) !important;
+    min-height: 100vh;
+}
+
+/* Contenedor principal */
+.container-fluid {
+    padding: var(--spacing-xl) var(--spacing-md);
+    min-height: calc(100vh - 120px);
+}
+
+/* Botón volver */
+.btn-outline-secondary {
+    transition: all 0.3s ease !important;
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+
+/* Card principal */
+.card {
+    border: none !important;
+    border-radius: var(--border-radius-xl) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+}
+
+/* Header */
+.card-header.bg-info {
+    background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    color: white !important;
+    border-bottom: none !important;
+    padding: 1.5rem !important;
+}
+
+.card-header h4 {
+    margin: 0 !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.card-header h4 i {
+    margin-right: 0.75rem;
+    font-size: 1.3em;
+}
+
+.card-header small {
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* Cuerpo de la card */
+.card-body {
+    padding: 2rem !important;
+    background: white;
+}
+
+/* Títulos de sección */
+h5.border-bottom {
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.75rem !important;
+    display: flex;
+    align-items: center;
+}
+
+h5 i {
+    font-size: 1.1em;
+}
+
+/* Tablas */
+.table {
+    margin-bottom: 0 !important;
+}
+
+.table th {
+    background: #f8f9fa !important;
+    font-weight: 600 !important;
+    color: #495057 !important;
+    vertical-align: middle !important;
+    padding: 0.75rem !important;
+}
+
+.table td {
+    vertical-align: middle !important;
+    padding: 0.75rem !important;
+    color: #212529 !important;
+}
+
+.table-bordered {
+    border: 1px solid #dee2e6 !important;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #dee2e6 !important;
+}
+
+/* Badges */
+.badge {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    border-radius: var(--border-radius-sm) !important;
+}
+
+.badge.fs-6 {
+    font-size: 1rem !important;
+    padding: 0.6rem 1rem !important;
+}
+
+/* Footer de la card */
+.card-footer {
+    background: #f8f9fa !important;
+    border-top: 1px solid #dee2e6 !important;
+    padding: 1.25rem 1.5rem !important;
+}
+
+.card-footer .btn {
+    padding: 0.65rem 1.5rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--border-radius-md) !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-footer .btn-outline-secondary:hover {
+    background: #6c757d !important;
+    color: white !important;
+}
+
+.card-footer .btn-warning {
+    background: linear-gradient(135deg, #ffc107, #ff9800) !important;
+    border: none !important;
+    color: #212529 !important;
+}
+
+.card-footer .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+}
+
+/* Botón flotante back-to-top */
+#btnBackToTop {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    display: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--hospital-blue), var(--hospital-dark)) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    padding: 0 !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#btnBackToTop:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+#btnBackToTop.show {
+    display: flex !important;
+}
+
+/* Texto danger en descripción de anomalía */
+.text-danger.fw-bold {
+    font-size: 1.05rem;
+    background: #fff3cd;
+    padding: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    border-left: 4px solid #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+    
+    .card-header {
+        padding: 1.25rem !important;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .card-footer {
+        padding: 1rem !important;
+    }
+    
+    .card-footer .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .card-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    h5 {
+        font-size: 1.1rem !important;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    #btnBackToTop {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-body {
+        padding: 1.25rem !important;
+    }
+    
+    h5 {
+        font-size: 1rem !important;
+    }
+    
+    .badge {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.4rem !important;
+        font-size: 0.85rem !important;
+    }
+}
