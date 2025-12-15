@@ -73,23 +73,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Botón Back to Top
-    const btnBackToTop = document.getElementById('btnBackToTop');
-    if (btnBackToTop) {
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                btnBackToTop.classList.add('show');
-            } else {
-                btnBackToTop.classList.remove('show');
-            }
+    const backToTopBtn = document.getElementById('backToTopBtn');
+
+    // Mostrar/ocultar botón según scroll
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    });
+
+    // Función para volver al inicio
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
-        
-        btnBackToTop.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
+    });
     
     console.log('Lista RNs inicializada correctamente 👶');
 });

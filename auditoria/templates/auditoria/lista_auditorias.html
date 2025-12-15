@@ -41,15 +41,15 @@
                                     <option value="">Todas</option>
                                     {% for accion in acciones_disponibles %}
                                         <option value="{{ accion }}" {% if filtros.accion == accion %}selected{% endif %}>
-                                            {% if accion == 'CREATE' %}📝 Creación
-                                            {% elif accion == 'UPDATE' %}✏️ Modificación  
-                                            {% elif accion == 'DELETE' %}🗑️ Eliminación
-                                            {% elif accion == 'LOGIN_SUCCESS' %}✅ Login Exitoso
-                                            {% elif accion == 'LOGIN_FAILED' %}❌ Login Fallido
-                                            {% elif accion == 'LOGOUT' %}🚪 Cierre Sesión
-                                            {% elif accion == 'VIEW' %}👁️ Visualización
-                                            {% elif accion == 'USER_BLOCKED' %}🚫 Usuario Bloqueado
-                                            {% elif accion == 'ACCESS_DENIED' %}⛔ Acceso Denegado
+                                            {% if accion == 'CREATE' %} Creación
+                                            {% elif accion == 'UPDATE' %} Modificación  
+                                            {% elif accion == 'DELETE' %} Eliminación
+                                            {% elif accion == 'LOGIN_SUCCESS' %} Login Exitoso
+                                            {% elif accion == 'LOGIN_FAILED' %} Login Fallido
+                                            {% elif accion == 'LOGOUT' %} Cierre Sesión
+                                            {% elif accion == 'VIEW' %} Visualización
+                                            {% elif accion == 'USER_BLOCKED' %} Usuario Bloqueado
+                                            {% elif accion == 'ACCESS_DENIED' %} Acceso Denegado
                                             {% else %}{{ accion }}{% endif %}
                                         </option>
                                     {% endfor %}
@@ -59,11 +59,11 @@
                                 <label for="modelo" class="form-label">Sección:</label>
                                 <select name="modelo" id="modelo" class="form-control form-control-sm">
                                     <option value="">Todas las Secciones</option>
-                                    <option value="Madre" {% if filtros.modelo == 'Madre' %}selected{% endif %}>🤱 Madres</option>
-                                    <option value="Parto" {% if filtros.modelo == 'Parto' %}selected{% endif %}>🏥 Partos</option>
-                                    <option value="RN" {% if filtros.modelo == 'RN' %}selected{% endif %}>👶 Recién Nacidos</option>
-                                    <option value="Usuario" {% if filtros.modelo == 'Usuario' %}selected{% endif %}>👥 Administración</option>
-                                    <option value="Auditoria" {% if filtros.modelo == 'Auditoria' %}selected{% endif %}>📊 Auditoría</option>
+                                    <option value="Madre" {% if filtros.modelo == 'Madre' %}selected{% endif %}> Madres</option>
+                                    <option value="Parto" {% if filtros.modelo == 'Parto' %}selected{% endif %}> Partos</option>
+                                    <option value="RN" {% if filtros.modelo == 'RN' %}selected{% endif %}> Recién Nacidos</option>
+                                    <option value="Usuario" {% if filtros.modelo == 'Usuario' %}selected{% endif %}> Administración</option>
+                                    <option value="Auditoria" {% if filtros.modelo == 'Auditoria' %}selected{% endif %}> Auditoría</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -147,15 +147,15 @@
                                         <td>
                                             <strong style="color: #000 !important;">
                                                 {% if log.modelo_afectado == 'Madre' %}
-                                                    🤱 Madres
+                                                     Madres
                                                 {% elif log.modelo_afectado == 'Parto' %}
-                                                    🏥 Partos
+                                                     Partos
                                                 {% elif log.modelo_afectado == 'RN' %}
-                                                    👶 Recién Nacidos
+                                                     Recién Nacidos
                                                 {% elif log.modelo_afectado == 'Usuario' %}
-                                                    👥 Administración
+                                                     Administración
                                                 {% elif log.modelo_afectado == 'Auditoria' %}
-                                                    📊 Auditoría
+                                                     Auditoría
                                                 {% else %}
                                                     {{ log.modelo_afectado }}
                                                 {% endif %}
