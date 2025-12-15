@@ -9,6 +9,11 @@ from partos.models import Parto
 from gestion_some.models import Madre
 from auditoria.models import registrar_evento_auditoria, Auditoria
 from .forms import CustomUserForm
+from reportes.models import Reporte
+from django.utils import timezone
+from django.db.models import Count
+
+
 
 
 # Vista para listar todos los usuarios registrados
@@ -216,16 +221,28 @@ def api_estadisticas_some(request):
 # API: Estadísticas para panel supervisor (solo datos, nunca renderiza paneles)
 @login_required
 def api_estadisticas_supervisor(request):
-    User = get_user_model()
-    total_usuarios = User.objects.count()
-    usuarios_activos = User.objects.filter(is_active=True).count()
     hoy = timezone.now().date()
-    eventos_hoy = Auditoria.objects.filter(fecha_hora__date=hoy).count()
+    mes = hoy.month
+    anio = hoy.year
+
+    # Totales
+    total_reportes = Reporte.objects.count()
+    reportes_mes = Reporte.objects.filter(fecha__year=anio, fecha__month=mes).count()
+    reportes_hoy = Reporte.objects.filter(fecha__date=hoy).count()
+
+    # Distribución por tipo
+    tipos_qs = Reporte.objects.values('tipo').annotate(cantidad=Count('id'))
+    tipos_reportes = {item['tipo']: item['cantidad'] for item in tipos_qs}
+
     return JsonResponse({
-        'total_usuarios': total_usuarios,
-        'usuarios_activos': usuarios_activos,
-        'eventos_hoy': eventos_hoy,
+        'total_reportes': total_reportes,
+        'reportes_mes': reportes_mes,
+        'reportes_hoy': reportes_hoy,
+        'tipos_reportes': tipos_reportes
     })
+
+
+
 
 
 # API: Estadísticas para panel auditoría (solo datos, nunca renderiza paneles)

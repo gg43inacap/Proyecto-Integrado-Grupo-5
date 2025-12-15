@@ -66,7 +66,7 @@
             <div class="card shadow">
                 <div class="card-header bg-success text-white d-flex align-items-center">
                     <h5 class="mb-0 me-2"><i class="fas fa-chart-bar"></i> Estadísticas Visuales</h5>
-                    <span class="badge bg-light text-success ms-2">Interactivo</span>
+                    
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -87,17 +87,16 @@
         <div class="col-md-12">
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-filter"></i> Gestor de Reportes</h5>
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Reporte REM-24</h5>
                 </div>
-                <div class="card-body">
-                    <p class="mb-3">Busca y filtra reportes generados o personaliza nuevos reportes según tus necesidades.</p>
-                    <div class="d-flex gap-2">
-                       
-                        <a href="{% url 'reportes:rem_24' %}" class="btn btn-outline-info">
-                            <i class="fas fa-cog"></i> Personalizar Reportes
-                        </a>
-                    </div>
+                <div class="card-body text-center">
+                    <a href="{% url 'reportes:rem_24' %}" class="btn-ver-reporte">
+                        <i class="fas fa-file-alt"></i> Ver Reporte
+                    </a>
                 </div>
+
+
+
             </div>
         </div>
     </div>
@@ -153,28 +152,25 @@ function cargarEstadisticasReportes() {
         return response.json();
     })
     .then(data => {
-        // Actualizar contadores con datos reales
-        document.getElementById('total-reportes').textContent = data.total_usuarios || 0;
-        document.getElementById('reportes-mes').textContent = data.eventos_hoy || 0;
-        document.getElementById('reportes-hoy').textContent = data.usuarios_activos || 0;
-        document.getElementById('tipos-reportes').textContent = data.eventos_hoy || 0;
+        //  Actualizar contadores con datos de reportes
+        document.getElementById('total-reportes').textContent = data.total_reportes || 0;
+        document.getElementById('reportes-mes').textContent = data.reportes_mes || 0;
+        document.getElementById('reportes-hoy').textContent = data.reportes_hoy || 0;
+        document.getElementById('tipos-reportes').textContent = Object.keys(data.tipos_reportes || {}).length || 0;
 
-        // Gráfico de Barras
+        // Gráfico de Barras (sin Total Reportes)
         const ctxBarras = document.getElementById('graficoBarrasReportes').getContext('2d');
         new Chart(ctxBarras, {
             type: 'bar',
             data: {
-                labels: ['Total Usuarios', 'Usuarios Activos', 'Eventos Hoy'],
+                labels: ['Reportes del Mes', 'Reportes de Hoy'],
                 datasets: [{
                     label: 'Cantidad',
                     data: [
-                        data.total_usuarios || 0,
-                        data.usuarios_activos || 0,
-                        data.eventos_hoy || 0
+                        Number(data.reportes_mes) || 0,
+                        Number(data.reportes_hoy) || 0
                     ],
-                    backgroundColor: [
-                        '#4e73df', '#1cc88a', '#36b9cc'
-                    ],
+                    backgroundColor: ['#1cc88a', '#36b9cc'],
                     borderWidth: 1
                 }]
             },
@@ -185,25 +181,33 @@ function cargarEstadisticasReportes() {
                     title: { display: true, text: 'Resumen de Reportes' }
                 },
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    }
                 }
             }
         });
 
-        // Gráfico de Torta
+
+        //  Gráfico de Torta (Distribución por tipo de reporte)
         const ctxTorta = document.getElementById('graficoTortaReportes').getContext('2d');
+        const tipos = data.tipos_reportes || {};
+        const labelsTorta = Object.keys(tipos);
+        const valuesTorta = Object.values(tipos);
+
         new Chart(ctxTorta, {
             type: 'pie',
             data: {
-                labels: ['Total Usuarios', 'Usuarios Activos', 'Eventos Hoy'],
+                labels: labelsTorta,
                 datasets: [{
-                    data: [
-                        data.total_usuarios || 0,
-                        data.usuarios_activos || 0,
-                        data.eventos_hoy || 0
-                    ],
+                    data: valuesTorta,
                     backgroundColor: [
-                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'
+                        '#4e73df', '#1cc88a', '#36b9cc',
+                        '#f6c23e', '#e74a3b', '#858796'
                     ]
                 }]
             },
@@ -211,7 +215,7 @@ function cargarEstadisticasReportes() {
                 responsive: true,
                 plugins: {
                     legend: { position: 'bottom' },
-                    title: { display: true, text: 'Distribución de Reportes' }
+                    title: { display: true, text: 'Distribución por Tipo de Reporte' }
                 }
             }
         });
@@ -226,6 +230,7 @@ function cargarEstadisticasReportes() {
         document.getElementById('tipos-reportes').textContent = 'Error';
     });
 }
+</script>
 </script>
  
 <style>
