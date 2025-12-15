@@ -88,8 +88,12 @@ body {
 }
 
 /* Badges personalizados */
-.bg-pink {
-    background-color: #FFC0CB !important;
+
+
+ .badge.bg-pink {
+    background-color: #FFC0CB !important; /* fondo rosado */
+    color: #212529 !important;            /* texto oscuro para contraste */
+    border: 1px solid #e6a9b3;            /* borde suave opcional */
 }
 
 .badge {

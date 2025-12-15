@@ -3,6 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/apps/lista_rns.css' %}">
+
 {% endblock %}
 
 {% block content %}
@@ -64,13 +65,20 @@
                             </td>
                             <td>
                                 {% if rn.sexo == 'M' %}
-                                    <span class="badge bg-primary"><i class="fas fa-mars me-1"></i>{{ rn.get_sexo_display }}</span>
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-mars me-1"></i>{{ rn.get_sexo_display }}
+                                    </span>
                                 {% elif rn.sexo == 'F' %}
-                                    <span class="badge bg-pink"><i class="fas fa-venus me-1"></i>{{ rn.get_sexo_display }}</span>
+                                    <span class="badge" style="background-color: #FFC0CB; color: #212529; border: 1px solid #e6a9b3;">
+                                        <i class="fas fa-venus me-1"></i>{{ rn.get_sexo_display }}
+                                    </span>
                                 {% else %}
                                     <span class="badge bg-secondary">{{ rn.get_sexo_display }}</span>
                                 {% endif %}
                             </td>
+
+                  
+
                             <td>
                                 {% if rn.peso %}
                                     <strong>{{ rn.peso }}</strong> gr
