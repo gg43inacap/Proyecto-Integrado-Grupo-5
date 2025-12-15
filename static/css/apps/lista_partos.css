@@ -1,0 +1,18 @@
+/* Estilos CSS para hacer la tabla más compacta y legible */
+#partosTable.table-sm td, 
+#partosTable.table-sm th {
+    padding-top: 0.3rem; /* Espaciado vertical reducido */
+    padding-bottom: 0.3rem; /* Espaciado vertical reducido */
+}
+.btn-action-col {
+    padding: 2px 6px; /* Padding reducido para los botones */
+    font-size: 0.75rem; /* Fuente más pequeña para los botones */
+}
+.mother-info {
+    line-height: 1.2; /* Espaciado de línea reducido */
+}
+.mother-rut {
+    display: block; /* Asegura que el RUT esté en una nueva línea */
+    font-size: 0.75rem; /* Fuente más pequeña para el RUT */
+    color: #6c757d; /* Color gris para el RUT */
+}
