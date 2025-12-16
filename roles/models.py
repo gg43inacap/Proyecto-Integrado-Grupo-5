@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser # Modelo base de usuario de 
 from django.db import models # Sistema de modelos de Django
 
 ELEGIR_ROL = [ # Opciones de roles para los usuarios
-    ('SUPERADMIN', 'Superadministrador'), # Rol de superadministrador
     ('SOME', 'SOME'), # Rol de SOME
     ('MATRONA', 'Matrona'), # Rol de matrona
     ('SUPERVISOR', 'Supervisor'), # Rol de supervisor

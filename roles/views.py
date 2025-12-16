@@ -33,11 +33,11 @@ def dashboard(request):
     if not request.user.is_authenticated:
         return render(request, 'roles/no_autorizado.html')
 
-    # Permitir a superuser y SUPERADMIN elegir panel con ?rol=
+    # Permitir a superuser elegir panel con ?rol=
     rol_param = request.GET.get('rol')
-    if rol_param and (request.user.is_superuser or getattr(request.user, 'role', None) == 'SUPERADMIN'):
-        if rol_param == 'SUPERADMIN' or rol_param == 'ADMIN':
-            return render(request, 'roles/panel_admin.html', {'user_role_display': 'Super Administrador' if rol_param == 'SUPERADMIN' else 'Administrador'})
+    if rol_param and request.user.is_superuser:
+        if rol_param == 'ADMIN':
+            return render(request, 'roles/panel_admin.html', {'user_role_display': 'Administrador'})
         elif rol_param == 'SOME':
             return render(request, 'roles/panel_some.html', {'user_role_display': 'SOME'})
         elif rol_param == 'MATRONA':
@@ -58,9 +58,7 @@ def dashboard(request):
         messages.error(request, 'Usuario sin rol asignado. Contacte al administrador.')
         return render(request, 'roles/no_autorizado.html')
     # Renderizar panel según rol verificado
-    if rol == 'SUPERADMIN':
-        return render(request, 'roles/panel_admin.html', {'user_role_display': 'Super Administrador'})
-    elif rol == 'ADMIN':
+    if rol == 'ADMIN':
         return render(request, 'roles/panel_admin.html', {'user_role_display': 'Administrador'})
     elif rol == 'SOME':
         return render(request, 'roles/panel_some.html', {'user_role_display': 'SOME'})
@@ -326,8 +324,8 @@ def editar_usuario(request, pk):
     User = get_user_model()
     user = get_object_or_404(User, pk=pk)
 
-    # ADMIN no puede editar SUPERADMIN ni superuser
-    if getattr(request.user, 'role', None) == 'ADMIN' and (user.role == 'SUPERADMIN' or user.is_superuser):
+    # ADMIN no puede editar superuser
+    if getattr(request.user, 'role', None) == 'ADMIN' and user.is_superuser:
         messages.error(request, 'No tienes permisos para modificar este usuario.')
         return redirect('lista_usuarios')
 
