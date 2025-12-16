@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reporte REM A24 - Dashboard Enterprise{% endblock %}
+
+
+{% block head_extra %}  <!-- Añadir este bloque -->
+<link rel="stylesheet" href="{% static 'css/apps/rem24.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Librerías CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.2.1/dist/gridstack.min.css">
+
+
+
+<div class="rem24-container">
+    <!-- Encabezado Enterprise -->
+    <div class="header-enterprise animate__animated animate__fadeInDown">
+        <div class="header-top">
+            <div class="header-left">
+                <h1 class="rem24-header">{{ titulo }}</h1>
+
+                <p id="periodoDisplay" class="rem24-periodo">Periodo: {{ periodo }}</p>
+            </div>
+ 
+        </div>
+    </div>
+
+    <!-- Filtros y Comparativas -->
+    <div class="filters-enterprise animate__animated animate__fadeInUp">
+        <div class="filter-toolbar">
+            <div class="filter-group-enterprise">
+                <label for="mes">Mes</label>
+                <select id="mes" name="mes" class="filter-select-enterprise" onchange="updateComparison()">
+                    <option value="">Todos</option>
+                    <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
+                    <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
+                    <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
+                    <option value="4" {% if mes_seleccionado == 4 %}selected{% endif %}>Abril</option>
+                    <option value="5" {% if mes_seleccionado == 5 %}selected{% endif %}>Mayo</option>
+                    <option value="6" {% if mes_seleccionado == 6 %}selected{% endif %}>Junio</option>
+                    <option value="7" {% if mes_seleccionado == 7 %}selected{% endif %}>Julio</option>
+                    <option value="8" {% if mes_seleccionado == 8 %}selected{% endif %}>Agosto</option>
+                    <option value="9" {% if mes_seleccionado == 9 %}selected{% endif %}>Septiembre</option>
+                    <option value="10" {% if mes_seleccionado == 10 %}selected{% endif %}>Octubre</option>
+                    <option value="11" {% if mes_seleccionado == 11 %}selected{% endif %}>Noviembre</option>
+                    <option value="12" {% if mes_seleccionado == 12 %}selected{% endif %}>Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group-enterprise">
+                <label for="anio">Año</label>
+                <select id="anio" name="anio" class="filter-select-enterprise" onchange="updateComparison()">
+                    <option value="">Todos</option>
+                    {% for year in lista_anios %}
+                        <option value="{{ year }}" {% if anio_seleccionado == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn-widget-action" onclick="applyFilters()" style="margin-top: 1.5rem;">
+                <i class="fa-solid fa-filter"></i> Filtrar
+            </button>
+            <a href="{% url 'reportes:rem_24' %}" class="btn-widget-action" style="margin-top: 1.5rem; text-decoration: none;">
+                <i class="fa-solid fa-rotate-right"></i> Limpiar
+            </a>
+        </div>
+
+    </div>
+
+ 
+
+    <!-- Gráficos y Tablas Drill-down -->
+    <div class="widgets-section">
+        <div class="widgets-controls">
+            <div class="widgets-info">
+                <i class="fa-solid fa-info-circle"></i>
+                Haz clic en los gráficos para explorar datos en detalle
+            </div>
+
+        </div>
+
+        <!-- Grid de widgets -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: var(--spacing-lg);">
+            <!-- Widget 1 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-bar"></i>
+                        {{ seccion_d1.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart1" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table1">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        {% for row in seccion_d1.rows %}
+                            {% if row.0 != "Total nacidos vivos" and row.0 != "Anomalía congénita" %}
+                            <tr onclick="drilldown('d1', '{{ row.0 }}')" style="cursor: pointer;">
+                                <td>{{ row.0 }}</td>
+                                <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                                <td class="text-right">
+                                    <span class="badge-premium">{% widthratio row.1 seccion_d1.rows|length 100 %}%</span>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+
+                    </table>
+
+
+                </div>
+            </div>
+
+            <!-- Widget 2 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="150">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        {{ seccion_d2.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart2" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table2">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                <tbody>
+                    {% for row in seccion_d2.rows %}
+                        {% if row.0 != "Total Partos" %}
+                        <tr onclick="drilldown('d2', '{{ row.0 }}')" style="cursor: pointer;">
+                            <td>{{ row.0 }}</td>
+                            <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                            <td class="text-right">
+                                <span style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent)); color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">
+                                    {% widthratio row.1 seccion_d2.rows|length 100 %}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Widget 3 -->
+            <div class="card-enterprise" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-header-enterprise">
+                    <div class="card-title-enterprise">
+                        <i class="fa-solid fa-chart-line"></i>
+                        {{ seccion_d3.titulo }}
+                    </div>
+                    <div class="card-actions-enterprise">
+                        <button class="card-action-btn" onclick="fullscreen(this)" title="Pantalla completa">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="chart3" style="min-height: 300px;"></div>
+                <div style="margin-top: var(--spacing-lg); border-top: 1px solid #e5e7eb; padding-top: var(--spacing-lg);">
+                    <table class="table table-data-premium" id="table3">
+                        <thead>
+                            <tr>
+                                <th>Indicador</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">%</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        {% for row in seccion_d3.rows %}
+                            {% if row.0 != "Total Partos" %}
+                            <tr onclick="drilldown('d3', '{{ row.0 }}')" style="cursor: pointer;">
+                                <td>{{ row.0 }}</td>
+                                <td class="text-right"><strong>{{ row.1 }}</strong></td>
+                                <td class="text-right">
+                                    <span class="badge-premium">
+                                        {% widthratio row.1 seccion_d3.rows|length 100 %}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exportación Avanzada -->
+    <div class="export-advanced" data-aos="fade-up" data-aos-delay="300">
+        <div class="export-header-advanced">
+            <h3>
+                <i class="fa-solid fa-file-export"></i>
+                Opciones de Exportación 
+            </h3>
+        </div>
+        <div class="export-options">
+            <div class="export-card" onclick="window.location.href='{% url 'reportes:exportar_rem_a24_excel' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}'">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div class="export-title">Microsoft Excel</div>
+                <div class="export-desc">Formato .xlsx compatible</div>
+            </div>
+            <div class="export-card" onclick="window.location.href='{% url 'reportes:exportar_rem_a24_pdf' %}?mes={{ request.GET.mes }}&anio={{ request.GET.anio }}'">
+                <div class="export-icon-advanced">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="export-title">Reporte PDF </div>
+                <div class="export-desc">Documento formateado</div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Botón para volver al Panel Supervisor -->
+    <div class="text-center my-3">
+        <a href="/roles/dashboard/" class="btn btn-primary">
+            ← Volver al Panel Supervisor
+        </a>
+    </div>
+
+
+</div>
+
+<!-- Librerías JavaScript -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    window.REM24 = {
+            d1: {
+            title: "{{ seccion_d1.titulo|escapejs }}",
+            labels: [
+                {% for row in seccion_d1.rows %}
+                    {% if row.0 != "Total nacidos vivos" and row.0 != "Anomalía congénita" %}
+                        "{{ row.0|escapejs }}"{% if not forloop.last %},{% endif %}
+                    {% endif %}
+                {% endfor %}
+            ],
+            values: [
+                {% for row in seccion_d1.rows %}
+                    {% if row.0 != "Total nacidos vivos" and row.0 != "Anomalía congénita" %}
+                        {{ row.1|default:0 }}{% if not forloop.last %},{% endif %}
+                    {% endif %}
+                {% endfor %}
+            ]
+        },
+
+        d2: {
+            title: "{{ seccion_d2.titulo|escapejs }}",
+            labels: [
+                {% for row in seccion_d2.rows %}
+                    {% if row.0 != "Total Partos" %}
+                        "{{ row.0|escapejs }}",
+                    {% endif %}
+                {% endfor %}
+            ],
+
+            values: [
+                {% for row in seccion_d2.rows %}
+                    {% if row.0 != "Total Partos" %}
+                        {{ row.1|default:0 }},
+                    {% endif %}
+                {% endfor %}
+            ]
+        },
+
+
+        d3: {
+            title: "{{ seccion_d3.titulo|escapejs }}",
+            labels: [
+                {% for row in seccion_d3.rows %}
+                    {% if row.0 != "Total Partos" %}
+                        "{{ row.0|escapejs }}",
+                    {% endif %}
+                {% endfor %}
+            ],
+            values: [
+                {% for row in seccion_d3.rows %}
+                    {% if row.0 != "Total Partos" %}
+                        {{ row.1|default:0 }},
+                    {% endif %}
+                {% endfor %}
+            ]
+        },
+        titulo: "{{ titulo|escapejs }}",
+        periodo: "{{ periodo|escapejs }}"
+    };
+</script>
+
+<script src="{% static 'js/rem24.js' %}"></script>
+
+{% endblock %}

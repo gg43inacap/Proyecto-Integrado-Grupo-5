@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar usuario{% else %}Crear nuevo usuario{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+.required-field::after {
+    content: ' *';
+    color: #dc3545;
+    font-weight: bold;
+}
+.form-label.required {
+    position: relative;
+}
+.form-label.required::after {
+    content: ' *';
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 3px;
+}
+</style>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                
+                <div class="card-header">
+                    <h3 class="mb-0 text-hospital">
+                        <i class="fas fa-user-plus me-2"></i> 
+                        {% if form.instance.pk %}Gestione los datos del Usuario{% else %}Crear nuevo usuario{% endif %}
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Error de Validación</h4>
+                            <p>Por favor, corrija los siguientes errores:</p>
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    <li class="mb-1">
+                                        <strong>{{ field|capfirst }}:</strong>
+                                        {% for error in errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" id="userForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_rut" class="form-label required"><i class="fas fa-id-card me-1"></i> RUT</label>
+                            {{ form.rut|add_class:"form-control" }}
+                            <div class="form-text">Ingrese el RUT con puntos y guión (Ej: 12.345.678-9)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label required"><i class="fas fa-user me-1"></i> Nombre de usuario</label>
+                            {{ form.username|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label required"><i class="fas fa-envelope me-1"></i> Email</label>
+                            {{ form.email|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_role" class="form-label required"><i class="fas fa-user-tag me-1"></i> Rol</label>
+                            {{ form.role|add_class:"form-select" }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label {% if not form.instance.pk %}required{% endif %}"><i class="fas fa-lock me-1"></i> Contraseña</label>
+                            {{ form.password|add_class:"form-control" }}
+                            {% if form.instance.pk %}
+                            <div class="form-text">Deje este campo vacío si no desea cambiar la contraseña actual.</div>
+                            {% else %}
+                            <div class="form-text">Debe ingresar una contraseña segura para el nuevo usuario.</div>
+                            {% endif %}
+                        </div>
+                        
+                        
+                        <div class="mb-3">
+                            <div class="form-check"> 
+                                {{ form.is_active|add_class:"form-check-input" }}
+                                <label class="form-check-label" for="id_is_active">
+                                    <i class="fas fa-toggle-on me-1"></i> Usuario activo (Desmarque para bloquear)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 border-top mt-4">
+                            
+                            <a href="{% url 'lista_usuarios' %}" class="btn btn-outline-secondary transition-all me-md-2">
+                                <i class="fas fa-arrow-left"></i> Volver al listado
+                            </a>
+                            
+                            <button type="submit" class="btn btn-success transition-all">
+                                <i class="fas fa-save"></i> 
+                                {% if form.instance.pk %}Actualizar usuario{% else %}Crear usuario{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer text-end text-danger">
+                    <small>Campos marcados con * son obligatorios.</small>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/form_usuarios.js' %}"></script>
+{% endblock %}

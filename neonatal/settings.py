@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-i@ue^%el8wjcm1%=b1lbfp^f4_75-3pwj3siqk044!)931--)*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 
 
 # Application definition
@@ -38,11 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'login',
     'partos',
-    'reportes',
     'auditoria',
+    'reportes',
+    'roles',
+    'gestion_some',
+    'login',
+    'widget_tweaks',
 ]
+
+AUTH_USER_MODEL = 'roles.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -107,11 +112,29 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
+USE_TZ = True
+
+# Configuración UTF-8
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
+
+# Configuración adicional para manejo de caracteres UTF-8
+import locale
+try:
+    locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
+except:
+    try:
+        locale.setlocale(locale.LC_ALL, 'Spanish_Spain.1252')
+    except:
+        pass  # Si no se puede configurar locale, continuar
+
+# Asegurar que las respuestas HTTP usen UTF-8
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 USE_TZ = True
 
@@ -128,3 +151,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de login/logout
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'

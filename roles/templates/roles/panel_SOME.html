@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel SOME{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="mb-0 text-primary"><i class="fas fa-user-nurse me-3"></i> Panel SOME</h1>
+            <p class="lead text-muted mt-1">Gestión y monitoreo de madres en el sistema.</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-primary text-white">SOME</span>
+            <br>
+            <small class="text-muted">Usuario: <strong>{{ user.username }}</strong></small>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-4 justify-content-center">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Madres Ingresadas Hoy</div>
+                            <div class="h5 mb-0 font-weight-bold text-info" id="madres-hoy">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Madres Ingresadas Mes</div>
+                            <div class="h5 mb-0 font-weight-bold text-warning" id="madres-mes">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Madres</div>
+                            <div class="h5 mb-0 font-weight-bold text-success" id="total-madres">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header" style="background-color: #0d6efd;">
+            <h5 class="mb-0 d-flex align-items-center">
+                <i class="fas fa-cogs me-2" style="color: aliceblue;"></i>
+                <span style="color: aliceblue;">Funciones de Gestión</span>
+            </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-start border-4 border-primary">
+                                <div class="card-body">
+                                    <h6 class="text-primary"><i class="fas fa-list-ul me-1"></i> Listado de Madres</h6>
+                                    <p class="text-muted small mb-3">Ver todas las madres registradas en el sistema</p>
+                                    <a href="{% url 'lista_madres' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-search"></i> Ver Madres
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-start border-4 border-info">
+                                <div class="card-body">
+                                    <h6 class="text-info"><i class="fas fa-plus-circle me-1"></i> Nueva Madre</h6>
+                                    <p class="text-muted small mb-3">Registrar una nueva madre en el sistema</p>
+                                    <a href="{% url 'verificar_rut' %}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-plus"></i> Agregar Madre
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/gestion_some/api/estadisticas/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-madres').textContent = data.total_madres;
+            document.getElementById('madres-hoy').textContent = data.madres_hoy;
+            document.getElementById('madres-mes').textContent = data.madres_mes;
+        })
+        .catch(error => {
+            document.getElementById('total-madres').textContent = 'Error';
+            document.getElementById('madres-hoy').textContent = 'Error';
+            document.getElementById('madres-mes').textContent = 'Error';
+        });
+    });
+    </script>
+</div>
+{% endblock %}

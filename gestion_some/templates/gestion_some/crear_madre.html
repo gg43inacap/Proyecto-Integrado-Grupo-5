@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/calendario-amigable.css' %}">
+{% endblock %}
+
+{% block title %} Registro de Madre {% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white p-4">
+            <div>
+                <h1 class="mb-1"><i class="fas fa-user-plus me-2"></i>Registro de Nueva Madre</h1>
+                <p class="mb-0">Rellenar datos</p>
+            </div>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_nombre" class="form-label">Nombre Completo:</label>
+                        <input type="text" class="form-control" id="id_nombre" name="nombre" maxlength="100" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_rut" class="form-label">RUT:</label>
+                        <input type="text" class="form-control" id="id_rut" name="rut" maxlength="12" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
+                        <input type="text" class="form-control calendario-amigable" id="id_fecha_nacimiento" name="fecha_nacimiento" required placeholder="DD/MM/AAAA" readonly>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_direccion" class="form-label">Dirección:</label>
+                    <input type="text" class="form-control" id="id_direccion" name="direccion" maxlength="200" required>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_comuna" class="form-label">Comuna:</label>
+                        <input type="text" class="form-control" id="id_comuna" name="comuna" maxlength="100" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_telefono" class="form-label">Teléfono:</label>
+                        <input type="text" class="form-control" id="id_telefono" name="telefono" maxlength="20" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="id_cesfam" class="form-label">CESFAM/Centro de Salud:</label>
+                        <input type="text" class="form-control" id="id_cesfam" name="cesfam" maxlength="100" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_prevision" class="form-label">Previsión:</label>
+                        <select class="form-select" id="id_prevision" name="prevision" required>
+                            <option value="fonasa">Fonasa</option>
+                            <option value="isapre">Isapre</option>
+                            <option value="particular">Particular</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="id_migrante" class="form-label">¿Es migrante?</label>
+                        <select class="form-select" name="migrante" id="id_migrante" required>
+                            <option value="False" selected>No</option>
+                            <option value="True">Sí</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_pueblo_originario" class="form-label">¿Pertenece a pueblo originario?</label>
+                        <select class="form-select" name="pueblo_originario" id="id_pueblo_originario" required>
+                            <option value="False" selected>No</option>
+                            <option value="True">Sí</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_alergias" class="form-label">¿Alergias a comida/medicamento?</label>
+                        <select class="form-select" name="alergias" id="id_alergias" onchange="document.getElementById('alergias_si').style.display = this.value === 'True' ? 'block' : 'none';" required>
+                            <option value="False" selected>No</option>
+                            <option value="True">Sí</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3" id="alergias_si" style="display:none;">
+                    <label for="id_alergias_si" class="form-label">Especifique alergias:</label>
+                    <input type="text" class="form-control" id="id_alergias_si" name="alergias_si" maxlength="100" placeholder="Ej: Penicilina, mariscos...">
+                </div>
+                <div class="mb-3">
+                    <label for="id_antecedentes_obstetricos" class="form-label">Antecedentes Obstétricos (Historial de Partos):</label>
+                    <textarea class="form-control" id="id_antecedentes_obstetricos" name="antecedentes_obstetricos" rows="3" placeholder="G: P: A: C: Información relevante sobre embarazos y partos anteriores..." required></textarea>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                    <a href="{% url 'lista_madres' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Volver al Listado
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-save me-2"></i> Guardar Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+// Si hay un parámetro rut en la URL, autocompletar el campo rut
+window.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const rut = params.get('rut');
+    if (rut) {
+        const rutInput = document.getElementById('id_rut');
+        if (rutInput) {
+            rutInput.value = rut;
+            rutInput.readOnly = true; // Opcional: evitar edición si viene de URL
+        }
+    }
+});
+</script>
+    
+<script src="{% static 'js/calendario-amigable.js' %}"></script>
+{% endblock %}

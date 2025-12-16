@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% load static %}  {% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/lista_partos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 mt-4" style="max-width: 1400px;">
+    <a href="{% url 'dashboard' %}?rol=MATRONA" class="btn btn-outline-secondary mb-3" style="border-width: 2px !important; border-color: #6c757d !important;">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel MATRONA
+    </a>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="mb-0"><i class="fas fa-list"></i> Lista de Partos</h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="filtroLabel" style="font-size: 0.95rem; font-weight: 500;">Mostrando: Todos los partos</span>
+                            <label class="switch-toggle" style="margin: 0;">
+                                <input type="checkbox" id="toggleFiltro">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if partos %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle table-sm" id="partosTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="sortable" data-column="madre" style="cursor: pointer;">
+                                        Madre <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="fecha" style="cursor: pointer;">
+                                        Fecha <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="hora" style="cursor: pointer;">
+                                        Hora <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="tipo" style="cursor: pointer;">
+                                        Tipo <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="estado" style="cursor: pointer;">
+                                        Estado <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    
+                                    <th class="text-center" style="width: 70px;">Ver</th>
+                                    <th class="text-center" style="width: 70px;">Editar</th>
+                                    <th class="text-center" style="width: 180px;">Recien Nacido</th>
+                                    <th class="text-center" style="width: 100px;">Completar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for parto in partos %}
+                                <tr class="parto-row {% if parto.estado == 'completado' %}table-secondary{% endif %}" 
+                                    data-parto-estado="{{ parto.estado }}">
+                                    
+                                    <td class="mother-info" data-madre="{{ parto.madre.nombre }} {{ parto.madre.apellido_paterno }}">
+                                        {{ parto.madre.nombre }} {{ parto.madre.apellido_paterno }}
+                                        <span class="mother-rut">({{ parto.madre.rut }})</span>
+                                    </td>
+                                    
+                                    <td data-fecha="{{ parto.fecha_ingreso|date:'Y-m-d' }}">{{ parto.fecha_ingreso|date:"d/m/Y" }}</td>
+                                    <td data-hora="{{ parto.hora_ingreso|time:'H:i' }}">{{ parto.hora_ingreso }}</td>
+                                    <td data-tipo="{{ parto.tipo_parto }}">{{ parto.get_tipo_parto_display }}</td>
+                                    <td>
+                                        {% if parto.estado == 'activo' %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Comp.</span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        <a href="{% url 'detalle_parto' parto.id %}" class="btn btn-sm btn-info btn-action-col" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="{% url 'editar_parto' parto.id %}" class="btn btn-sm btn-warning btn-action-col" title="Editar Parto">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+
+                                    <td class="text-center">
+                                        {% if parto.estado == 'activo' %}
+                                            <a href="{% url 'crear_rns' %}?parto_id={{ parto.id }}" 
+                                               class="btn btn-success" 
+                                               style="padding: 6px 12px; font-size: 0.9rem; white-space: nowrap;"
+                                               title="Registrar Recién Nacidos">
+                                                <i class="fas fa-baby"></i> Añadir RN
+                                            </a>
+                                        {% else %}
+                                            <button disabled class="btn btn-success" style="padding: 6px 12px; font-size: 0.9rem;">
+                                                <i class="fas fa-baby"></i> Añadir RN
+                                            </button>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-center">
+                                        {% if parto.estado == 'activo' %}
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-danger btn-complete-parto btn-action-col" 
+                                                    data-url="{% url 'completar_parto' parto.id %}"
+                                                    title="Completar Parto">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                        {% else %}
+                                            <button disabled class="btn btn-sm btn-danger btn-action-col"><i class="fas fa-check-circle"></i></button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center" role="alert">
+                        No hay partos registrados en el sistema.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón flotante Back to Top -->
+<button id="backToTopBtn" class="btn btn-primary" title="Volver arriba">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script src="{% static 'js/lista_partos.js' %}"></script>
+{% endblock %}

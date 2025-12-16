@@ -6,4 +6,15 @@ __pycache__/
 .vscode/
 .idea/
 .env
+<<<<<<< HEAD
 db.sqlite3
+=======
+.sqlite3
+poblar_db.py
+test_sistema_completo.py
+test_sistema_completo.py
+test_modo_demo.py
+test_sistema_completo.py
+verificar_reportes_integracion.py
+run_tests.bat
+>>>>>>> 8aa6682b3e082511ec2dcf8e725ef929e79ee60f

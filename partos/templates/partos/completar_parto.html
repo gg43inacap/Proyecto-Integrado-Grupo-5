@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static%}
+
+{% block head_extra %}  <!-- Añadir este bloque -->
+<link rel="stylesheet" href="{% static 'css/apps/completar_parto.css' %}">
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-check-circle"></i> Completar Parto</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Confirmación</h5>
+                        <p>¿Está seguro que desea marcar como <strong>completado</strong> el siguiente parto?</p>
+                    </div>
+                    
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><strong>Detalles del Parto:</strong></h6>
+                            <ul class="list-unstyled">
+                                <li><strong>ID:</strong> {{ parto.id }}</li>
+                                <li><strong>Madre:</strong> {{ parto.madre }}</li>
+                                <li><strong>Fecha:</strong> {{ parto.fecha_ingreso|date:"d/m/Y" }}</li>
+                                <li><strong>Hora:</strong> {{ parto.hora_ingreso }}</li>                                
+                                <li><strong>Tipo:</strong> {{ parto.get_tipo_parto_display }}</li>
+                                <li><strong>Estado actual:</strong> <span class="badge bg-success">{{ parto.get_estado_display }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-3">
+                        <small><i class="fas fa-exclamation-triangle"></i> <strong>Nota:</strong> Al completar el parto, este no aparecerá en la lista de partos activos para nuevos registros de recién nacidos.</small>
+                    </div>
+                    
+                    <form method="post" class="d-flex justify-content-between mt-4">
+                        {% csrf_token %}
+                        <a href="{% url 'lista_partos' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-check"></i> Confirmar Completar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+from django.urls import path
+from . import views  # Importa las vistas de la aplicación roles
+
+urlpatterns = [
+    path('dashboard/', views.dashboard, name='dashboard'),  # Ruta para el panel principal según el rol
+    path('usuarios/', views.listar_usuario, name='lista_usuarios'),  # Ruta para listar usuarios
+    path('usuarios/crear/', views.crear_usuario, name='crear_usuario'),  # Ruta para crear usuario
+    path('usuarios/<int:pk>/editar/', views.editar_usuario, name='editar_usuario'),  # Ruta para editar usuario
+    path('usuarios/<int:pk>/bloquear/', views.bloquear_usuario, name='bloquear_usuario'),  # Ruta para bloquear usuario
+    path('api/estadisticas_admin/', views.api_estadisticas_admin, name='api_estadisticas_admin'),  # API estadísticas admin
+    path('api/estadisticas_matrona/', views.api_estadisticas_matrona, name='api_estadisticas_matrona'),  # API estadísticas matrona
+    path('api/estadisticas_some/', views.api_estadisticas_some, name='api_estadisticas_some'),  # API estadísticas SOME
+    path('api/estadisticas_supervisor/', views.api_estadisticas_supervisor, name='api_estadisticas_supervisor'),  # API estadísticas supervisor
+    path('api/estadisticas_auditoria/', views.api_estadisticas_auditoria, name='api_estadisticas_auditoria'),  # API estadísticas auditoría
+]

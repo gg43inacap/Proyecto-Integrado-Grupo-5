@@ -1,3 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin # Sistema de administración de Django
 
-# Register your models here.
+# Aquí puedes registrar el modelo Reporte si lo creas
+# Ejemplo:
+# from .models import Reporte # Importa el modelo Reporte
+# admin.site.register(Reporte) # Registra el modelo en el admin

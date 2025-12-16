@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle Auditoría{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 style="color: #000 !important;"><i class="fas fa-eye text-primary"></i> 📊 Detalle de Registro de Auditoría</h2>
+                <a href="{% url 'lista_auditorias' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información del Evento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Fecha y Hora</th>
+                                <td style="color: #000 !important;">{{ log.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Usuario</th>
+                                <td style="color: #000 !important;">
+                                    <i class="fas fa-user-circle"></i> {{ log.usuario.username|default:"Sistema" }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Acción Realizada</th>
+                                <td style="color: #000 !important;">
+                                    <span class="badge bg-{% if log.accion_realizada == 'CREATE' %}success{% elif log.accion_realizada == 'UPDATE' %}primary{% elif log.accion_realizada == 'DELETE' %}danger{% elif log.accion_realizada == 'LOGIN_SUCCESS' %}success{% elif log.accion_realizada == 'LOGIN_FAILED' %}danger{% elif log.accion_realizada == 'LOGOUT' %}warning{% elif log.accion_realizada == 'VIEW' %}secondary{% else %}dark{% endif %} badge-lg">
+                                        {% if log.accion_realizada == 'VIEW' %}Consulta{% else %}{{ log.get_accion_realizada_display }}{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Sección</th>
+                                <td style="color: #000 !important;">
+                                    <strong>
+                                        {% if log.modelo_afectado == 'Madre' %}
+                                             Madres
+                                        {% elif log.modelo_afectado == 'Parto' %}
+                                             Partos
+                                        {% elif log.modelo_afectado == 'RN' %}
+                                             Recién Nacidos
+                                        {% elif log.modelo_afectado == 'Usuario' %}
+                                             Administración
+                                        {% elif log.modelo_afectado == 'Auditoria' %}
+                                             Auditoría
+                                        {% else %}
+                                            {{ log.modelo_afectado }}
+                                        {% endif %}
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">ID del Registro</th>
+                                <td style="color: #000 !important;">
+                                    <span class="badge badge-light" style="color: #000 !important; background-color: #e9ecef; border: 1px solid #ced4da;">
+                                        #{{ log.registro_id }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Detalles del Cambio</th>
+                                <td style="color: #000 !important;">
+                                    <div class="p-3" style="background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+                                        {{ log.detalles_cambio }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="color: #000 !important; background-color: #f8f9fa;">Dirección IP</th>
+                                <td style="color: #000 !important;">
+                                    <code style="color: #000 !important; background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 4px 8px;">{{ log.ip_address }}</code>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                        <i class="fas fa-list"></i>  Volver al Listado de Auditoría
+                    </a>
+                    <a href="{% url 'dashboard' %}?rol=AUDITORIA" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-home"></i>  Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info" style="color: #000 !important; background-color: #e7f3ff; border-color: #b8daff;">
+                <h6 style="color: #000 !important;"><i class="fas fa-shield-alt"></i> 🔒 Información de Seguridad</h6>
+                <p class="mb-0" style="color: #000 !important;">
+                    Este registro de auditoría es <strong>inmutable</strong> y se generó automáticamente por el sistema. 
+                    Los registros de auditoría no pueden ser editados ni eliminados para mantener la integridad del historial de trazabilidad.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Forzar texto negro en todos los elementos */
+h1, h2, h3, h4, h5, h6, p, td, th, label, small, .text-muted {
+    color: #000 !important;
+}
+.badge-lg {
+    font-size: 1em;
+    padding: 8px 12px;
+}
+code {
+    color: #000 !important;
+    background-color: #f8f9fa !important;
+}
+</style>
+{% endblock %}

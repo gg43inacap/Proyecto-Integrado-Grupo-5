@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel Auditoría{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="mb-0 text-secondary"><i class="fas fa-user-shield me-3"></i> Panel de Auditoría</h1> 
+            <p class="lead text-muted mt-1">Consulta y monitoreo de eventos críticos del sistema.</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-secondary text-white">{{ user_role_display|default:"Auditoría" }}</span>
+            <br>
+            <small class="text-muted">Usuario: <strong>{{ user.username }}</strong></small>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-4">
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Total Eventos Registrados</div>
+                            <div class="h5 mb-0 font-weight-bold text-secondary" id="total-eventos">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-database fa-2x text-secondary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Eventos de Auditoría Hoy</div>
+                            <div class="h5 mb-0 font-weight-bold text-info" id="eventos-hoy">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Eventos Críticos (Última Semana)</div>
+                            <div class="h5 mb-0 font-weight-bold text-warning" id="eventos-semana">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col me-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Permiso de Acceso</div>
+                            <div class="h5 mb-0 font-weight-bold text-success">SOLO CONSULTA</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-eye fa-2x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header" style="background-color: #0d6efd; " >
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs" style="color: aliceblue;"></i>  <p style="color: aliceblue;"> Funciones de Auditoría y trazabilidad </p> 
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-secondary">
+                                <div class="card-body">
+                                    <h6 class="text-secondary"><i class="fas fa-list-ul me-1"></i> Lista Completa</h6>
+                                    <p class="text-muted small mb-3">Ver todos los eventos de auditoría registrados en detalle</p>
+                                    <a href="{% url 'lista_auditorias' %}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-search"></i> Ver Eventos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-info">
+                                <div class="card-body">
+                                    <h6 class="text-info"><i class="fas fa-filter me-1"></i> Búsqueda Avanzada</h6>
+                                    <p class="text-muted small mb-3">Filtrar eventos por fecha, usuario, modelo, y tipo de acción</p>
+                                    <a href="{% url 'lista_auditorias' %}?filtros=1" class="btn btn-info btn-sm">
+                                        <i class="fas fa-search-plus"></i> Filtrar Eventos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card h-100 border-start border-4 border-primary">
+                                <div class="card-body">
+                                    <h6 class="text-primary"><i class="fas fa-chart-pie me-1"></i> refrescar datos</h6>
+                                    <p class="text-muted small mb-3">Visualiza gráficas de tendencias de actividad por rol y acción</p>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="cargarEstadisticas()">
+                                        <i class="fas fa-sync-alt"></i> Cargar Datos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-warning border-left-warning" role="alert">
+                <h5 class="alert-heading text-warning"><i class="fas fa-lock me-2"></i> Consideraciones de Seguridad</h5>
+                <ul class="mb-0">
+                    <li><strong>Acceso Restringido:</strong> Este panel es **solo de consulta**. No se permite crear, editar o eliminar registros de auditoría.</li>
+                    <li><strong>Registro Inmutable:</strong> La integridad de los registros está asegurada; ningún evento de auditoría puede ser modificado post-creación.</li>
+                    <li><strong>Trazabilidad:</strong> Cada evento registra la **Dirección IP** del cliente y los **detalles del cambio** realizado.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark">
+                        <i class="fas fa-history me-2"></i> Últimos 10 Eventos del Sistema
+                    </h5>
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-sm btn-outline-secondary">Ver Historial Completo</a>
+                </div>
+                <div class="card-body" id="ultimos-eventos">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="sr-only">Cargando eventos...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Cargando últimos eventos del sistema...</p>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+</div>
+
+<!-- JavaScript para cargar estadísticas -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    cargarEstadisticas();
+    cargarUltimosEventos();
+});
+
+function cargarEstadisticas() {
+    // Mostrar estado de carga
+    document.getElementById('total-eventos').textContent = 'Cargando...';
+    document.getElementById('eventos-hoy').textContent = 'Cargando...';
+    document.getElementById('eventos-semana').textContent = 'Cargando...';
+    
+    // Obtener estadísticas reales del servidor
+    fetch('/roles/api/estadisticas_auditoria/')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cargar estadísticas');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Actualizar contadores con datos reales
+        document.getElementById('total-eventos').textContent = data.total_eventos || 0;
+        document.getElementById('eventos-hoy').textContent = data.eventos_hoy || 0;
+        document.getElementById('eventos-semana').textContent = data.eventos_semana || 0;
+        
+        console.log('Estadísticas cargadas:', data);
+    })
+    .catch(error => {
+        console.error('Error cargando estadísticas:', error);
+        document.getElementById('total-eventos').textContent = 'Error';
+        document.getElementById('eventos-hoy').textContent = 'Error';
+        document.getElementById('eventos-semana').textContent = 'Error';
+    });
+}
+
+function cargarUltimosEventos() {
+    // Cargar los últimos eventos reales del servidor
+    fetch('/roles/api/estadisticas_auditoria/')
+    .then(response => response.json())
+    .then(data => {
+        const eventosContainer = document.getElementById('ultimos-eventos');
+        
+        if (data.ultimos_eventos && data.ultimos_eventos.length > 0) {
+            let eventosHtml = '<div class="table-responsive"><table class="table table-sm"><tbody>';
+            
+            data.ultimos_eventos.forEach(evento => {
+                let badgeClass = 'secondary';
+                let accionTraducida = evento.accion;
+                
+                // Traducir acciones al español y asignar colores
+                if (evento.accion === 'CREATE') {
+                    badgeClass = 'success';
+                    accionTraducida = '📝 Creación';
+                } else if (evento.accion === 'UPDATE') {
+                    badgeClass = 'warning';
+                    accionTraducida = '✏️ Modificación';
+                } else if (evento.accion === 'DELETE') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🗑️ Eliminación';
+                } else if (evento.accion === 'VIEW') {
+                    badgeClass = 'info';
+                    accionTraducida = '👁️ Visualización';
+                } else if (evento.accion === 'LOGIN_SUCCESS') {
+                    badgeClass = 'success';
+                    accionTraducida = '✅ Login Exitoso';
+                } else if (evento.accion === 'LOGIN_FAILED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '❌ Login Fallido';
+                } else if (evento.accion === 'LOGOUT') {
+                    badgeClass = 'secondary';
+                    accionTraducida = '🚪 Cierre Sesión';
+                } else if (evento.accion === 'USER_BLOCKED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '🚫 Usuario Bloqueado';
+                } else if (evento.accion === 'ACCESS_DENIED') {
+                    badgeClass = 'danger';
+                    accionTraducida = '⛔ Acceso Denegado';
+                }
+                
+                eventosHtml += `
+                    <tr>
+                        <td><span class="badge bg-${badgeClass}">${accionTraducida}</span></td>
+                        <td>${evento.modelo}</td>
+                        <td><small>${evento.usuario}</small></td>
+                        <td><small class="text-muted">${evento.fecha}</small></td>
+                    </tr>
+                `;
+            });
+            
+            eventosHtml += '</tbody></table></div>';
+            eventosHtml += `
+                <div class="text-center mt-3">
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-list"></i> Ver Lista Completa
+                    </a>
+                    <small class="text-muted d-block mt-2">Actualizado: ${data.fecha_consulta}</small>
+                </div>
+            `;
+            
+            eventosContainer.innerHTML = eventosHtml;
+        } else {
+            eventosContainer.innerHTML = `
+                <div class="text-center">
+                    <p class="text-muted">No hay eventos registrados</p>
+                    <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Ver Lista Completa de Eventos
+                    </a>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error cargando eventos:', error);
+        document.getElementById('ultimos-eventos').innerHTML = `
+            <div class="text-center text-danger">
+                <p>Error al cargar eventos</p>
+                <a href="{% url 'lista_auditorias' %}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> Ver Lista Completa
+                </a>
+            </div>
+        `;
+    });
+}
+</script>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.border-left-secondary {
+    border-left: 0.25rem solid #858796 !important;
+}
+</style>
+{% endblock %}

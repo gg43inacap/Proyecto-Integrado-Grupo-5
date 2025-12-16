@@ -1,0 +1,248 @@
+/* static/css/apps/editar_parto.css */
+@import url('../base/variables.css');
+@import url('../base/base.css');
+
+/* ========================================================= */
+/* ESTILOS PARA EDITAR_PARTO.HTML                            */
+/* ========================================================= */
+
+/* Fondo del sistema */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%) !important;
+    min-height: 100vh;
+}
+
+/* Contenedor principal */
+body > .container {
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Título principal */
+h2 {
+    color: var(--hospital-dark) !important;
+    font-weight: 700 !important;
+    margin-bottom: 2rem !important;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--hospital-blue);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+/* Formulario Django (form.as_p) */
+form[method="post"] {
+    background: white;
+    border-radius: var(--border-radius-xl);
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+}
+
+/* Estilos para los párrafos generados por form.as_p */
+form[method="post"] p {
+    margin-bottom: 1.5rem !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Labels */
+form[method="post"] label {
+    font-weight: 600 !important;
+    color: var(--hospital-dark) !important;
+    margin-bottom: 0.5rem !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Inputs, selects, textareas generados por Django */
+form[method="post"] input[type="text"],
+form[method="post"] input[type="number"],
+form[method="post"] input[type="date"],
+form[method="post"] input[type="time"],
+form[method="post"] input[type="datetime-local"],
+form[method="post"] select,
+form[method="post"] textarea,
+form[method="post"] input[type="checkbox"],
+form[method="post"] input[type="radio"] {
+    padding: 0.75rem 1rem !important;
+    border: 2px solid #e1e5e9 !important;
+    border-radius: var(--border-radius-md) !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease;
+    background-color: #fff !important;
+    width: 100% !important;
+    max-width: 100%;
+}
+
+/* Focus states */
+form[method="post"] input[type="text"]:focus,
+form[method="post"] input[type="number"]:focus,
+form[method="post"] input[type="date"]:focus,
+form[method="post"] input[type="time"]:focus,
+form[method="post"] input[type="datetime-local"]:focus,
+form[method="post"] select:focus,
+form[method="post"] textarea:focus {
+    border-color: var(--hospital-blue) !important;
+    box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25) !important;
+    outline: none !important;
+}
+
+/* Checkboxes y radios específicos */
+form[method="post"] input[type="checkbox"],
+form[method="post"] input[type="radio"] {
+    width: auto !important;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+form[method="post"] input[type="checkbox"] + label,
+form[method="post"] input[type="radio"] + label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-weight: normal;
+}
+
+/* Contenedor de botones */
+form[method="post"] button[type="submit"],
+form[method="post"] a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: var(--border-radius-md) !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Botón Guardar */
+form[method="post"] button[type="submit"] {
+    background: linear-gradient(135deg, var(--hospital-blue), var(--hospital-dark)) !important;
+    color: white !important;
+    min-width: 180px;
+}
+
+form[method="post"] button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3) !important;
+    color: white !important;
+}
+
+/* Botón Cancelar */
+form[method="post"] a {
+    background: #6c757d !important;
+    color: white !important;
+    margin-left: 1rem;
+    min-width: 140px;
+}
+
+form[method="post"] a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3) !important;
+    color: white !important;
+}
+
+/* Contenedor para agrupar botones */
+form[method="post"] > p:last-child {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem !important;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e1e5e9;
+    justify-content: flex-start;
+}
+
+/* Mensajes de error de Django */
+form[method="post"] .errorlist {
+    color: #dc3545 !important;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+form[method="post"] .errorlist li {
+    padding: 0.25rem 0;
+}
+
+/* Help text de Django */
+form[method="post"] .helptext {
+    color: #6c757d !important;
+    font-size: 0.85rem !important;
+    margin-top: 0.25rem !important;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body > .container {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+        padding: 0 1rem 1rem 1rem;
+    }
+    
+    form[method="post"] {
+        padding: 1.5rem;
+        margin: 0 1rem;
+        border-radius: var(--border-radius-lg);
+    }
+    
+    /* Botones en columna en móviles */
+    form[method="post"] > p:last-child {
+        flex-direction: column;
+    }
+    
+    form[method="post"] button[type="submit"],
+    form[method="post"] a {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-bottom: 0.75rem;
+    }
+    
+    form[method="post"] a:last-child {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    form[method="post"] {
+        padding: 1.25rem;
+    }
+    
+    form[method="post"] input[type="text"],
+    form[method="post"] input[type="number"],
+    form[method="post"] input[type="date"],
+    form[method="post"] input[type="time"],
+    form[method="post"] input[type="datetime-local"],
+    form[method="post"] select,
+    form[method="post"] textarea {
+        padding: 0.625rem 0.75rem !important;
+    }
+    
+    form[method="post"] button[type="submit"],
+    form[method="post"] a {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.95rem;
+    }
+}

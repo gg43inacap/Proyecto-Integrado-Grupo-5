@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{% static 'css/apps/calendario-amigable.css' %}">
+{% endblock %}
+
+{% block title %}Editar Madre: {{ madre.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow-lg border-0">
+        
+        <div class="card-header bg-warning text-dark p-4">
+            <h1 class="card-title mb-0"><i class="fas fa-edit me-2"></i> Editando Registro de Madre</h1>
+            <p class="mb-0">Modificando datos de: <strong class="fw-bold">{{ madre.nombre }} (RUT: {{ madre.rut }})</strong></p>
+        </div>
+        
+        <div class="card-body p-4 p-md-5">
+            <form method="post">
+                {% csrf_token %}
+                
+                <h4 class="mb-4 text-primary"><i class="fas fa-id-card me-2"></i> Datos de Identificación Requeridos</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_nombre" class="form-label fw-bold">Nombre Completo: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ madre.nombre }}" required placeholder="Nombre completo">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_rut" class="form-label fw-bold">RUT: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="id_rut" name="rut" value="{{ madre.rut }}" required placeholder="RUT sin puntos ni guión (opcional)">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_fecha_nacimiento" class="form-label fw-bold">Fecha de Nacimiento:
+                             <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control calendario-amigable" id="id_fecha_nacimiento" name="fecha_nacimiento" value="{{ madre.fecha_nacimiento|date:'d/m/Y' }}" required placeholder="DD/MM/AAAA" readonly>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <h4 class="mb-4 text-primary"><i class="fas fa-hospital-user me-2"></i> Información de Contacto y Clínica</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_direccion" class="form-label">Dirección:</label>
+                        <input type="text" class="form-control" id="id_direccion" name="direccion" value="{{ madre.direccion }}" placeholder="Calle, número, departamento...">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_comuna" class="form-label">Comuna:</label>
+                        <input type="text" class="form-control" id="id_comuna" name="comuna" value="{{ madre.comuna }}" placeholder="Ej: Santiago">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="id_telefono" class="form-label">Teléfono:</label>
+                        <input type="text" class="form-control" id="id_telefono" name="telefono" value="{{ madre.telefono }}" placeholder="Ej: +569 1234 5678">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_cesfam" class="form-label">CESFAM/Centro de Salud:</label>
+                        <input type="text" class="form-control" id="id_cesfam" name="cesfam" value="{{ madre.cesfam }}" placeholder="Ej: CESFAM Dr. Raúl Silva">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="id_prevision" class="form-label">Previsión (Salud):</label>
+                        <input type="text" class="form-control" id="id_prevision" name="prevision" value="{{ madre.prevision }}" placeholder="Ej: FONASA B / Isapre">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                <hr class="my-4">
+                <h4 class="mb-4 text-primary"><i class="fas fa-notes-medical me-2"></i> Antecedentes Clínicos para Actualizar</h4>
+                <div class="mb-3">
+                    <label for="id_antecedentes_obstetricos" class="form-label">Antecedentes Obstétricos (Historial de Partos):</label>
+                    <textarea class="form-control" id="id_antecedentes_obstetricos" name="antecedentes_obstetricos" rows="3" placeholder="G: P: A: C: Información relevante sobre embarazos y partos anteriores...">{{ madre.antecedentes_obstetricos }}</textarea>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">¿Es migrante?</label>
+                        <select class="form-select" name="migrante" id="id_migrante">
+                            <option value="False" {% if not madre.migrante %}selected{% endif %}>No</option>
+                            <option value="True" {% if madre.migrante %}selected{% endif %}>Sí</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">¿Pertenece a pueblo originario?</label>
+                        <select class="form-select" name="pueblo_originario" id="id_pueblo_originario">
+                            <option value="False" {% if not madre.pueblo_originario %}selected{% endif %}>No</option>
+                            <option value="True" {% if madre.pueblo_originario %}selected{% endif %}>Sí</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">¿Alergias a comida/medicamento?</label>
+                        <select class="form-select" name="alergias" id="id_alergias" onchange="document.getElementById('alergias_si').style.display = this.value === 'True' ? 'block' : 'none';">
+                            <option value="False" {% if not madre.alergias %}selected{% endif %}>No</option>
+                            <option value="True" {% if madre.alergias %}selected{% endif %}>Sí</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3" id="alergias_si" style="{% if madre.alergias %}display:block;{% else %}display:none;{% endif %}">
+                    <label for="id_alergias_si" class="form-label">Especifique alergias:</label>
+                    <input type="text" class="form-control" id="id_alergias_si" name="alergias_si" maxlength="100" value="{{ madre.alergias_si }}" placeholder="Ej: Penicilina, mariscos...">
+                </div>
+
+                {% comment %}
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="id_confirmado" name="confirmado" role="switch" {% if madre.confirmado %}checked{% endif %}>
+                    <label class="form-check-label" for="id_confirmado">Registro Confirmado/Validado</label>
+                </div>
+                {% endcomment %}
+                
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                    <a href="{% url 'lista_madres' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Volver al Listado
+                    </a>
+                    <button type="submit" class="btn btn-warning btn-lg text-dark">
+                        <i class="fas fa-save me-2"></i> **Guardar Cambios**
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/calendario-amigable.js' %}"></script>
+{% endblock %}

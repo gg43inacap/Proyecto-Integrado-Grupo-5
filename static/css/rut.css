@@ -1,0 +1,26 @@
+/* Estilos para validación de RUT */
+input.is-invalid {
+    border-color: #dc3545;       /* rojo institucional */
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+input.is-valid {
+    border-color: #28a745;       /* verde institucional */
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Mensajes debajo del input */
+.form-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.invalid-feedback {
+    font-size: 0.85rem;
+    color: #dc3545;
+}
+
+.valid-feedback {
+    font-size: 0.85rem;
+    color: #28a745;
+}
