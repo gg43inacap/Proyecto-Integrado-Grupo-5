@@ -42,7 +42,7 @@ def login_view(request):
 			)
 			
 			# Solo superuser va al inicio (para activar demo), otros van directo a dashboard
-			if user.is_superuser or getattr(user, 'role', None) == 'SUPERADMIN':
+			if user.is_superuser:
 				return redirect('inicio')
 			else:
 				return redirect('dashboard')

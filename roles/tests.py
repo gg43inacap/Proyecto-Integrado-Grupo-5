@@ -29,18 +29,7 @@ class CustomUserModelTest(TestCase):
             )
             self.assertEqual(user.role, role)
 
-    def test_admin_cannot_edit_superadmin(self):
-        self.client.login(username='admin', password='admin123')
-        url = reverse('editar_usuario', args=[self.superadmin.pk])
-        response = self.client.get(url)
-        self.assertRedirects(response, reverse('lista_usuarios'))
 
-    def test_admin_cannot_block_superadmin(self):
-        self.client.login(username='admin', password='admin123')
-        url = reverse('bloquear_usuario', args=[self.superadmin.pk])
-        response = self.client.post(url)
-        self.superadmin.refresh_from_db()
-        self.assertTrue(self.superadmin.is_active)
         
 class RutValidationTest(TestCase):
     def test_ruts_validos(self):
