@@ -1,7 +1,5 @@
 from django.db import models
 from django.utils import timezone
-
-# Importas otros modelos si quieres relacionarlos
 from partos.models import Parto, RN
 from gestion_some.models import Madre
 
@@ -16,7 +14,6 @@ class Reporte(models.Model):
     fecha = models.DateTimeField(default=timezone.now)
     descripcion = models.TextField(blank=True, null=True)
 
-    # Relación opcional con Madre, Parto o RN si quieres vincular el reporte
     madre = models.ForeignKey(Madre, on_delete=models.SET_NULL, null=True, blank=True)
     parto = models.ForeignKey(Parto, on_delete=models.SET_NULL, null=True, blank=True)
     rn = models.ForeignKey(RN, on_delete=models.SET_NULL, null=True, blank=True)

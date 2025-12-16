@@ -9,6 +9,9 @@ import io
 from django.shortcuts import render
 from datetime import datetime, date
 from xhtml2pdf import pisa
+from django.utils import timezone
+from .models import Reporte
+
 
 
 # --- Nombres de meses en español ---
@@ -230,6 +233,13 @@ def rem_24(request):
 
     data = get_reporte_rem24_completo(mes=mes, anio=anio)
 
+    #  Aquí se registra el reporte en la base de datos
+    Reporte.objects.create(
+        tipo="REM A24",
+        fecha=timezone.now(),
+        descripcion=f"Reporte REM A24 generado para {periodo_legible}"
+    )
+
     lista_anios = range(now.year - 5, now.year + 1)
 
     return render(request, "reportes/rem_24.html", {
@@ -241,4 +251,21 @@ def rem_24(request):
         "lista_anios": lista_anios,
         "mes_seleccionado": mes,
         "anio_seleccionado": anio,
+    })
+
+
+def panel_reportes(request):
+    now = timezone.now()
+    hoy = now.date()
+
+    total = Reporte.objects.count()
+    este_mes = Reporte.objects.filter(fecha__year=now.year, fecha__month=now.month).count()
+    hoy_count = Reporte.objects.filter(fecha__date=hoy).count()
+    tipos = Reporte.objects.values("tipo").distinct().count()
+
+    return render(request, "roles/panel_SUPERVISOR.html", {
+        "total": total,
+        "este_mes": este_mes,
+        "hoy": hoy_count,
+        "tipos": tipos,
     })
