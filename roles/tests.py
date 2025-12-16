@@ -23,7 +23,7 @@ class CustomUserModelTest(TestCase):
         for role in roles:
             user = CustomUser.objects.create_user(
                 username=f'test_{role.lower()}',
-                password='test123',
+                password='Inacap2025*',
                 role=role,
                 rut='8.168.483-9'
             )
@@ -65,9 +65,9 @@ class RutValidationTest(TestCase):
 class UserAuditoriaTest(TestCase):
     def setUp(self):
         User = get_user_model()
-        self.admin = User.objects.create_user(username='admin_test', password='test123', role='ADMIN')
+        self.admin = User.objects.create_user(username='admin_test', password='Inacap2025*', role='ADMIN')
         self.client = Client()
-        self.client.login(username='admin_test', password='test123')
+        self.client.login(username='admin_test', password='Inacap2025*')
         
     def test_crear_usuario_registra_auditoria(self):
         initial_count = Auditoria.objects.count()

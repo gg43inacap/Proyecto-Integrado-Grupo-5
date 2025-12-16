@@ -8,8 +8,8 @@ from partos.models import Parto, RN
 class AuditoriaIntegracionTest(TestCase):
     def setUp(self):
         User = get_user_model()
-        self.admin = User.objects.create_user(username='admin', password='test123', role='ADMIN')
-        self.client.login(username='admin', password='test123')
+        self.admin = User.objects.create_user(username='admin', password='Inacap2025*', role='ADMIN')
+        self.client.login(username='admin', password='Inacap2025*')
 
     def test_crear_madre_registra_auditoria(self):
         response = self.client.post(reverse('crear_madre'), {

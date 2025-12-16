@@ -29,9 +29,9 @@ class MadreModelTest(TestCase):
 class MadreViewTest(TestCase):
     def setUp(self):
         User = get_user_model()
-        self.user = User.objects.create_user(username='test', password='test123', role='SOME')
+        self.user = User.objects.create_user(username='test', password='Inacap2025*', role='SOME')
         self.client = Client()
-        self.client.login(username='test', password='test123')
+        self.client.login(username='test', password='Inacap2025*')
         
     def test_crear_madre_registra_auditoria(self):
         initial_count = Auditoria.objects.count()

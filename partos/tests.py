@@ -73,9 +73,9 @@ class RNModelTest(TestCase):
 class PartoAjaxTest(TestCase):
     def setUp(self):
         User = get_user_model()
-        self.user = User.objects.create_user(username='test', password='test123', role='MATRONA')
+        self.user = User.objects.create_user(username='test', password='Inacap2025*', role='MATRONA')
         self.client = Client()
-        self.client.login(username='test', password='test123')
+        self.client.login(username='test', password='Inacap2025*')
         
         self.madre = Madre.objects.create(
             nombre='Test Madre', rut='12345678-9', fecha_nacimiento='1990-01-01',

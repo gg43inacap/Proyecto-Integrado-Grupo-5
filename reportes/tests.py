@@ -8,9 +8,9 @@ from partos.models import Parto, RN
 class ReportesTest(TestCase):
     def setUp(self):
         User = get_user_model()
-        self.user = User.objects.create_user(username='test', password='test123', role='ADMIN')
+        self.user = User.objects.create_user(username='test', password='Inacap2025*', role='ADMIN')
         self.client = Client()
-        self.client.login(username='test', password='test123')
+        self.client.login(username='test', password='Inacap2025*')
         
         # Crear datos de prueba para reportes
         self.madre = Madre.objects.create(
@@ -76,7 +76,7 @@ class ReportesTest(TestCase):
         for rol in roles_con_acceso:
             user = User.objects.create_user(
                 username=f'test_{rol.lower()}',
-                password='test123',
+                password='Inacap2025*',
                 role=rol
             )
             # Verificar que el rol es correcto
