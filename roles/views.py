@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
-from partos.models import Parto
+from partos.models import Parto, RN
 from gestion_some.models import Madre
 from auditoria.models import registrar_evento_auditoria, Auditoria
 from .forms import CustomUserForm
@@ -184,16 +184,36 @@ def api_estadisticas_admin(request):
 # API: Estadísticas para panel matrona (solo datos, nunca renderiza paneles)
 @login_required
 def api_estadisticas_matrona(request):
+    from datetime import date
+    hoy = date.today()
+
+    # --- PARTOS ---
     total_partos = Parto.objects.count()
     partos_activos = Parto.objects.filter(estado='activo').count()
-    hoy = timezone.now().date()
-    partos_hoy = Parto.objects.filter(fecha_ingreso__date=hoy).count()
-    partos_mes = Parto.objects.filter(fecha_ingreso__year=hoy.year, fecha_ingreso__month=hoy.month).count()
+    # Como fecha_ingreso es DateField, no se usa __date
+    partos_hoy = Parto.objects.filter(fecha_ingreso=hoy).count()
+    partos_mes = Parto.objects.filter(
+        fecha_ingreso__year=hoy.year,
+        fecha_ingreso__month=hoy.month
+    ).count()
+
+    # --- RECIÉN NACIDOS ---
+    total_rns = RN.objects.count()
+    # Si RN tiene fecha_nacimiento como DateField
+    rns_hoy = RN.objects.filter(fecha_nacimiento=hoy).count()
+    rns_mes = RN.objects.filter(
+        fecha_nacimiento__year=hoy.year,
+        fecha_nacimiento__month=hoy.month
+    ).count()
+
     return JsonResponse({
         'total_partos': total_partos,
         'partos_activos': partos_activos,
         'partos_hoy': partos_hoy,
         'partos_mes': partos_mes,
+        'total_rns': total_rns,
+        'rns_hoy': rns_hoy,
+        'rns_mes': rns_mes,
     })
 
 
