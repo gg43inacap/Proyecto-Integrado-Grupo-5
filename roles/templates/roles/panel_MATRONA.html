@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Panel Matrona{% endblock %}
@@ -17,8 +16,12 @@
         </div>
     </div>
 
-    <div class="row mb-5 g-4">
-        <div class="col-xl-3 col-md-6 mb-4">
+
+
+    <!-- Estadísticas de Partos -->
+    <div class="row mb-4 g-4">
+        <!-- Partos Activos -->
+        <div class="col-md-4 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -34,23 +37,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Partos Hoy</div>
-                            <div class="h5 mb-0 font-weight-bold text-info" id="partos-hoy">-</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar-day fa-2x text-info opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+
+        <!-- Partos Mes -->
+        <div class="col-md-4 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -66,7 +55,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+
+        <!-- Total Partos -->
+        <div class="col-md-4 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -85,8 +76,9 @@
     </div>
 
     <!-- Estadísticas de Recién Nacidos -->
-    <div class="row mb-5 g-4">
-        <div class="col-xl-4 col-md-6 mb-4">
+    <div class="row justify-content-center mb-4 g-4">
+        <!-- Total RN -->
+        <div class="col-md-4 mb-4">
             <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -102,23 +94,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card border-left-secondary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col me-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                Recién Nacidos Hoy</div>
-                            <div class="h5 mb-0 font-weight-bold text-secondary" id="rns-hoy">-</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar-day fa-2x text-secondary opacity-50"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6 mb-4">
+
+        <!-- RN Mes -->
+        <div class="col-md-4 mb-4">
             <div class="card border-left-dark shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -136,12 +114,15 @@
         </div>
     </div>
 
+
+
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card shadow">
-                <div class="card-header" style="background-color: #0d6efd; " >
+                <div class="card-header" style="background-color: #0d6efd; ">
                     <h5 class="mb-0">
-                        <i class="fas fa-cogs" style="color: aliceblue;"></i>  <p style="color: aliceblue;"> Funciones de Gestión </p> 
+                        <i class="fas fa-cogs" style="color: aliceblue;"></i>
+                        <p style="color: aliceblue;"> Funciones de Gestión </p>
 
                     </h5>
                 </div>
@@ -189,67 +170,67 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mapping = {
-            'total-partos': 'total_partos',
-            'partos-hoy': 'partos_hoy',
-            'partos-mes': 'partos_mes',
-            'partos-activos': 'partos_activos',
-            'total-rns': 'total_rns',
-            'rns-hoy': 'rns_hoy',
-            'rns-mes': 'rns_mes'
-        };
+        document.addEventListener('DOMContentLoaded', function () {
+            const mapping = {
+                'total-partos': 'total_partos',
+                'partos-hoy': 'partos_hoy',
+                'partos-mes': 'partos_mes',
+                'partos-activos': 'partos_activos',
+                'total-rns': 'total_rns',
+                'rns-hoy': 'rns_hoy',
+                'rns-mes': 'rns_mes'
+            };
 
-        // Show loading state where elements exist
-        Object.keys(mapping).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Cargando...';
-        });
-
-    fetch('/partos/api/estadisticas_matrona/', {
-            credentials: 'same-origin',
-            headers: { 'Accept': 'application/json' }
-        })
-            .then(response => {
-                // Si no está ok, lanzar error con código
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-
-                // Verificar content-type antes de parsear
-                const contentType = response.headers.get('content-type') || '';
-                if (!contentType.includes('application/json')) {
-                    // Podría ser HTML (redirect a login). Obtener texto corto para debugging
-                    return response.text().then(text => {
-                        const snippet = text ? text.slice(0, 300) : 'empty body';
-                        throw new Error('Unexpected response (not JSON). Sample: ' + snippet);
-                    });
-                }
-
-                return response.json();
-            })
-            .then(data => {
-                if (!data || typeof data !== 'object') throw new Error('Respuesta inválida');
-
-                Object.entries(mapping).forEach(([elId, prop]) => {
-                    const el = document.getElementById(elId);
-                    if (!el) return; // elemento no presente, ignorar
-
-                    const value = data[prop];
-                    if (value === null || value === undefined) {
-                        el.textContent = '-';
-                    } else {
-                        el.textContent = (typeof value === 'number') ? value : String(value);
-                    }
-                });
-            })
-            .catch(error => {
-                // Mostrar error en consola con más contexto
-                console.error('Error cargando estadísticas de matrona:', error);
-                Object.keys(mapping).forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = 'Error';
-                });
+            // Show loading state where elements exist
+            Object.keys(mapping).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Cargando...';
             });
-    });
+
+            fetch('/partos/api/estadisticas_matrona/', {
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(response => {
+                    // Si no está ok, lanzar error con código
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                    // Verificar content-type antes de parsear
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        // Podría ser HTML (redirect a login). Obtener texto corto para debugging
+                        return response.text().then(text => {
+                            const snippet = text ? text.slice(0, 300) : 'empty body';
+                            throw new Error('Unexpected response (not JSON). Sample: ' + snippet);
+                        });
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data || typeof data !== 'object') throw new Error('Respuesta inválida');
+
+                    Object.entries(mapping).forEach(([elId, prop]) => {
+                        const el = document.getElementById(elId);
+                        if (!el) return; // elemento no presente, ignorar
+
+                        const value = data[prop];
+                        if (value === null || value === undefined) {
+                            el.textContent = '-';
+                        } else {
+                            el.textContent = (typeof value === 'number') ? value : String(value);
+                        }
+                    });
+                })
+                .catch(error => {
+                    // Mostrar error en consola con más contexto
+                    console.error('Error cargando estadísticas de matrona:', error);
+                    Object.keys(mapping).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = 'Error';
+                    });
+                });
+        });
     </script>
 </div>
 {% endblock %}
