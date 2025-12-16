@@ -66,8 +66,6 @@ class RN(models.Model): # Modelo que representa un recién nacido
         (2, 'Reanimación avanzada'),
     ]
     
-    madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='rns') # Relación con la madre
-    parto_asociado = models.ForeignKey('Parto', on_delete=models.CASCADE, related_name='rns') # Relación con el parto
     fecha_nacimiento = models.DateField() # Fecha de nacimiento
     hora_nacimiento = models.TimeField() # Hora de nacimiento
     apellido_paterno_rn = models.CharField(max_length=255) # Apellido paterno del recién nacido

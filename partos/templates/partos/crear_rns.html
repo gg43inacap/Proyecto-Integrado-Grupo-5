@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="row">
                                     {% for field in form %}
-                                        {% if not field.is_hidden and field.name != 'id' and field.name != 'madre' and field.name != 'parto_asociado' %}
+                                        {% if not field.is_hidden and field.name != 'id' %}
                                         <!-- Caso especial: descripcion_anomalia se muestra condicionalmente -->
                                         {% if field.name == 'descripcion_anomalia' %}
                                         <div class="col-md-12 mb-3 descripcion-anomalia-container" style="display: none;">

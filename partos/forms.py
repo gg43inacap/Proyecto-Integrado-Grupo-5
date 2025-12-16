@@ -75,15 +75,6 @@ class RNForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'HH:MM'
             }),
-            'madre': forms.Select(attrs={
-                'id': 'id_madre',
-                'class': 'form-select',
-                'onchange': 'filtrarPartos()'
-            }),
-            'parto_asociado': forms.Select(attrs={
-                'id': 'id_parto_asociado',
-                'class': 'form-select'
-            }),
             'apellido_paterno_rn': forms.TextInput(attrs={'class': 'form-control'}),
             'sexo': forms.Select(attrs={'class': 'form-select'}),
             'peso': forms.NumberInput(attrs={'class': 'form-control', "min": '500',"max": '6000'}),
