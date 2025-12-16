@@ -29,6 +29,18 @@
                 <h1 class="mb-0"><i class="fas fa-baby me-2"></i>Registrar Parto</h1>
             </div>
             <div class="card-body p-4">
+                {% if parto_guardado %}
+                <div class="alert alert-success mt-4 shadow-sm">
+                    <i class="fas fa-check-circle me-2"></i>Parto registrado correctamente.
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'crear_rns' %}?parto_id={{ parto_guardado.id }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-baby me-2"></i>Registrar Recién Nacidos
+                    </a>
+                </div>
+                {% endif %}
+
                 <form method="post" novalidate>
                     {% csrf_token %}
                     
@@ -141,18 +153,6 @@
                 </form>
             </div>
         </div>
-        
-        {% if parto_guardado %}
-        <div class="alert alert-success mt-4 shadow-sm">
-            <i class="fas fa-check-circle me-2"></i>Parto registrado correctamente.
-        </div>
-        
-        <div class="text-center mt-3">
-            <a href="{% url 'crear_rns' %}?parto_id={{ parto_guardado.id }}" class="btn btn-success btn-lg">
-                <i class="fas fa-baby me-2"></i>Registrar Recién Nacidos
-            </a>
-        </div>
-        {% endif %}
     </div>
 </div>
 
