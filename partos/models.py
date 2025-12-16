@@ -52,20 +52,22 @@ class RN(models.Model): # Modelo que representa un recién nacido
         ('F', 'Femenino'),
         ('I', 'Indeterminado'),
     ]
-    
+
     EHI_GRADO_CHOICES = [
         (0, 'Sin EHI'),
         (1, 'EHI Grado I (Leve)'),
         (2, 'EHI Grado II (Moderado)'),
         (3, 'EHI Grado III (Severo)'),
     ]
-    
+
     REANIMACION_CHOICES = [
         (0, 'Sin reanimación'),
         (1, 'Reanimación básica'),
         (2, 'Reanimación avanzada'),
     ]
-    
+
+    madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='rns') # Relación con la madre
+    parto_asociado = models.ForeignKey(Parto, on_delete=models.CASCADE, related_name='rns') # Relación con el parto
     fecha_nacimiento = models.DateField() # Fecha de nacimiento
     hora_nacimiento = models.TimeField() # Hora de nacimiento
     apellido_paterno_rn = models.CharField(max_length=255) # Apellido paterno del recién nacido

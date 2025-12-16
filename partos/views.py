@@ -20,9 +20,28 @@ def crear_rns(request):
             parto = None
     else:
         parto = None
-    RNFormSetLocal = RNFormSet
+
     if request.method == 'POST':
-        formset = RNFormSetLocal(request.POST, queryset=RN.objects.none())
+        formset = RNFormSet(request.POST, queryset=RN.objects.none())
+        if formset.is_valid():
+            instances = formset.save()
+            for rn in instances:
+                registrar_evento_auditoria(
+                    usuario=request.user,
+                    accion_realizada='CREATE',
+                    modelo_afectado='RN',
+                    registro_id=rn.id,
+                    detalles_cambio=f"RN creado para madre ID: {rn.madre.id if rn.madre else ''}",
+                    ip_address=request.META.get('REMOTE_ADDR')
+                )
+            return redirect('lista_rns')
+    else:
+        formset = RNFormSet(queryset=RN.objects.none())
+        # Set initial values for each form in the formset
+        for form in formset:
+            form.initial = initial
+
+    return render(request, 'partos/crear_rns.html', {'formset': formset, 'parto': parto})
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.utils import timezone
