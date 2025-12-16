@@ -132,25 +132,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== FUNCIONALIDAD BACK TO TOP =====
-    const btnBackToTop = document.getElementById('btnBackToTop');
-    
-    if (btnBackToTop) {
-        // Mostrar/ocultar botón según scroll
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                btnBackToTop.style.display = 'block';
-            } else {
-                btnBackToTop.style.display = 'none';
-            }
+    // Botón Back to Top
+    const backToTopBtn = document.getElementById('backToTopBtn');
+
+    // Mostrar/ocultar botón según scroll
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    });
+
+    // Función para volver al inicio
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
-        
-        // Scroll suave al top al hacer click
-        btnBackToTop.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
+    });
 });
