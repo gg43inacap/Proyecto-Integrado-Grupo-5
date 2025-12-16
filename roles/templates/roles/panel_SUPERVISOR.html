@@ -22,7 +22,7 @@
     </div>
  
     <!-- Estadísticas rápidas de reportes -->
-    <div class="row mb-4">
+    <div class="row mb-4 justify-content-center">
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -41,14 +41,7 @@
             </div>
         </div>
  
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="text-info font-weight-bold text-uppercase mb-1">Reportes Hoy</div>
-                    <div class="h3 mb-0" id="reportes-hoy">Cargando...</div>
-                </div>
-            </div>
-        </div>
+
  
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
@@ -70,10 +63,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <canvas id="graficoBarrasReportes" style="max-height:350px;"></canvas>
-                        </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-12 mb-3">
                             <canvas id="graficoTortaReportes" style="max-height:350px;"></canvas>
                         </div>
                     </div>
@@ -116,19 +106,6 @@
         </div>
     </div>
  
-    <!-- Navegación -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body text-center">
-                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
  
 <!-- JavaScript para cargar estadísticas y mostrar gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -141,7 +118,6 @@ function cargarEstadisticasReportes() {
     // Mostrar estado de carga
     document.getElementById('total-reportes').textContent = 'Cargando...';
     document.getElementById('reportes-mes').textContent = 'Cargando...';
-    document.getElementById('reportes-hoy').textContent = 'Cargando...';
     document.getElementById('tipos-reportes').textContent = 'Cargando...';
 
     fetch('/roles/api/estadisticas_supervisor/')
@@ -155,43 +131,7 @@ function cargarEstadisticasReportes() {
         //  Actualizar contadores con datos de reportes
         document.getElementById('total-reportes').textContent = data.total_reportes || 0;
         document.getElementById('reportes-mes').textContent = data.reportes_mes || 0;
-        document.getElementById('reportes-hoy').textContent = data.reportes_hoy || 0;
         document.getElementById('tipos-reportes').textContent = Object.keys(data.tipos_reportes || {}).length || 0;
-
-        // Gráfico de Barras (sin Total Reportes)
-        const ctxBarras = document.getElementById('graficoBarrasReportes').getContext('2d');
-        new Chart(ctxBarras, {
-            type: 'bar',
-            data: {
-                labels: ['Reportes del Mes', 'Reportes de Hoy'],
-                datasets: [{
-                    label: 'Cantidad',
-                    data: [
-                        Number(data.reportes_mes) || 0,
-                        Number(data.reportes_hoy) || 0
-                    ],
-                    backgroundColor: ['#1cc88a', '#36b9cc'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: 'Resumen de Reportes' }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            precision: 0
-                        }
-                    }
-                }
-            }
-        });
-
 
         //  Gráfico de Torta (Distribución por tipo de reporte)
         const ctxTorta = document.getElementById('graficoTortaReportes').getContext('2d');
@@ -226,7 +166,6 @@ function cargarEstadisticasReportes() {
         console.error('Error cargando estadísticas:', error);
         document.getElementById('total-reportes').textContent = 'Error';
         document.getElementById('reportes-mes').textContent = 'Error';
-        document.getElementById('reportes-hoy').textContent = 'Error';
         document.getElementById('tipos-reportes').textContent = 'Error';
     });
 }
