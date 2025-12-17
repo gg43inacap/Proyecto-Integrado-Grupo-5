@@ -14,10 +14,14 @@ class ReportesTest(TestCase):
         
         # Crear datos de prueba para reportes
         self.madre = Madre.objects.create(
-            nombre='Test Reporte', rut='8.168.483-9', fecha_nacimiento='1990-01-01',
-            comuna='Santiago', cesfam='CESFAM Test', direccion='Test',
-            telefono='912345678', antecedentes_obstetricos='Test',
-            atenciones_clinicas='Test', acompanante='Test'
+            nombre='Test Reporte', 
+            rut='8.168.483-9', 
+            fecha_nacimiento='1990-01-01',
+            comuna='Santiago', 
+            cesfam='CESFAM Test', 
+            direccion='Test',
+            telefono='912345678', 
+            antecedentes_obstetricos='Test'
         )
         
         self.parto = Parto.objects.create(

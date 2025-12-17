@@ -34,7 +34,7 @@ Este es un despliegue de una aplicación Django para gestión hospitalaria neona
 **Acceso**:
 - Máquina local: `http://127.0.0.1/`
 - Red LAN: `http://sistema.neonatal/` (dominio local)
-- IP del servidor: `10.155.12.62`
+- IP del servidor: `10.155.12.62` (Este puede variar, se debe verificar con el comando "hostname -I" en la terminal de Linux Ubuntu)
 
 ---
 

@@ -239,25 +239,30 @@ def api_estadisticas_some(request):
 # API: Estadísticas para panel supervisor (solo datos, nunca renderiza paneles)
 @login_required
 def api_estadisticas_supervisor(request):
+    from reportes.models import Reporte
+    from datetime import timedelta
+    
     hoy = timezone.now().date()
-    mes = hoy.month
-    anio = hoy.year
-
-    # Totales
+    hace_un_mes = hoy - timedelta(days=30)
+    
+    # Total de reportes
     total_reportes = Reporte.objects.count()
-    reportes_mes = Reporte.objects.filter(fecha__year=anio, fecha__month=mes).count()
-    reportes_hoy = Reporte.objects.filter(fecha__date=hoy).count()
-
-    # Distribución por tipo
-    tipos_qs = Reporte.objects.values('tipo').annotate(cantidad=Count('id'))
-    tipos_reportes = {item['tipo']: item['cantidad'] for item in tipos_qs}
-
-    # Respuesta en JSON
+    
+    # Distribución de reportes por tipo
+    tipos_reportes = {}
+    reportes_por_tipo = Reporte.objects.values('tipo').annotate(count=Count('id'))
+    for item in reportes_por_tipo:
+        tipos_reportes[item['tipo']] = item['count']
+    
+    # Si no hay reportes de ningún tipo, incluir tipos vacíos
+    if not tipos_reportes:
+        for tipo_choice in Reporte.TIPOS_CHOICES:
+            tipos_reportes[tipo_choice[0]] = 0
+    
     return JsonResponse({
         'total_reportes': total_reportes,
         'reportes_mes': reportes_mes,
-        'reportes_hoy': reportes_hoy,
-        'tipos_reportes': tipos_reportes
+        'tipos_reportes': tipos_reportes,
     })
 
 

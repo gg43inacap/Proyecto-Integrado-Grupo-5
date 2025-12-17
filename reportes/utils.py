@@ -2,18 +2,31 @@
 from datetime import date
 from django.db.models import Q
 from calendar import monthrange
-from .models import RN  # Ajusta al nombre real de tu modelo
+from partos.models import RN
 
 def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
     """
     Devuelve todas las secciones del REM A24 filtradas por mes o rango de fechas.
+    
+    Parámetros:
+    - mes: número de mes (1-12) o None para todos los meses
+    - anio: año específico (requerido si mes es None para filtrar todo el año)
+    - inicio/fin: rango de fechas alternativo
     """
 
     # --- Normalización de fechas ---
+    start = None
+    end = None
+    
     if mes and anio:
+        # Mes específico en año específico
         start = date(anio, mes, 1)
         end = date(anio, mes, monthrange(anio, mes)[1])
-    else:
+    elif not mes and anio:
+        # Todos los meses del año especificado
+        start = date(anio, 1, 1)
+        end = date(anio, 12, 31)
+    elif inicio and fin:
         start = inicio
         end = fin
 
@@ -75,8 +88,17 @@ def get_reporte_rem24_completo(mes=None, anio=None, inicio=None, fin=None):
             ["Cesárea Urgencia", rn_lactancia.filter(parto_asociado__tipo_parto="cesarea_urgencia").count()],
         ]
     }
-        # --- Retorno global ---
-    periodo = f"{anio}-{mes:02d}" if mes and anio else (f"{inicio} a {fin}" if inicio and fin else "Sin filtro")
+    
+    # --- Retorno global ---
+    if mes and anio:
+        periodo = f"{anio}-{mes:02d}"  # Mes específico
+    elif not mes and anio:
+        periodo = f"{anio} (Todos los meses)"  # Año completo
+    elif inicio and fin:
+        periodo = f"{inicio} a {fin}"  # Rango personalizado
+    else:
+        periodo = "Sin filtro"
+    
     return {
         "titulo": "REM A24 — Atención del Recién Nacido",
         "periodo": periodo,

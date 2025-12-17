@@ -59,62 +59,6 @@ function filtrarPartos() {
     });
 }
 
-/**
- * Función para mostrar/ocultar el campo de descripción de anomalía
- * según el estado del checkbox de anomalia_congenita
- */
-function toggleDescripcionAnomalia(checkbox) {
-    const form = checkbox.closest('.ribbon-tab');
-    if (!form) return;
-    
-    const descripcionContainer = form.querySelector('.descripcion-anomalia-container');
-    if (!descripcionContainer) return;
-    
-    const descripcionInput = descripcionContainer.querySelector('input[name*="descripcion_anomalia"]');
-    
-    if (checkbox.checked) {
-        // Mostrar el campo y hacerlo requerido
-        descripcionContainer.style.display = 'block';
-        if (descripcionInput) {
-            descripcionInput.required = true;
-            descripcionInput.focus();
-        }
-        console.log('Campo de descripción de anomalía mostrado');
-    } else {
-        // Ocultar el campo y limpiar su valor
-        descripcionContainer.style.display = 'none';
-        if (descripcionInput) {
-            descripcionInput.value = '';
-            descripcionInput.required = false;
-        }
-        console.log('Campo de descripción de anomalía oculto y limpiado');
-    }
-}
-
-/**
- * Función para configurar eventos en un formulario
- */
-function setupFormEvents(form) {
-    // Buscar el checkbox de anomalia_congenita
-    const anomaliaCheckbox = form.querySelector('input[name*="anomalia_congenita"]');
-    if (anomaliaCheckbox) {
-        anomaliaCheckbox.addEventListener('change', function() {
-            toggleDescripcionAnomalia(this);
-        });
-        
-        // Aplicar el estado inicial (si ya está marcado al cargar)
-        if (anomaliaCheckbox.checked) {
-            toggleDescripcionAnomalia(anomaliaCheckbox);
-        }
-    }
-    
-    // Configurar evento de filtrado de partos
-    const madreSelect = form.querySelector('[id*="-madre"]');
-    if (madreSelect) {
-        madreSelect.addEventListener('change', filtrarPartos);
-    }
-}
-
 function addForm() {
     if (formIndex >= maxForms) {
         alert('¡Límite máximo alcanzado! Incluso la esposa de Apu necesitaría un descanso después de 10 bebés 😅');
@@ -228,25 +172,29 @@ function addForm() {
 }
 
 function removeForm(button) {
+    const form = button.closest('.ribbon-tab');
     const container = document.getElementById('formset-container');
     
+    // No permitir eliminar si solo hay un formulario
     if (container.children.length <= 1) {
         alert('Debe haber al menos un recién nacido para registrar.');
         return;
     }
     
-    if (confirm('¿Está seguro de que desea quitar este formulario?')) {
-        const form = button.closest('.ribbon-tab');
+    // Confirmar eliminación
+    if (confirm('¿Está seguro de que desea quitar este formulario de recién nacido?')) {
         form.remove();
         
-        // Esta función es clave: renumera IDs, Names, Títulos y actualiza formIndex
-        updateFormIndices();
+        // Actualizar numeración de títulos
+        updateFormTitles();
         
-        // Actualizar el TOTAL_FORMS para Django
+        // Actualizar TOTAL_FORMS
         const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
         if (totalFormsInput) {
-            totalFormsInput.value = container.querySelectorAll('.ribbon-tab').length;
+            totalFormsInput.value = container.children.length;
         }
+        
+        console.log(`Formulario eliminado. Total forms: ${container.children.length}`);
     }
 }
 
@@ -268,64 +216,84 @@ function updateFormIndices() {
     const forms = document.querySelectorAll('.ribbon-tab');
     
     forms.forEach((form, index) => {
-        // Actualizar título (Recién Nacido 1, 2, etc.)
+        // 1. Actualizar título visible
         const title = form.querySelector('h5');
         if (title) {
             title.innerHTML = `<i class="fas fa-baby"></i> Recién Nacido ${index + 1}`;
         }
 
-        // Actualizar nombres e IDs de los inputs para Django
-        const elements = form.querySelectorAll('input, select, textarea, label');
-        elements.forEach(el => {
-            const attrs = ['name', 'id', 'for'];
-            attrs.forEach(attr => {
-                const val = el.getAttribute(attr);
-                if (val) {
-                    // Reemplaza el índice viejo por el nuevo (index actual del loop)
-                    el.setAttribute(attr, val.replace(/-\d+-/, `-${index}-`));
-                }
-            });
+        // 2. Actualizar el índice en los nombres/IDs de los campos
+        const elementsToUpdate = form.querySelectorAll('input, select, textarea, label');
+        elementsToUpdate.forEach(element => {
+            const oldName = element.getAttribute('name');
+            const oldId = element.getAttribute('id');
+            const oldFor = element.getAttribute('for');
+
+            // Actualizar nombres
+            if (oldName) {
+                // Reemplaza el número de índice antiguo (ej: -0-, -1-, -2-) por el nuevo
+                const newName = oldName.replace(/-\d+-/, `-${index}-`);
+                element.setAttribute('name', newName);
+            }
+            // Actualizar IDs
+            if (oldId) {
+                const newId = oldId.replace(/-\d+-/, `-${index}-`);
+                element.setAttribute('id', newId);
+            }
+            // Actualizar 'for' de las etiquetas (labels)
+            if (oldFor) {
+                const newFor = oldFor.replace(/-\d+-/, `-${index}-`);
+                element.setAttribute('for', newFor);
+            }
         });
 
+        // 3. Actualizar el atributo data-form-index
         form.setAttribute('data-form-index', index);
     });
 
-    // REINICIAR EL CONTADOR GLOBAL al número real de formularios
+    // 4. Actualizar la variable global 'formIndex' al nuevo total (para el próximo formulario a crear)
     formIndex = forms.length;
 }
 
+// Configurar eventos al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('formset-container');
-    const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
-
-    if (container) {
-        // Obtener todos los formularios renderizados
-        let forms = container.querySelectorAll('.ribbon-tab');
-
-        // Si hay más de uno por error del servidor o caché, dejamos solo el primero
-        if (forms.length > 1) {
-            for (let i = 1; i < forms.length; i++) {
-                forms[i].remove();
-            }
-            // Actualizar la lista después de borrar
-            forms = container.querySelectorAll('.ribbon-tab');
-        }
-
-        // Inicializar eventos para el único formulario que quedó
-        forms.forEach(form => {
-            setupFormEvents(form);
-        });
-
-        // IMPORTANTE: Sincronizar el contador global y el input de Django
-        formIndex = 1; 
-        if (totalFormsInput) {
-            totalFormsInput.value = 1;
-        }
-    }
-
-    // Configurar el botón de añadir
+    // Configurar botón de añadir formulario
     const addButton = document.getElementById('add-form-btn');
     if (addButton) {
         addButton.addEventListener('click', addForm);
     }
+    
+    // Mostrar solo el primer ribbon si la plantilla renderizó varios
+    const container = document.getElementById('formset-container');
+    if (container) {
+        const forms = Array.from(container.querySelectorAll('.ribbon-tab'));
+
+        // If the template rendered multiple, keep only the first visible and remove others from DOM
+        if (forms.length > 1) {
+            // Remove all except the first
+            forms.slice(1).forEach(f => f.remove());
+        }
+        
+        // Asegurar alineación correcta de los checkboxes/switches en el primer formulario
+        const checkboxContainers = container.querySelectorAll('.form-check.form-switch');
+        checkboxContainers.forEach(switchContainer => {
+            const parentCol = switchContainer.closest('.col-md-6');
+            if (parentCol) {
+                parentCol.classList.add('d-flex', 'align-items-center');
+                parentCol.style.minHeight = '58px';
+            }
+        });
+
+        // Ensure formIndex and TOTAL_FORMS reflect current visible forms (start at 1)
+        formIndex = container.querySelectorAll('.ribbon-tab').length || 1;
+        const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+        if (totalFormsInput) totalFormsInput.value = formIndex;
+
+        // Attach filtrarPartos to the madre selects present
+        const madreSelects = container.querySelectorAll('[id*="id_"][id*="-madre"]');
+        madreSelects.forEach(ms => ms.addEventListener('change', filtrarPartos));
+        if (madreSelects.length && madreSelects[0].value) filtrarPartos();
+    }
+    
+    console.log('Formset dinámico inicializado. Listo para partos múltiples! 👶👶👶');
 });

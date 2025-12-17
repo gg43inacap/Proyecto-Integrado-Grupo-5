@@ -35,7 +35,6 @@
             <div class="filter-group-enterprise">
                 <label for="mes">Mes</label>
                 <select id="mes" name="mes" class="filter-select-enterprise" onchange="updateComparison()">
-                    <option value="">Todos</option>
                     <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
                     <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
                     <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
@@ -53,7 +52,6 @@
             <div class="filter-group-enterprise">
                 <label for="anio">Año</label>
                 <select id="anio" name="anio" class="filter-select-enterprise" onchange="updateComparison()">
-                    <option value="">Todos</option>
                     {% for year in lista_anios %}
                         <option value="{{ year }}" {% if anio_seleccionado == year %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}

@@ -33,17 +33,6 @@
         </div>
  
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="text-success font-weight-bold text-uppercase mb-1">Reportes Este Mes</div>
-                    <div class="h3 mb-0" id="reportes-mes">Cargando...</div>
-                </div>
-            </div>
-        </div>
- 
-
- 
-        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="text-warning font-weight-bold text-uppercase mb-1">Tipos de Reportes</div>
@@ -117,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function cargarEstadisticasReportes() {
     // Mostrar estado de carga
     document.getElementById('total-reportes').textContent = 'Cargando...';
-    document.getElementById('reportes-mes').textContent = 'Cargando...';
     document.getElementById('tipos-reportes').textContent = 'Cargando...';
 
     fetch('/roles/api/estadisticas_supervisor/')
@@ -130,7 +118,7 @@ function cargarEstadisticasReportes() {
     .then(data => {
         //  Actualizar contadores con datos de reportes
         document.getElementById('total-reportes').textContent = data.total_reportes || 0;
-        document.getElementById('reportes-mes').textContent = data.reportes_mes || 0;
+        // Línea eliminada - reportes-mes ya no se muestra
         document.getElementById('tipos-reportes').textContent = Object.keys(data.tipos_reportes || {}).length || 0;
 
         //  Gráfico de Torta (Distribución por tipo de reporte)

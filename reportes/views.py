@@ -1,8 +1,9 @@
 # reportes/views.py
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 from reportes.models import Reporte
 from .utils import get_reporte_rem24_completo
 from django.template.loader import render_to_string
@@ -61,6 +62,7 @@ def write_horizontal_section(ws, start_row, titulo, rows):
     return start_row
 
 # --- Exportar Excel ---
+@login_required
 def exportar_rem_a24_excel(request):
     # --- Capturar filtros desde GET ---
     mes_str = request.GET.get("mes")
@@ -185,8 +187,7 @@ def exportar_rem_a24_excel(request):
     return response
 
 
-
-
+@login_required
 def exportar_rem_a24_pdf(request):
     # --- Capturar filtros desde POST o GET ---
     mes = request.POST.get("mes") or request.GET.get("mes")
@@ -220,19 +221,45 @@ def exportar_rem_a24_pdf(request):
     response["Content-Disposition"] = f'attachment; filename="REM_A24_{data["periodo"]}.pdf"'
     return response
 
+
+@login_required
+@login_required
 def rem_24(request):
-    mes_str = request.GET.get("mes")
-    anio_str = request.GET.get("anio")
+    """
+    Vista que renderiza el reporte REM A24 con filtros opcionales.
+    
+    Parámetros GET:
+    - mes: número de mes (1-12) o vacío para todos los meses
+    - anio: año específico (requerido) o vacío para usar el actual
+    """
+    mes_str = request.GET.get("mes", "").strip()
+    anio_str = request.GET.get("anio", "").strip()
 
     now = datetime.now()
-    mes = int(mes_str) if mes_str and mes_str.isdigit() else now.month
-    anio = int(anio_str) if anio_str and anio_str.isdigit() else now.year
+    
+    # Determinar año a usar
+    if anio_str and anio_str.isdigit():
+        anio = int(anio_str)
+    else:
+        # Si no especifica año, usar el actual
+        anio = now.year
+    
+    # Determinar mes a usar
+    mes = None
+    if mes_str and mes_str.isdigit():
+        mes = int(mes_str)
+    # Si mes_str está vacío, mes = None (significa "Todos los meses")
 
-    periodo_legible = f"{nombre_mes(mes)} {anio}"
+    # Generar descripción del período
+    if mes:
+        periodo_legible = f"{nombre_mes(mes)} {anio}"
+    else:
+        periodo_legible = f"Año {anio} (Todos los meses)"
 
+    # Obtener datos del reporte
     data = get_reporte_rem24_completo(mes=mes, anio=anio)
 
-    # Aquí se registra el reporte en la base de datos
+    # Registrar el reporte en la base de datos
     Reporte.objects.create(
         tipo="REM A24",
         fecha=timezone.now(),
@@ -253,7 +280,12 @@ def rem_24(request):
     })
 
 
+@login_required
 def panel_reportes(request):
+    """
+    Vista que renderiza el panel de reportes para supervisores.
+    Muestra estadísticas y acceso a reportes disponibles.
+    """
     now = timezone.now()
     hoy = now.date()
 
@@ -262,9 +294,48 @@ def panel_reportes(request):
     hoy_count = Reporte.objects.filter(fecha__date=hoy).count()
     tipos = Reporte.objects.values("tipo").distinct().count()
 
-    return render(request, "roles/panel_SUPERVISOR.html", {
+    return render(request, "roles/panel_supervisor.html", {
         "total": total,
         "este_mes": este_mes,
         "hoy": hoy_count,
         "tipos": tipos,
+    })
+
+
+@login_required
+def api_reportes_estadisticas(request):
+    """
+    API que retorna estadísticas de reportes en formato JSON.
+    Utilizada por el panel supervisor para actualizar datos dinámicamente.
+    """
+    from datetime import timedelta
+    from django.db.models import Count
+    
+    hoy = timezone.now().date()
+    hace_un_mes = hoy - timedelta(days=30)
+    
+    # Total de reportes
+    total_reportes = Reporte.objects.count()
+    
+    # Reportes de este mes
+    reportes_mes = Reporte.objects.filter(
+        fecha__year=hoy.year,
+        fecha__month=hoy.month
+    ).count()
+    
+    # Distribución de reportes por tipo
+    tipos_reportes = {}
+    reportes_por_tipo = Reporte.objects.values('tipo').annotate(count=Count('id'))
+    for item in reportes_por_tipo:
+        tipos_reportes[item['tipo']] = item['count']
+    
+    # Si no hay reportes de ningún tipo, incluir tipos vacíos
+    if not tipos_reportes:
+        for tipo_choice in Reporte.TIPOS_CHOICES:
+            tipos_reportes[tipo_choice[0]] = 0
+    
+    return JsonResponse({
+        'total_reportes': total_reportes,
+        'reportes_mes': reportes_mes,
+        'tipos_reportes': tipos_reportes,
     })
