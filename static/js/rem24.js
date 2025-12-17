@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
         danger: '#ef4444'
     };
 
-    // Gráfico 1 - Barras
+   // Gráfico 1 - Barras
+    const maxD1 = Math.max(...dataD1.values);
+    const margenD1 = Math.ceil(maxD1 * 0.2);
+
     new ApexCharts(document.querySelector('#chart1'), {
         series: [{ name: dataD1.title, data: dataD1.values }],
         chart: { type: 'bar', height: 350, toolbar: { show: true } },
@@ -36,7 +39,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 style: { fontSize: '14px', fontWeight: 500, color: '#333' }
             }
         },
-        tooltip: { y: { formatter: val => val + " casos" } }
+        yaxis: {
+            min: 0,
+            max: maxD1 + margenD1,
+            tickAmount: 5,
+            labels: {
+                formatter: val => Math.round(val)
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: val => `${Math.round(val)} casos`
+            }
+        }
     }).render();
 
     // --- Reordenar etiquetas y valores de D2 ---
@@ -45,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         value: dataD2.values[i]
     }));
 
-    // Mueve "Cesárea" al inicio y deja el resto en su orden original
     const reorderedD2 = [
         ...pairsD2.filter(p => p.label === "Cesárea"),
         ...pairsD2.filter(p => p.label !== "Cesárea")
@@ -58,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Gráfico 2 - Barras
+    const maxD2 = Math.max(...dataD2Reordered.values);
+    const margenD2 = Math.ceil(maxD2 * 0.2);
+
     new ApexCharts(document.querySelector('#chart2'), {
         series: [{ name: dataD2Reordered.title, data: dataD2Reordered.values }],
         chart: {
@@ -85,11 +102,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 style: { fontSize: '14px', fontWeight: 500, color: '#333' }
             }
         },
+        yaxis: {
+            min: 0,
+            max: maxD2 + margenD2,
+            tickAmount: 5,
+            labels: {
+                formatter: val => Math.round(val)
+            }
+        },
         grid: { padding: { bottom: 20 } },
-        tooltip: { y: { formatter: val => `${val} atenciones registradas` } }
+        tooltip: {
+            y: {
+                formatter: val => `${Math.round(val)} atenciones registradas`
+            }
+        }
     }).render();
 
     // Gráfico 3 - Barras
+    const maxD3 = Math.max(...dataD3.values);
+    const margenD3 = Math.ceil(maxD3 * 0.2);
+    const tickD3 = maxD3 <= 5 ? maxD3 : 5; // si el máximo es bajo, usamos menos ticks
+
     new ApexCharts(document.querySelector('#chart3'), {
         series: [{ name: dataD3.title, data: dataD3.values }],
         chart: { type: 'bar', height: 350, toolbar: { show: true } },
@@ -104,16 +137,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 style: { fontSize: '14px', fontWeight: 500, color: '#333' }
             }
         },
-            yaxis: {
+        yaxis: {
+            min: 0,
+            max: maxD3 + margenD3,
+            tickAmount: tickD3,
             labels: {
-                formatter: function (val) {
-                    return Math.round(val); //  fuerza a enteros
-                }
+                formatter: val => Math.round(val)
             }
         },
-
-        tooltip: { y: { formatter: val => `${val} RN con LM ≤ 60 min` } }
+        tooltip: {
+            y: {
+                formatter: val => `${Math.round(val)} RN con LM ≤ 60 min`
+            }
+        }
     }).render();
+
 
     // DataTables
     $('#table1, #table2, #table3').DataTable({
