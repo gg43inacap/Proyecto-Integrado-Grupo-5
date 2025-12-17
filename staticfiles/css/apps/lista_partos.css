@@ -1,0 +1,143 @@
+/* Estilos CSS para hacer la tabla más compacta y legible */
+#partosTable.table-sm td, 
+#partosTable.table-sm th {
+    padding-top: 0.3rem; /* Espaciado vertical reducido */
+    padding-bottom: 0.3rem; /* Espaciado vertical reducido */
+    font-size: 0.9rem; /* Tamaño de fuente ajustado para mejor lectura */
+}
+
+/* Responsive: en móviles, reducir aún más el font-size */
+@media (max-width: 768px) {
+    #partosTable.table-sm td, 
+    #partosTable.table-sm th {
+        font-size: 0.8rem;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    
+    .mother-rut {
+        font-size: 0.7rem !important;
+    }
+}
+.btn-action-col {
+    padding: 6px 12px; /* Padding aumentado para mejor visibilidad */
+    font-size: 0.95rem; /* Fuente más grande */
+    min-width: 40px; /* Ancho mínimo para consistencia */
+}
+.mother-info {
+    line-height: 1.2; /* Espaciado de línea reducido */
+}
+.mother-rut {
+    display: block; /* Asegura que el RUT esté en una nueva línea */
+    font-size: 0.75rem; /* Fuente más pequeña para el RUT */
+    color: #6c757d; /* Color gris para el RUT */
+}
+
+/* Toggle Switch estilo iOS/Android */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+}
+
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: 0.3s;
+    border-radius: 28px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.switch-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-toggle input:checked + .slider {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.switch-toggle input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.switch-toggle .slider:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.switch-toggle input:checked + .slider:hover {
+    background-color: #218838;
+}
+
+/* Botón Back to Top */
+#backToTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+#backToTopBtn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+#backToTopBtn.show {
+    display: block;
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    #backToTopBtn {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+}

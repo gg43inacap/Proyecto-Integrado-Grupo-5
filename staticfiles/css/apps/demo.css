@@ -1,0 +1,172 @@
+/* static/css/apps/demo.css */
+/* Importar estilos base */
+@import url('../base/variables.css');
+
+/* ========================================================= */
+/* ESTILOS ESPECÍFICOS PARA TEST_LOGIN.HTML (Login Demo)     */
+/* ========================================================= */
+
+.demo-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+}
+
+.demo-card {
+    border: none;
+    border-radius: var(--border-radius-xl);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    width: 100%;
+}
+
+.demo-header {
+    background: linear-gradient(135deg, var(--info-color), #0aa2c0);
+    color: white;
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.demo-icon {
+    font-size: 3.5rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.demo-body {
+    padding: var(--spacing-xl);
+}
+
+.role-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.role-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.role-title {
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: var(--spacing-sm);
+}
+
+.role-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    min-height: 40px;
+    margin-bottom: var(--spacing-md);
+}
+
+.btn-role {
+    margin-top: var(--spacing-md);
+    font-weight: 600;
+    padding: 10px 0;
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s ease;
+}
+
+.btn-role:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Botones específicos por rol */
+.btn-role.btn-info {
+    background: linear-gradient(135deg, var(--role-some), #138496);
+    border: none;
+}
+
+.btn-role.btn-success {
+    background: linear-gradient(135deg, var(--role-matrona), #1e7e34);
+    border: none;
+}
+
+.btn-role.btn-warning {
+    background: linear-gradient(135deg, var(--role-supervisor), #e0a800);
+    border: none;
+}
+
+.btn-role.btn-secondary {
+    background: linear-gradient(135deg, var(--role-auditoria), #59359a);
+    border: none;
+}
+
+.btn-role.btn-dark {
+    background: linear-gradient(135deg, var(--role-admin), #23272b);
+    border: none;
+}
+
+.demo-info-box {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    background-color: #fff3cd;
+    border: 1px solid #ffc720;
+    color: #664d03;
+}
+
+.demo-info-box h5 {
+    font-weight: bold;
+    margin-bottom: var(--spacing-md);
+    color: #664d03;
+    display: flex;
+    align-items: center;
+}
+
+.demo-info-box h5 i {
+    margin-right: var(--spacing-sm);
+}
+
+.demo-info-box ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.demo-info-box ul li {
+    margin-bottom: var(--spacing-xs);
+    padding-left: var(--spacing-lg);
+    position: relative;
+}
+
+.demo-info-box ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #664d03;
+    font-weight: bold;
+}
+
+/* Responsive para demo */
+@media (max-width: 768px) {
+    .demo-header {
+        padding: var(--spacing-lg);
+    }
+    
+    .demo-body {
+        padding: var(--spacing-lg);
+    }
+    
+    .role-card {
+        margin-bottom: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+}

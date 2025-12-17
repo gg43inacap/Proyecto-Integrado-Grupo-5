@@ -1,0 +1,19 @@
+[Unit]
+Description=gunicorn daemon for neonatal
+After=network.target
+
+[Service]
+User=hospital
+Group=www-data
+WorkingDirectory=/home/hospital/Escritorio/Neonatal/Proyecto-Integrado-Grupo-5
+Environment="PATH=/home/hospital/Escritorio/Neonatal/Proyecto-Integrado-Grupo-5/.venv/bin"
+ExecStart=/home/hospital/Escritorio/Neonatal/Proyecto-Integrado-Grupo-5/.venv/bin/gunicorn \
+  --access-logfile - \
+  --workers 3 \
+  --bind unix:/run/gunicorn/neonatal.sock \
+  neonatal.wsgi:application
+RuntimeDirectory=gunicorn
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target

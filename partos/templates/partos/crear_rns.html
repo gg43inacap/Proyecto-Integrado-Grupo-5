@@ -52,7 +52,19 @@
                                             {% endfor %}
                                         </div>
                                         {% else %}
-                                        {% if field.name == 'apego' or field.name == 'lactancia_antes_60' or field.name == 'profilaxis_ocular' or field.name == 'vacuna_bcg' or field.name == 'vacuna_hepatitis_b' or field.name == 'anomalia_congenita' %}
+                                        {% if field.name == 'anomalia_congenita' %}
+                                        <div class="col-md-6 mb-3 d-flex align-items-center" style="min-height: 58px;">
+                                            <div class="form-check form-switch">
+                                                {{ field|add_class:"form-check-input" }}
+                                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                                    {{ field.label }}
+                                                </label>
+                                            </div>
+                                            {% for error in field.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        {% elif field.name == 'apego' or field.name == 'lactancia_antes_60' or field.name == 'profilaxis_ocular' or field.name == 'vacuna_bcg' or field.name == 'vacuna_hepatitis_b' %}
                                         <div class="col-md-6 mb-3 d-flex align-items-center" style="min-height: 58px;">
                                             <div class="form-check form-switch">
                                                 {{ field|add_class:"form-check-input" }}

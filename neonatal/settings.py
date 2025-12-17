@@ -12,10 +12,19 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIRS = os.path.join(BASE_DIR, 'templates')
+
+# Cargar variables de entorno desde un archivo .env (opcional)
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    environ.Env.read_env(env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -24,9 +33,10 @@ TEMPLATES_DIRS = os.path.join(BASE_DIR, 'templates')
 SECRET_KEY = 'django-insecure-i@ue^%el8wjcm1%=b1lbfp^f4_75-3pwj3siqk044!)931--)*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Respect `.env` DEBUG if set, otherwise default to False for LAN/production-like run
+DEBUG = env('DEBUG', default=True)  # Allow True for LAN development
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = ['*', 'sistema.neonatal', '10.155.12.62', '127.0.0.1', 'localhost']  # Allow all hosts on LAN (safe for local network)
 
 
 # Application definition
@@ -89,6 +99,13 @@ DATABASES = {
     }
 }
 
+# Si se configura `DATABASE_URL` en el entorno, usarla (por ejemplo: postgres://user:pass@host:port/dbname)
+DATABASE_URL = env('DATABASE_URL', default=None)
+if DATABASE_URL:
+    DATABASES = {
+        'default': env.db()
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -147,6 +164,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'), 
 ]
+# Directorio donde `collectstatic` colocará los archivos estáticos para servir con Nginx
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
