@@ -11,4 +11,5 @@ urlpatterns = [
     path("exportar/rem_a24/excel/", views.exportar_rem_a24_excel, name="exportar_rem_a24_excel"),
     path("exportar/rem_a24/pdf/", views.exportar_rem_a24_pdf, name="exportar_rem_a24_pdf"),
     path("rem_24/", views.rem_24, name="rem_24"), 
+    path("panel/", views.panel_reportes, name="panel_reportes"),
 ]

@@ -252,12 +252,14 @@ def api_estadisticas_supervisor(request):
     tipos_qs = Reporte.objects.values('tipo').annotate(cantidad=Count('id'))
     tipos_reportes = {item['tipo']: item['cantidad'] for item in tipos_qs}
 
+    # Respuesta en JSON
     return JsonResponse({
         'total_reportes': total_reportes,
         'reportes_mes': reportes_mes,
         'reportes_hoy': reportes_hoy,
         'tipos_reportes': tipos_reportes
     })
+
 
 
 
