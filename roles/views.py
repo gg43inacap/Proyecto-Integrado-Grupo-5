@@ -261,7 +261,6 @@ def api_estadisticas_supervisor(request):
     
     return JsonResponse({
         'total_reportes': total_reportes,
-        'reportes_mes': reportes_mes,
         'tipos_reportes': tipos_reportes,
     })
 

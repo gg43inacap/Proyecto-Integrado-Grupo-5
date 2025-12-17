@@ -153,7 +153,6 @@ function cargarEstadisticasReportes() {
     .catch(error => {
         console.error('Error cargando estadísticas:', error);
         document.getElementById('total-reportes').textContent = 'Error';
-        document.getElementById('reportes-mes').textContent = 'Error';
         document.getElementById('tipos-reportes').textContent = 'Error';
     });
 }
